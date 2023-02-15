@@ -1,0 +1,284 @@
+﻿@page "/Logbook"
+@inject IHttpService httpservice
+@using AONLOGBOOK.SHARED.Models;
+<style>
+    .button {
+        width: 100px;
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+
+    .table-scroll tbody {
+        position: absolute;
+        overflow-y: scroll;
+        overflow-x: scroll;
+        height: 250px;
+    }
+
+    .table-scroll tr {
+        width: 100%;
+        table-layout: fixed;
+        display: inline-table;
+    }
+
+    .table-scroll thead > tr > th {
+        border: none;
+    }
+
+</style>
+
+@if(DispData==true)
+{
+    @if (logmst != null)
+    {
+        @*@if (logmst.L= null)
+        {*@
+
+        <LogDetailSchema log="@logmst.LogbookId.ToString()" mstlogChanged="@HandleDataSaved">
+                <ChildContent>
+                    <Button Color="Color.Secondary" Type="ButtonType.Button" @onclick="@back" Style="margin:2px;"><BarIcon IconName="IconName.Backward"></BarIcon></Button> 
+                    
+                </ChildContent>
+                <ChildContent1>
+                    <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                          <Check TValue="bool" Checked="@ismandatory" CheckedChanged="@Oncheckedchange">IsMandatory</Check>
+                    </Field>
+                </ChildContent1>
+            </LogDetailSchema>
+       @* }*@
+    }
+
+}
+else if (isDialogOpen == true)
+{
+    @if (logmst != null)
+    {
+        @if (logmst.LogbookId != null)
+        {
+
+        }
+        <CModal Lmst="@logmst" title="Create New LogBook" mstDatasChanged="@HandleAddlogbook">
+            <ChildContent1>
+                <EditForm Model="@logbookmst" OnValidSubmit="save">
+                    <Fields>
+                        <Field ColumnSize="ColumnSize.Is12">
+                            <FieldLabel>LogBook Name</FieldLabel>
+                            <TextEdit @bind-Text="logbookmst.LogbookName"></TextEdit>
+                        </Field>
+                    </Fields>
+                    <Fields>
+                        <Field Flex="Flex.JustifyContent.Center">
+                            <Button Type="ButtonType.Submit" Color="Color.Primary" class="m-2">Submit</Button>
+                            <Button Type="ButtonType.Reset" Color="Color.Info" class="m-2">Reset</Button>
+                            <Button Type="ButtonType.Button" Color="Color.Warning" class="m-2" Clicked="@HandleCancel">Cancel</Button>
+                        </Field>
+                    </Fields>
+                </EditForm>
+            </ChildContent1>
+        </CModal>
+    }
+}
+
+else
+{
+    <div class="container">
+   <Heading Flex="Flex.JustifyContent.Center" Size="HeadingSize.Is4">LogBook Creation</Heading>
+    <Divider DividerType="DividerType.Dashed" />
+    
+        
+                <Fields>
+                    <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                        <FieldLabel>Department</FieldLabel>
+                <Select SelectedValue="tblSdept.DeptId" SelectedValueExpression="@(()=>tblSdept.DeptId)" SelectedValueChanged="@((string args)=>{handleSubDept(args);})">
+                             <SelectItem>--Select--</SelectItem>
+                     @if (deptList != null)
+                            {
+                                @foreach (TblDeptMaster dept in deptList)
+                                {
+                                    <SelectItem Value="@dept.Id">@dept.DeptName</SelectItem>
+                                }
+                            }
+                </Select>  
+                    </Field>
+                    <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                        <FieldLabel>Sub Department</FieldLabel>
+                <Select SelectedValue="logbookmst.SubDepartment" SelectedValueExpression="@(()=>logbookmst.SubDepartment)" SelectedValueChanged="@((string args)=>{handlelogbook(args);})">
+                            <SelectItem>--Select--</SelectItem>
+                            @if (SdeptList != null)
+                            {
+                                @foreach (TblSubDeptMaster sdept in SdeptList)
+                                {
+                            <SelectItem Value="@sdept.Id">@sdept.SubDptName</SelectItem>
+                                }
+                            }
+                        </Select> 
+                    </Field>
+                  
+                </Fields>
+        <Field ColumnSize="ColumnSize.Is5.OnDesktop.Is12.OnMobile">
+            @ChildContent
+            <Button class="m-2" style="margin-top:10px;background:#659abb;color:#000;" @onclick="@Addlogbook" Disabled="@(tblSdept.DeptId==null || logbookmst.SubDepartment==null)" >Add</Button>
+        </Field>
+
+        @if (logbookMasters != null)
+        {
+            @foreach (var item in logbookMasters)
+            {
+                <div id="accordion">
+                    <div class="faq-container">
+                        <div class="card w-100" style="border-top: 1px solid #FF6E31;">
+                            <details class="d-flex m-2">
+                                <summary style="margin-left:10px;"><i class="fa fa-city p-2" style="color:#243763;"></i>@item.LogbookName</summary>
+                                <p style="margin-left:15px;">
+                                    <Field>
+                                        <Button class="p-1 m-1" style="font-size:13px;" Clicked="@(()=>HandleEditlogbook(item))" Color="Color.Primary"><BarIcon IconName="IconName.Edit"></BarIcon></Button>
+                                        <Button class="p-1 m-1" style="font-size:13px;" Color="Color.Danger"><BarIcon IconName="IconName.Delete"></BarIcon></Button>
+                                        <Button class="p-1 m-1" style="font-size:13px;" Clicked="@(()=>handlelogbookdetail(item))" Color="Color.Warning"><BarIcon IconName="IconName.Book"></BarIcon>Logbook Detail</Button>
+                                    
+
+                                    </Field>
+                                </p>
+                            </details>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+   </div>
+      
+     
+
+     
+  
+}
+
+
+
+@code {
+    IEnumerable<LogbookMaster> logbookMasters;
+    TblLogbookMaster logbookmst = new();
+    TblLogBookDataTable selectedLogbook;
+    string sdept;
+    string cmpId;
+    string plantid;
+    string Deptid;
+    string log;
+    bool ismandatory;
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    TblLogBookDataTable logbook = new();
+    IEnumerable<TblLogBookDataTable> LogDataList;
+    IEnumerable<TblCompanyMaster> companyList;
+    IEnumerable<TblPlantMaster> plantList;
+    IEnumerable<TblDeptMaster> deptList;
+    IEnumerable<TblSubDeptMaster> SdeptList;
+    TblSubDeptMaster tblSdept = new();
+    TblDeptMaster tblDept = new();
+    TblPlantMaster tblPlant = new();
+    bool? isDialogOpen;
+    bool? DispData;
+    bool? Displayform { get; set; } = false;
+    LogbookMaster? logmst;
+    public EventCallback<bool> mstDataschanged { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        deptList = await httpservice.Get<List<TblDeptMaster>>("DeptMasters");
+        //  logbookMasters = await httpservice.Get<List<LogbookMaster>>("logbookMasters");
+        StateHasChanged();
+
+    }
+    async void handleSubDept(string value)
+    {
+
+        tblSdept.DeptId = value;
+        SdeptList = await httpservice.Get<List<TblSubDeptMaster>>("SubDeptMasters/" + tblSdept.DeptId);
+        Deptid =  tblSdept.DeptId ;
+        StateHasChanged();
+    }
+    async void handlelogbook(string value)
+    {
+        logbookmst.SubDepartment = value;
+        logbookMasters = await httpservice.Get<List<LogbookMaster>>("LogbookMasters/" + logbookmst.SubDepartment);
+        log = logbookmst.SubDepartment;
+        StateHasChanged();
+    }
+    async void Addlogbook()
+    {
+        logmst = new LogbookMaster();
+        isDialogOpen = true;
+        logmst.SubDepartment = log;
+        StateHasChanged();
+    }
+    void HandleAddlogbook()
+    {
+        logmst = null;
+        isDialogOpen = null;
+    }
+    void HandleEditlogbook(LogbookMaster item)
+    {
+
+    }
+    void handlelogbookdetail(LogbookMaster item)
+    {
+        logmst = item;
+        DispData = true;
+    }
+
+    async void save()
+    {
+        try
+        {
+            // logbookmst.PlantCode =
+            logbookmst.Department = tblSdept.DeptId;
+            logbookmst.PlantCode = tblSdept.PlantId;
+            logbookmst.CompanyId = tblSdept.CompanyId;
+
+            var data = await httpservice.Post<string>("LogbookMasters", logbookmst);
+            if (data != null)
+            {
+                await App.Current.MainPage.DisplayAlert("Message", data, "Ok");
+
+            }
+            else
+            {
+                await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
+            }
+            HandleCancel();
+            await OnInitializedAsync();
+            logbookMasters = await httpservice.Get<List<LogbookMaster>>("LogbookMasters/" + logbookmst.SubDepartment);
+            logbookmst.LogbookName = null;
+            StateHasChanged();
+        }catch(Exception ex)
+        {
+
+        }
+
+    }
+    void HandleCancel()
+    {
+        logmst = null;
+        isDialogOpen = false;
+    }
+    void HandleDataSaved()
+    {
+
+    }
+    void back()
+    {
+        DispData = false;
+        isDialogOpen = false;
+        logmst = null;
+    }
+    void Oncheckedchange(bool value)
+    {
+        ismandatory = value;
+    }
+}

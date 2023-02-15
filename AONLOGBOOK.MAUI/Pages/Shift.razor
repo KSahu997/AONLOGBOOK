@@ -1,0 +1,294 @@
+﻿@page "/Shift"
+@inject IHttpService httpservice
+
+
+<Div class="container">
+    <Heading Flex="Flex.JustifyContent.Center">Shift Creation</Heading>
+    <EditForm Model="@shift" OnValidSubmit="Submit">
+        <Fields>
+            <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                <FieldLabel>Shift</FieldLabel>
+                <TextEdit @bind-Text="shift.ShiftPrefix" Role="TextRole.Text" />
+            </Field>
+            <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                <FieldLabel>Start Time</FieldLabel>
+                <TimePicker TValue="TimeSpan?" @bind-Time="shift.ShiftStart" />
+            </Field>
+            <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                <FieldLabel>Shift Hour</FieldLabel>
+                <NumericPicker @bind-Value="@shift.Shifthour" />
+            </Field>
+            <Field>
+                <Button Type="ButtonType.Submit" style="background:#659abb;color:#000;">Add Shift</Button>
+                <Button Type="ButtonType.Reset" Background="Background.Secondary" TextColor="TextColor.Light">Reset</Button>
+            </Field>
+        </Fields>
+    </EditForm>
+    <Fields>
+        <Field ColumnSize="ColumnSize.Is12.OnDesktop.Is12.OnMobile">
+            <Card>
+                <CardHeader>Current Shift</CardHeader>
+                <CardBody>
+                   <Table>
+                        <TableHeader Style="background:#a2c3e0;">
+                            <TableRow>
+                                <TableHeaderCell>Shift</TableHeaderCell>
+                                <TableHeaderCell>Shift Start</TableHeaderCell>
+                                <TableHeaderCell>Shift hour</TableHeaderCell>
+                                <TableHeaderCell>Action</TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            @if (shiftlist != null)
+                            {
+                               
+                                    @foreach (var item in shiftlist.Where(a=>(a.Delflag==0)))
+                                    {
+                                    
+                                        <TableRow>
+                                            <TableRowCell>@item.ShiftPrefix</TableRowCell>
+                                            <TableRowCell>@item.ShiftStart</TableRowCell>
+                                            <TableRowCell>@item.Shifthour</TableRowCell>
+                                            <TableRowCell>
+                                                <Button Clicked="@(()=>{EditShift(item);})" Background="Background.Warning">Edit</Button>
+                                                <Button Background="Background.Danger" Clicked="@(()=>{Delete(item);})">Delete</Button>
+                                            </TableRowCell>
+                                        </TableRow>
+
+                                    }
+                                
+                            }
+
+                        </TableBody>
+                    </Table>
+                </CardBody>
+            </Card>
+        </Field>
+        <Field ColumnSize="ColumnSize.Is12.OnDesktop.Is12.OnMobile">
+            <Card>
+                <CardHeader>Deleted Shift</CardHeader>
+                <CardBody>
+                    <Table>
+                        <TableHeader Style="background:#a2c3e0;">
+                            <TableRow>
+                                <TableHeaderCell>Shift</TableHeaderCell>
+                                <TableHeaderCell>Shift Start</TableHeaderCell>
+                                <TableHeaderCell>Shift hour</TableHeaderCell>
+                                <TableHeaderCell>Action</TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            @if (shiftlist != null)
+                            {
+                            @foreach (var item in shiftlist.Where(a => (a.Delflag == 1)))
+                                {
+                                    <TableRow>
+                                        <TableRowCell>@item.ShiftPrefix</TableRowCell>
+                                        <TableRowCell>@item.ShiftStart</TableRowCell>
+                                        <TableRowCell>@item.Shifthour</TableRowCell>
+                                        <TableRowCell>
+                                         <Button Clicked="@(()=>{UnDelete(item);})" style="background:#659abb;color:#000;">UnDelete</Button>
+                                        </TableRowCell>
+                                    </TableRow>
+
+                                }
+                            }
+
+                        </TableBody>
+                    </Table>
+                </CardBody>
+            </Card>
+        </Field>
+    </Fields>
+   
+
+
+   @* @if(DispShift==true)
+    {
+        <Card>
+        <CardHeader>Shift Name</CardHeader>
+        <CardBody>
+            <table>
+                <thead>
+                    <tr>
+                        <td>Prefix</td>
+                    </tr>
+                </thead>
+                <tbody>
+
+                        @foreach (var i in shiftD)
+                            {
+                        <tr>
+                               <td><TextEdit Role="TextRole.Text" @bind-Text="i.ShiftPrefix">@i.ShiftPrefix</TextEdit></td>
+                        </tr>
+                            }
+                   
+                </tbody>
+            </table>
+           
+                <Button Clicked="@Save" style="margin-top:10px;background:#659abb;color:#000;">Submit</Button>
+        </CardBody>
+        </Card>
+   
+    }*@
+
+</Div>
+
+
+@code {
+
+        IEnumerable<TblShiftMaster> shiftlist;
+        TblShiftMaster shift = new TblShiftMaster();
+        List<TblShiftMaster> shiftD = new ();
+        int NoofShift;
+        bool isnew = true;
+        TblShiftMaster? shiftMaster;
+        TimeOnly endshift;
+        bool DispShift = false;
+        int Delflag = 0;
+        IEnumerable<TblCompanyMaster> companies;
+    protected override async Task OnInitializedAsync()
+    {
+        companies = await httpservice.Get<List<TblCompanyMaster>>("CompanyMasters");
+        shiftlist = await httpservice.Get<List<TblShiftMaster>>("ShiftMasters");
+
+    }
+    async void Submit()
+    {
+
+
+        if (isnew == true)
+        {
+            try
+            {
+                shift.CompanyId = companies.First().Id.ToString();
+                var savedata = await httpservice.Post<string>("ShiftMasters", shift);
+                if (savedata != null)
+                {
+                    await App.Current.MainPage.DisplayAlert("Message", savedata, "ok");
+
+                }
+                else
+                {
+                    await App.Current.MainPage.DisplayAlert("Message", "Error", "ok");
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            await OnInitializedAsync();
+            shift.ShiftPrefix = null;
+            shift.Shifthour = null;
+            shift.ShiftStart = null;
+            StateHasChanged();
+        }
+        else 
+        {
+
+            try
+            {
+                shift.CompanyId = companies.First().Id.ToString();
+                var editdata = await httpservice.Post<string>("ShiftMasters/upd", shift);
+                if (editdata != null)
+                {
+                    await App.Current.MainPage.DisplayAlert("Message", editdata, "ok");
+                    isnew = true;
+                    StateHasChanged();
+                }
+                else
+                {
+                    await App.Current.MainPage.DisplayAlert("Message", "Error", "ok");
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+
+            await OnInitializedAsync();
+            shift.ShiftPrefix = null;
+            shift.Shifthour = null;
+            shift.ShiftStart = null;
+            StateHasChanged();
+        }
+
+
+
+
+
+
+
+
+    }
+    async void EditShift(TblShiftMaster item)
+    {
+        shift = item;
+        isnew = false;
+
+    }
+    async void Delete(TblShiftMaster item)
+    {
+
+        try
+        {
+
+            item.Delflag = 1;
+            var deldata = await httpservice.Post<string>("ShiftMasters/del", item);
+            if (deldata != null)
+            {
+                await App.Current.MainPage.DisplayAlert("Message", deldata, "ok");
+                isnew = true;
+                StateHasChanged();
+            }
+            else
+            {
+                await App.Current.MainPage.DisplayAlert("Message", "Error", "ok");
+            }
+        }catch(Exception ex)
+        {
+            item.Delflag = 0 ;
+
+        }
+    }
+    async void UnDelete(TblShiftMaster item)
+    {
+        try
+        {
+
+            item.Delflag = 0;
+            var deldata = await httpservice.Post<string>("ShiftMasters/del", item);
+            if (deldata != null)
+            {
+                await App.Current.MainPage.DisplayAlert("Message", deldata, "ok");
+                isnew = true;
+                StateHasChanged();
+            }
+            else
+            {
+                await App.Current.MainPage.DisplayAlert("Message", "Error", "ok");
+            }
+        }
+        catch (Exception ex)
+        {
+
+        }
+        
+    }
+
+        
+        
+    //void Submit()
+    //{
+    //    NoofShift =Convert.ToInt16(24 / shift.Shifthour);
+    //    DispShift = true;
+    //    for(int i=1; i>=0; i--)
+    //    {
+    //        shiftD.Add(new TblShiftMaster { ShiftStart = shift.ShiftStart, CompanyId = shift.CompanyId });
+    //    }
+
+    //}
+   }

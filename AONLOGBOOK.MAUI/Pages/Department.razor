@@ -1,0 +1,226 @@
+﻿@page "/Department"
+@inject IHttpService httpservice
+@using System.ComponentModel.DataAnnotations;
+<style>
+    
+
+    ::marker {
+        content: close-quote;
+        unicode-bidi: isolate;
+        font-variant-numeric: tabular-nums;
+        text-transform: none;
+        text-indent: 0px !important;
+        text-align: start !important;
+        text-align-last: start !important;
+    }
+</style>
+
+@if (isDialogOpen == true)
+{
+    @if (selectdept != null)
+    {
+        @if (selectdept.Id != null)
+        {
+
+        }
+        <CModal dept="@selectdept" title="Create New Department" mstDatasChanged="@HandleAdddept">
+            <ChildContent1>
+                <EditForm Model="@Dept" OnValidSubmit="submit"> 
+                    <Validations Mode="ValidationMode.Manual" Model="@Dept" @ref="validation">
+                        <Validation Validator="ValidationRule.IsNotEmpty">
+                       <Field ColumnSize="ColumnSize.Is12.OnDesktop.Is12.OnMobile">
+                            <FieldLabel>Department Name</FieldLabel>
+                            <TextEdit @bind-Text="@Dept.DeptName"></TextEdit>
+                             <Feedback>
+                                 <ValidationSuccess/>
+                                <ValidationError>Enter name</ValidationError>
+                            </Feedback>
+                        </Field>
+                        </Validation>
+                    </Validations>
+                    <div class="row m-2">
+                        <div class="col-md-12 d-flex mb-3 justify-content-center">
+                            <Button Type=ButtonType.Submit class="m-2" Color="Color.Primary">Submit</Button>
+                            <Button Type="ButtonType.Reset" class="m-2" Color="Color.Info">Reset</Button>
+                            <Button Type="ButtonType.Button" class="m-2" Color="Color.Warning" onclick="@HandleCancel">Cancel</Button>
+                        </div>
+
+                    </div>
+                </EditForm>
+            </ChildContent1>
+        </CModal>
+    }
+
+
+}
+else
+{
+    <div class="Container">
+        <h4 class="fw-bold" style="color:#243763;">Department List</h4>
+     <Fields>
+        <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+            <FieldLabel>Company</FieldLabel>
+            <Select SelectedValue="plant.CompanyId" SelectedValueChanged="@((string arg)=>{handlePlant(arg);})" SelectedValueExpression="@(()=>plant.CompanyId)">
+                <SelectItem>--Select Company--</SelectItem>
+                @if (companies != null)
+                {
+                    @foreach (TblCompanyMaster comp in companies)
+                    {
+                        <SelectItem Value="@comp.Id">@comp.CompanyName</SelectItem>
+                    }
+                }
+            </Select>
+
+        </Field>
+        <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+            <FieldLabel>Plant</FieldLabel>
+            <Select SelectedValue="Dept.PlantId" SelectedValueChanged="@((string arg)=>{HandlePlantList(arg);})"SelectedValueExpression="@(()=>Dept.PlantId)" >
+                <SelectItem>--Select Plant--</SelectItem>
+                @if(PlantList!=null)
+                {
+                    @foreach(TblPlantMaster plt in PlantList)
+                    {
+                        <SelectItem Value="@plt.PlantId">@plt.PlantName</SelectItem>
+                    }
+                }
+            </Select>
+        </Field>
+        <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+            @ChildContent
+            <Button Margin="Margin.Is3" style="margin-top:10px;background:#659abb;color:#000;" @onclick="@AddDept" Disabled=@(plant.CompanyId==null||Dept.PlantId==null)>Add</Button>
+        </Field>
+      </Fields>
+        <div class="row">
+            <div class="col-md-12">
+              
+                    @if (DeptList != null)
+                    {
+                        @foreach (var item in DeptList)
+                        {
+                        <div id="accordion">
+                            <div class="faq-container">
+                                <div class="card w-100" style="border-top: 1px solid #FF6E31;">
+                                   <details class="d-flex m-2">
+                                    <summary style="margin-left:10px;"><i class="fa fa-city p-2" style="color:#243763;"></i>@item.DeptName</summary>
+                                        <p style="margin-left:15px;">
+                                             
+                                        <Button class="btn btnEdit p-1" @onclick=@(()=>handleEditDept(item))><i class="fa fa-pen p-2" /></Button>
+                                        <Button class="btn btn-danger p-1"><i class="fa fa-trash p-2" /></Button>
+                                       @* <button class="btn btnAdd p-2" @onclick="@(()=>handleAddnewSubDept(item))">Sub Departments</button>*@
+                                            </p>
+                                        </details>
+                                    </div>
+                                </div>
+                            </div>
+                           
+                        }
+                    }
+                </div>
+                 </div>
+            </div>
+      
+}
+
+ 
+
+@code {
+    TblDeptMaster Dept = new();
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    [Parameter]
+    public EventCallback<bool> mstplantchanged{get; set;}
+    IEnumerable<TblDeptMaster> DeptList;
+    bool DispsData;
+    bool? isDialogOpen;
+    public string plantId;
+    TblDeptMaster? selectdept;
+    IEnumerable<TblCompanyMaster> companies;
+    IEnumerable<TblPlantMaster> PlantList;
+    TblPlantMaster plant = new();
+    Validations validation;
+
+
+    async void submit()
+    {
+        if(await validation.ValidateAll())
+        {
+            try
+            {
+                Dept.CompanyId = PlantList.First(a => (a.PlantId == plantId)).CompanyId;
+                Dept.CreatedBy = "Admin";
+                var data = await httpservice.Post<string>("DeptMasters", Dept);
+                if (data != null)
+                {
+                    await App.Current.MainPage.DisplayAlert("Message", data, "ok");
+                    Dept.DeptName = string.Empty;
+                }
+                else
+                {
+                    await App.Current.MainPage.DisplayAlert("Message", "Error", "ok");
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+            HandleCancel();
+            StateHasChanged();
+            await OnInitializedAsync();
+        }
+        
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        companies = await httpservice.Get<List<TblCompanyMaster>>("CompanyMasters");
+        Dept.PlantId = plantId;
+        DeptList = (await httpservice.Get<List<TblDeptMaster>>("DeptMasters")).Where(a => (a.PlantId == Dept.PlantId));
+        StateHasChanged();
+
+    }
+    void handleDataSaved()
+    {
+
+    }
+    void HandleCancel()
+    {
+        selectdept = null;
+        DispsData = false;
+        isDialogOpen = false;
+    }
+    void HandleAdddept()
+    {
+        selectdept = null;
+        isDialogOpen = null;
+    }
+    void AddDept()
+    {
+        selectdept = new TblDeptMaster();
+        isDialogOpen = true;
+        selectdept.PlantId = plantId;
+    }
+    void back(){
+        selectdept=null;
+        DispsData = false;
+    }
+    void handleEditDept(TblDeptMaster item)
+    {
+        selectdept = item;
+        isDialogOpen = true;
+    }
+    async void handlePlant(string val)
+    {
+        plant.CompanyId = val;
+        PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters")).Where(a => (a.CompanyId == plant.CompanyId));
+        StateHasChanged();
+    }
+    async void HandlePlantList(string val)
+    {
+        Dept.PlantId = val;
+        DeptList = (await httpservice.Get<List<TblDeptMaster>>("DeptMasters")).Where(a => (a.PlantId == Dept.PlantId));
+        plantId = Dept.PlantId;
+        StateHasChanged();
+    }
+}

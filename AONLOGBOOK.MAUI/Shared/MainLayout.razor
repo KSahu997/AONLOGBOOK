@@ -1,0 +1,65 @@
+﻿@inherits LayoutComponentBase
+@using Newtonsoft.Json;
+@inject NavigationManager NaviManager
+    <Layout Sider>
+
+@if (User.userdata != null)
+{
+        <LayoutSider>
+            <LayoutSiderContent>
+                <Bar @ref="@sidebar" Mode="BarMode.VerticalInline"
+                 Breakpoint="Breakpoint.Desktop"
+                 Background="Background.Light"
+                 
+                 ThemeContrast="ThemeContrast.Light">
+                    <NavMenu />
+                </Bar>
+            </LayoutSiderContent>
+        </LayoutSider>
+        }
+
+        <Layout>
+        @if (User.userdata != null)
+        {
+            <LayoutHeader Fixed>
+                <Bar Mode="BarMode.Horizontal"
+                 ThemeContrast="ThemeContrast.Light" Style="background-color: #dee2e6;
+                color: #E7E0C9;">
+                        <BarToggler Bar="@sidebar" />
+                        <BarMenu>
+                            <BarItem></BarItem>
+                        </BarMenu>
+                    </Bar>
+                </LayoutHeader>
+            }
+                <LayoutContent Padding="Padding.Is4.OnX">
+                @Body
+            </LayoutContent>
+            
+            
+        </Layout>
+    </Layout>
+
+    @*Sider bar*@
+
+
+@code {
+    private Bar sidebar;
+
+    public User? user;
+    protected override async Task OnInitializedAsync()
+    {
+       
+            string data = await SecureStorage.GetAsync("user");
+
+        if (!string.IsNullOrEmpty(data))
+          User.userdata = JsonConvert.DeserializeObject<UserData>(data);
+        else
+           NaviManager.NavigateTo("/LoginPage");
+            StateHasChanged();
+        
+        
+    }
+
+}
+

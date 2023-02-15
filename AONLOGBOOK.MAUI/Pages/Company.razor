@@ -1,0 +1,323 @@
+﻿@page "/Company"
+@using System.ComponentModel.DataAnnotations
+@using AONLOGBOOK.SHARED.Models;
+@inject IHttpService httpservice
+
+<style>
+   
+    body{
+        background: #F6F5F5;
+    }
+    .faq-container {
+        
+    }
+
+    details {
+        margin-bottom: 18px;
+       
+    }
+
+        details summary {
+            font-size: 13px;
+           
+            cursor:pointer;
+        }
+
+        details  p {
+            font-size: 13px;
+            line-height: 24px;
+            margin-top: 10px;
+            color: #545d7a;
+        }
+
+    .card{
+        background-color:transparent;
+    }
+   
+    .buttonback{
+        background: #1c7266;
+        color:#fff;
+    }
+    
+    .btncancel{
+        background: linear-gradient(to top, #480b2a 0%, #fff 100%);
+        color:#fff;
+    }
+
+    ::marker {
+        content:close-quote;
+        unicode-bidi: isolate;
+        font-variant-numeric: tabular-nums;
+        text-transform: none;
+        text-indent: 0px !important;
+        text-align: start !important;
+        text-align-last: start !important;
+    }
+
+    .btnEdit{
+        background-color:#11324D;
+        color:whitesmoke;
+    }
+    .btnEdit:hover{
+        color:#fff;
+    }
+    .btnAdd{
+        background-color: #11324D;
+        color: whitesmoke;
+    }
+
+    .btnAdd:hover {
+        color: #fff;
+    }
+</style>
+
+@if (isDialogOpen== true)
+{
+    @if(selectedcompany!= null)
+    {
+        @if(selectedcompany.Id == null)
+        {
+     
+        }
+          <CModal company="@selectedcompany" title=" Create New Company" mstDatasChanged="@HandleAddcompany">
+                <ChildContent1>
+
+                    <EditForm Model="@tblCompanyMaster" OnValidSubmit="submit">
+                        <DataAnnotationsValidator />
+                   <Validations Mode="ValidationMode.Auto" Model="@tblCompanyMaster">
+                        <Fields>
+                            <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                <FieldLabel>Company Name</FieldLabel>
+                                <TextEdit @bind-Text="tblCompanyMaster.CompanyName" Role="TextRole.Text"></TextEdit>
+                            </Field>
+                            <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                <FieldLabel>Email</FieldLabel>
+                                <TextEdit @bind-Text="tblCompanyMaster.Email" Role="TextRole.Email"></TextEdit>
+                            </Field>
+                            <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                <FieldLabel>Mobile Number</FieldLabel>
+                                <TextEdit @bind-Text="tblCompanyMaster.PhoneNo" Role="TextRole.Text"></TextEdit>
+                            </Field>
+                        </Fields>
+                        <Fields>
+                            <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                <FieldLabel>Address</FieldLabel>
+                                <TextEdit @bind-Text="tblCompanyMaster.Address" Role="TextRole.Text"></TextEdit>
+                            </Field>
+                            <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                <FieldLabel>Country</FieldLabel>
+                                <TextEdit @bind-Text="tblCompanyMaster.Country" Role="TextRole.Text"></TextEdit>
+                            </Field>
+                            <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                <FieldLabel>State</FieldLabel>
+                                <TextEdit @bind-Text="tblCompanyMaster.State" Role="TextRole.Text"></TextEdit>
+                            </Field>
+                        </Fields>
+                        <Fields>
+                            <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                <FieldLabel>City</FieldLabel>
+                                <TextEdit @bind-Text="tblCompanyMaster.City" Role="TextRole.Text"></TextEdit>
+                            </Field>
+                            <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                <FieldLabel>Postal Code</FieldLabel>
+                                <NumericEdit @bind-Value="tblCompanyMaster.PinCode"></NumericEdit>
+                            </Field>
+                            <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                <FieldLabel>GSTIN</FieldLabel>
+                                <TextEdit @bind-Text="tblCompanyMaster.GstNo" Role="TextRole.Text"></TextEdit>
+                            </Field>
+                        </Fields>
+                        <Fields>
+                            <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                <FieldLabel>Company Logo</FieldLabel>
+                                <FileEdit Changed="@Onchanged" />
+                            </Field>
+                        </Fields>
+                        <Fields>
+                            <Field Flex="Flex.JustifyContent.Center">
+                                <Button Type="ButtonType.Submit" Color="Color.Primary" class="m-2">Submit</Button>
+                                <Button Type="ButtonType.Reset" Color="Color.Info" class="m-2">Reset</Button>
+                                <Button Type="ButtonType.Button" Color="Color.Warning" class="m-2" Clicked="@HandleCanceled">Cancel</Button>
+                            </Field>
+                        </Fields>
+                      
+                    </Validations>
+                      
+                    </EditForm>
+                </ChildContent1>
+            </CModal>
+      
+       
+}
+   
+    
+}
+else
+{
+
+
+<div class="Container">
+       <div class="row m-2">
+         <Heading Size="HeadingSize.Is4" Flex="Flex.JustifyContent.Center">COMPANY(s)</Heading>
+            <hr/>
+        <div class="col-md-12">
+                <Button class="btn" style="margin:10px;" Color="Color.Info" @onclick="@Addcompany"><BarIcon IconName="IconName.Add" ></BarIcon>
+                  
+                    Add
+                </Button>
+  
+                          @if (companies != null)
+                            {
+                                @foreach (var item in companies)
+                                {
+                                 <div id="accordion">
+                                        <div class="faq-container">
+                                             <div class="card w-100" style="border-top: 1px solid #FF6E31;">
+                                                
+                                        <details class="d-flex m-2">
+                                        <summary><i class="fa fa-city p-2" style="color:#243763;"></i>@item.CompanyName</summary>
+                                        <p style="margin-left:10px;">
+                                       <ListGroup>
+                                           <ListGroupItem><b>Email</b>   @item.Email</ListGroupItem>
+                                           <ListGroupItem> <b>Mobile Number</b>  @item.PhoneNo</ListGroupItem>
+                                                <ListGroupItem><b>GSTIN</b>  @item.GstNo</ListGroupItem>
+                                                <ListGroupItem> <b>City</b>  @item.City</ListGroupItem>
+                                                <ListGroupItem><b>Country</b>  @item.Country</ListGroupItem>
+                                                <ListGroupItem><b>State</b>  @item.State</ListGroupItem>
+                                                <ListGroupItem><b>Postal Code</b>  @item.PinCode</ListGroupItem>
+                                       </ListGroup>
+                                       <Field>
+                                                <Button class="btn btnEdit p-1 m-1" style="font-size:13px;" Clicked="@(()=>handalEditcompany(item))"><i class="fa fa-pen p-2" /></Button>
+                                                <Button class="btn btn-danger p-1 m-1" style="font-size:13px;"><i class="fa fa-trash p-2" /></Button>
+                                                
+
+                                       </Field>
+                                               
+                                                </p>
+                                         
+                                           </details>
+                                </div>
+
+                            </div>
+                                        </div>                                        
+                                }
+                            }
+                      
+        </div>
+   </div>
+</div>
+}
+@code {
+    bool collapse1Visible = true;
+    TblCompanyMaster tblCompanyMaster = new();
+    IEnumerable<TblCompanyMaster> companies;
+    TblCompanyMaster? selectedcompany;
+    TblPlantMaster selectedplant;
+    bool? DispData;
+    bool? isDialogOpen;
+    async void submit()
+    {
+        try
+        {
+            tblCompanyMaster.CreatedBy = "Admin";
+            var result = await httpservice.Post<string>("CompanyMasters",tblCompanyMaster);
+
+            if (result!=null)
+            {
+                await App.Current.MainPage.DisplayAlert("Message",result,"Ok");
+            }
+            else
+            {
+
+                await App.Current.MainPage.DisplayAlert("Message","Error","Ok");
+
+            }
+           
+            StateHasChanged();
+
+        }
+        catch (Exception ex)
+        {
+            if(tblCompanyMaster != null && tblCompanyMaster.CompanyName == tblCompanyMaster.CompanyName || tblCompanyMaster.CompanyName=="")
+            {
+                await App.Current.MainPage.DisplayAlert("Message","Invalid Company name", "Ok");
+            }else   
+
+                await App.Current.MainPage.DisplayAlert("Message", ex.Message, "Ok");
+        }
+        HandleCanceled();
+        StateHasChanged();
+        tblCompanyMaster.CompanyName = string.Empty;
+        tblCompanyMaster.Email = null;
+        tblCompanyMaster.PhoneNo = null;
+        tblCompanyMaster.Address = null;
+        tblCompanyMaster.Country = null;
+        tblCompanyMaster.State = null;
+        tblCompanyMaster.City = null;
+        tblCompanyMaster.PinCode = null;
+        tblCompanyMaster.GstNo = null;
+        await OnInitializedAsync();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        companies = await httpservice.Get<List<TblCompanyMaster>>("CompanyMasters");
+        StateHasChanged();
+    }
+
+    public async Task HandleDataSaved()
+    {
+        //GridLoad = true;
+        //reports = null;
+        selectedcompany = null;
+        DispData = null;
+        //reports = (await Http.GetFromJsonAsync<List<TblQuestionsBank>>("Trainning"));
+        //GridLoad = false;
+    }
+    void HandleCancel()
+    {
+        selectedplant = null;
+        DispData = false;
+        // DisData = false;
+    }
+    void Addcompany()
+    {
+        selectedcompany = new TblCompanyMaster();
+        isDialogOpen = true;
+
+    }
+    void HandleAddcompany()
+    {
+        selectedcompany = null;
+        isDialogOpen = null;
+
+
+    }
+    void HandleCanceled()
+    {
+        selectedcompany = null;
+        isDialogOpen = false;
+
+    }
+    void back()
+    {
+        selectedcompany=null;
+        DispData = null;
+    }
+    void handalEditcompany(TblCompanyMaster item)
+    {
+        selectedcompany = item;
+        isDialogOpen = true;
+    }
+    void Onchanged()
+    {
+        
+    }
+    //async void handleAddnewPlant(TblCompanyMaster item)
+    //{
+    //    selectedcompany = item;
+    //    DispData = true;
+
+
+    //}
+}

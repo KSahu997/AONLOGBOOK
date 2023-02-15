@@ -1,0 +1,130 @@
+﻿@page "/TagMaster"
+@inject IHttpService httpservices
+
+<style>
+    .table-scroll tbody {
+        position: absolute;
+        overflow-y: scroll;
+        overflow-x: scroll;
+        height: 250px;
+    }
+
+    .table-scroll tr {
+        width: 100%;
+        table-layout: fixed;
+        display: inline-table;
+    }
+
+    .table-scroll thead > tr > th {
+        border: none;
+    }
+</style>
+
+<Div class="container" Padding="Padding.Is3">
+    
+   <Fields>
+       <Field ColumnSize="ColumnSize.Is3.OnDesktop.Is12.OnMobile">
+            <Badge Color="Color.Info"><BarIcon IconName="IconName.Tag"></BarIcon></Badge><h4 class="mb-4">Tag Master</h4>
+        </Field>
+           <Field ColumnSize="ColumnSize.Is2.OnDesktop.Is12.OnMobile">
+               </Field>
+   </Fields>
+    <Card Padding="Padding.Is2" Margin="Margin.Is2">
+        <EditForm Model="@tagdata" OnValidSubmit="submit">
+            <DataAnnotationsValidator></DataAnnotationsValidator>
+                <Fields>
+                    <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                        <FieldLabel>Tag name</FieldLabel>
+                        <TextEdit @bind-Text="tagdata.TagName"></TextEdit>
+                    </Field>
+                     <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                        <FieldLabel>Display name</FieldLabel>
+                        <TextEdit @bind-Text="tagdata.DisplayName"></TextEdit>
+                    </Field>
+                     <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                        <FieldLabel>Description</FieldLabel>
+                        <TextEdit @bind-Text="tagdata.Description"></TextEdit>
+                    </Field>
+                </Fields>
+       
+           @* <div class="col-md-3">
+                <label>UOM</label>
+                <InputSelect class="form-control" style="font-size:12px;" @bind-Value="tagdata.Uom">
+                    <option>--Select--</option>
+                    @if(uommst!=null)
+                    {
+                        @foreach(TblUommaster uom in uommst)
+                        {
+                             <option value="@uom.Id">@uom.Unit</option>   
+                        }
+                    }
+                </InputSelect>
+            </div>*@
+           <Fields>
+               <Field ColumnSize="ColumnSize.Is12.OnDesktop.Is12.OnMobile">
+                    <Button Type="ButtonType.Submit" Color="Color.Info">Submit</Button>
+               </Field>
+           </Fields>
+      
+        </EditForm>
+    </Card>
+
+
+<Table Hoverable Bordered>
+        <TableHeader ThemeContrast="ThemeContrast.None" Background="Background.Secondary" TextColor="TextColor.White">
+        <TableRow>
+           
+            <TableHeaderCell>Tagname</TableHeaderCell>
+            <TableHeaderCell>Display Name</TableHeaderCell>
+            <TableHeaderCell>Description</TableHeaderCell>
+        </TableRow>
+    </TableHeader>
+    <TableBody>
+        
+             @if (tagmst != null)
+                {
+                    @foreach (var item in tagmst)
+                    {
+                    <TableRow>
+                        <TableRowCell><Badge Background="Background.Info" Padding="Padding.Is2">@item.TagName</Badge></TableRowCell>
+                        <TableRowCell>@item.DisplayName</TableRowCell>
+                         <TableRowCell>@item.Description</TableRowCell>
+                    </TableRow>
+                   
+                    }
+                }
+       
+        
+    </TableBody>
+</Table>
+</Div>
+@code 
+{
+    IEnumerable<TblUommaster>uommst;
+    IEnumerable<TblTagMaster> tagmst;
+    TblTagMaster tagdata = new();
+    protected override async Task  OnInitializedAsync()
+    {
+        uommst = await httpservices.Get<List<TblUommaster>>("Uommasters");
+        tagmst = await httpservices.Get<List<TblTagMaster>>("TagMasters");
+        StateHasChanged();
+    }
+
+    async void submit()
+    {
+        var savedata = await httpservices.Post<string>("TagMasters", tagdata);
+        if (savedata != null)
+        {
+            await App.Current.MainPage.DisplayAlert("Message", savedata, "ok");
+
+        }
+        else
+        {
+            await App.Current.MainPage.DisplayAlert("Message", "Error", "ok");
+        }
+        tagdata = new();
+        await OnInitializedAsync();
+         StateHasChanged();
+    }
+    
+}

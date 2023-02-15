@@ -1,0 +1,49 @@
+﻿<style>
+   .modal-content{
+        border: 1px solid #999933;
+   }
+</style>
+
+@*@if (isDialogOpen)
+{*@
+    <div class="container align-item-center">
+           <div class="modal fade show" style="display:block; background-color: rgba(10,10,10,.8);"
+     aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                  
+                    <h4 class="modal-title" style="color:#243763;">@title</h4>
+                    @*<button type="button" class="close" @onclick="@(()=>{isDialogOpen = false;})">&times;</button>*@
+                </div>
+
+                <div class="modal-body">
+                    @ChildContent1
+                    
+                </div>
+                @*<div class="modal-footer">
+                 
+                </div>*@
+            </div>
+        </div>
+    </div>
+
+    </div>
+@*}*@
+@code {
+    bool isDialogOpen = true;
+    [Parameter]
+    public EventCallback<bool> mstDatasChanged { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent1 { get; set; }
+    [Parameter]
+    public string title{ get; set; }
+    [Parameter]
+    public TblCompanyMaster company { get; set; }
+    [Parameter]
+    public TblPlantMaster plant{ get; set; }
+    [Parameter]
+    public TblDeptMaster dept { get; set; }
+    [Parameter]
+    public TblSubDeptMaster sdept { get; set; }
+}

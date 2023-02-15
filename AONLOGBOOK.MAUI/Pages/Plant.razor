@@ -1,0 +1,264 @@
+﻿@page "/Plant"
+
+
+@inject IHttpService httpservice
+<style>
+    .btnEdit {
+        background-color: #11324D;
+        color: whitesmoke;
+    }
+
+    .btnAdd {
+        background-color: #11324D;
+        color: whitesmoke;
+    }
+
+    ::marker {
+        content: close-quote;
+        unicode-bidi: isolate;
+        font-variant-numeric: tabular-nums;
+        text-transform: none;
+        text-indent: 0px !important;
+        text-align: start !important;
+        text-align-last: start !important;
+    }
+</style>
+
+@if (isDialogOpen == true)
+{
+    @if(selectedplant != null ){
+        @if(selectedplant.Id != null)
+        {
+            
+        }
+        <CModal plant="@selectedplant" title="Create New Plant" mstDatasChanged="@HandleAddplant">
+            <ChildContent1>
+                <EditForm Model="@tblPlant" OnValidSubmit="submit">
+                    <div class="row m-2">
+                        <InputText @bind-Value="tblPlant.CompanyId" hidden></InputText>
+                       @* <div class="form-floating mb-3">
+                           
+                            <InputText @bind-Value="tblPlant.PlantName" class="form-control" id="floatingInput" placeholder="Plant Name" typeof="text" required />
+                            <label for="floatingInput">Plant Name</label>
+                            
+                        </div>*@
+                        <Fields>
+                            
+                                <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                    <FieldLabel>Plant name</FieldLabel>
+                                    <TextEdit @bind-Text="tblPlant.PlantName" Role="TextRole.Text"></TextEdit>
+                                </Field>
+                                <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                    <FieldLabel>Email</FieldLabel>
+                                    <TextEdit @bind-Text="tblPlant.Email" Role="TextRole.Email"></TextEdit>
+                                </Field>
+                               <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                    <FieldLabel>Mobile</FieldLabel>
+                                    <TextEdit @bind-Text="tblPlant.PhoneNo" Role="TextRole.Telephone"></TextEdit>
+                                </Field>
+                                <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                    <FieldLabel>Address</FieldLabel>
+                                    <TextEdit @bind-Text="tblPlant.Address" Role="TextRole.Text"></TextEdit>
+                                </Field>
+                                <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                    <FieldLabel>City</FieldLabel>
+                                    <TextEdit @bind-Text="tblPlant.City" Role="TextRole.Text"></TextEdit>
+                                </Field>
+                                <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                    <FieldLabel>State</FieldLabel>
+                                    <TextEdit @bind-Text="tblPlant.State" Role="TextRole.Text"></TextEdit>
+                                </Field>
+                               <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                <FieldLabel>Country</FieldLabel>
+                                    <TextEdit @bind-Text="tblPlant.Country" Role="TextRole.Text"></TextEdit>
+                                </Field>
+                                <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                    <FieldLabel>PinCode</FieldLabel>
+                                    <NumericEdit @bind-Value="tblPlant.PinCode" role="none"/>
+                                </Field>
+                           
+                        </Fields>
+                    </div>
+                    <div class="row m-2">
+                        <div class="col-md-12 d-flex mb-3 justify-content-center">
+                            <Button Type=ButtonType.Submit Color="Color.Primary" class="m-2">Submit</Button>
+                            <Button Type=ButtonType.Reset Color="Color.Info" class="m-2">Reset</Button>
+                            <Button Type=ButtonType.Button Color="Color.Warning" class="m-2" onclick="@HandleCancel">Cancel</Button>
+
+                        </div>
+
+                    </div>
+                </EditForm>
+            </ChildContent1>
+        </CModal>
+    }
+   
+
+}
+else
+{
+    <div class="Container">
+        <h4 class="fw-bold text" style="color:#243763;">Plant List</h4>
+        @*<p>Company Id:@tblPlant.CompanyId</p>*@
+        <Field ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile">
+            <FieldLabel>Company</FieldLabel>
+            <Select SelectedValue="tblPlant.CompanyId" SelectedValueChanged="@((string arg)=>{handlePlant(arg);})" SelectedValueExpression="@(()=>tblPlant.CompanyId)">
+                <SelectItem>--Select--</SelectItem>
+                @if(companies!=null)
+                {
+                    @foreach(TblCompanyMaster comp in companies)
+                    {
+                        <SelectItem Value="@comp.CompanyId">@comp.CompanyName</SelectItem>
+                    }
+                }
+            </Select>
+
+        </Field>
+        <Field ColumnSize="ColumnSize.Is5.OnDesktop.Is12.OnMobile">
+            @ChildContent
+            <Button class="m-2" style="margin-top:10px;background:#659abb;color:#000;" @onclick="@AddPlant" Disabled=@(tblPlant.CompanyId==null||string.IsNullOrEmpty(tblPlant.CompanyId))>Add</Button>
+        </Field>
+        <div class="row">
+            <div class="col-md-12">
+             
+                    @if (PlantList != null)
+                    {
+                        @foreach (var item in PlantList)
+                        {
+                        <div id="accordion">
+                            <div class="faq-container m-2 ">
+                        <div class="card w-100" style="border-top: 1px solid #FF6E31;">
+                                    <div class="row">
+                                        <details class="d-flex m-2">
+                                            <summary style="margin-left:10px;"><i class="fa fa-city p-2" style="color:#243763;"></i>@item.PlantName</summary>
+                                            <p style="margin-left:10px;">
+                                                <ListGroup>
+                                                    <ListGroupItem><b>Email</b>   @item.Email</ListGroupItem>  
+                                                    <ListGroupItem> <b>City</b>  @item.City</ListGroupItem>
+                                                    <ListGroupItem><b>Country</b>  @item.Country</ListGroupItem>
+                                                    <ListGroupItem><b>State</b>  @item.State</ListGroupItem>
+                                                    <ListGroupItem><b>Postal Code</b>  @item.PinCode</ListGroupItem>
+                                                </ListGroup>
+                                                <Field>
+                                                    <Button class="btn btnEdit p-1 m-1" style="font-size:13px;" Clicked="@(()=>handleEditPlant(item))"><i class="fa fa-pen p-2" /></Button>
+                                                    <Button class="btn btn-danger p-1 m-1" style="font-size:13px;"><i class="fa fa-trash p-2" /></Button>
+                                                </Field>
+                                           </p>
+                                        </details>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                        }
+                    }
+            </div>
+                </div>
+            </div>
+}
+
+
+@code {
+
+    IEnumerable<TblCompanyMaster> companies;
+    TblPlantMaster tblPlant = new();
+    string cmpId;
+
+    [Parameter]
+    public EventCallback<bool> mstDataChanged { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent{ get; set; }
+
+    IEnumerable<TblPlantMaster> PlantList;
+    bool? DispDatas;
+    bool? isDialogOpen;
+    TblPlantMaster? selectedplant;
+    protected override async Task OnInitializedAsync()
+    {
+        companies = await httpservice.Get<List<TblCompanyMaster>>("CompanyMasters");
+        tblPlant.CompanyId = cmpId;
+        PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters")).Where(a => (a.CompanyId == tblPlant.CompanyId));
+    }
+    async void submit()
+    {
+        try
+        {
+            if (tblPlant.CompanyId != null && tblPlant.PlantName != "")
+            {
+                tblPlant.CompanyId = companies.First(a => (a.CompanyId == cmpId)).Id.ToString();        
+                tblPlant.CreatedBy = "Admin";
+                var result = await httpservice.Post<string>("PlantMasters", tblPlant);
+
+                if (result != null)
+                {
+                    await App.Current.MainPage.DisplayAlert("Message", result, "Ok");
+
+                }
+                else
+                {
+                    await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
+
+                }
+
+            }
+
+        }catch(Exception ex)
+        {
+
+        }
+
+        HandleCancel();
+        PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters")).Where(a => (a.CompanyId == tblPlant.CompanyId));
+        await OnInitializedAsync();
+        tblPlant.PlantName = string.Empty;
+        StateHasChanged();
+
+    }
+    async void handleAddnewDept(TblPlantMaster item)
+    {
+        selectedplant = item;
+        DispDatas = true;
+    }
+    void handleDataSaved()
+    {
+        selectedplant = null;
+        DispDatas = null;
+
+    }
+    void HandleCancel()
+    {
+        selectedplant = null;
+        DispDatas = false;
+        isDialogOpen = false;
+    }
+    void AddPlant()
+    {
+        selectedplant = new TblPlantMaster();
+        isDialogOpen = true;
+        selectedplant.CompanyId = cmpId;
+
+    }
+    void HandleAddplant()
+    {
+        selectedplant = null;
+        isDialogOpen = null;
+
+    }
+    void back()
+    {
+        selectedplant = null;
+        DispDatas = false;
+    }
+    void handleEditPlant(TblPlantMaster item)
+    {
+        selectedplant = item;
+        isDialogOpen = true;
+    }
+
+    async void handlePlant(string val)
+    {
+        tblPlant.CompanyId = val;
+        PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters")).Where(a => (a.CompanyId == tblPlant.CompanyId));
+        cmpId = tblPlant.CompanyId;
+    }
+}

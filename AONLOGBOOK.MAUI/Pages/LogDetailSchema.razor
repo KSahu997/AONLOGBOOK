@@ -1,0 +1,262 @@
+﻿@inject IHttpService httpservice
+@using AONLOGBOOK.SHARED.CModels;
+@if (Displayform==true)
+{
+   <Modal></Modal>
+
+}else
+{
+    <Card Margin="Margin.Is4.OnY">
+                <CardHeader>Logbook Entry</CardHeader>
+                 <CardBody>
+                  <EditForm Model="@logdt">
+                             <Fields>
+                                 <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                     <FieldLabel>Element</FieldLabel>
+                                     <Select @bind-SelectedValue="logdt.Element">
+                                @*<Select SelectedValue="@logdt.Element" TValue="int?" SelectedValueExpression="@(()=>logdt.Element)" 
+                                SelectedValueChanged="@((args)=>{handleUOM(args);})">*@
+                                <SelectItem>--Select--</SelectItem>
+                                    @if (tagmst != null)
+                                    {
+                                        @foreach (TblTagMaster tag in tagmst)
+                                        {
+                                            <SelectItem Value="@tag.Id">@tag.TagName</SelectItem>
+                                        }
+                                    }
+                                </Select>
+                                 </Field>
+                                    <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                        <FieldLabel>UOM</FieldLabel>
+                                        <Select @bind-SelectedValue="logdt.Uom">
+                                            <SelectItem>--Select--</SelectItem>
+                                            @if (uommst != null)
+                                            {
+                                            @foreach (TblUommaster umm in uommst)
+                                            {
+                                                <SelectItem Value="@umm.Id">@umm.Unit</SelectItem>
+                                            }
+                                            }
+                                </Select>
+                            </Field>
+                            <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                <FieldLabel>Type</FieldLabel>
+                                <Select TValue="string" SelectedValue="logdt.DataType" SelectedValueChanged="@((string a)=>{handleType(a);})" SelectedValueExpression="@(()=>logdt.DataType)"> 
+                                        <SelectItem>--Select--</SelectItem>
+                                        <SelectItem Value=@("Text")>Text</SelectItem>
+                                        <SelectItem Value=@("Number")>Number</SelectItem>
+                                        <SelectItem Value=@("DateTime")>DateTime</SelectItem>
+                                        <SelectItem Value=@("Date")>Date</SelectItem>
+                                        <SelectItem Value=@("Time")>Time</SelectItem>
+                                        <SelectItem Value=@("Choice")>Choice</SelectItem>
+                                        <SelectItem Value=@("Boolean")>Boolean</SelectItem>
+                                         <SelectItem Value=@("Lookup")>Lookup</SelectItem>
+
+                                </Select>
+                            </Field>
+                       </Fields>
+
+                               <Fields>
+                                   <Field ColumnSize="ColumnSize.Is4">
+                                       <FieldLabel>Source</FieldLabel>
+                                    <Select @bind-SelectedValue="logdt.Source">
+
+                                            <SelectItem >--Select--</SelectItem>
+                                            <SelectItem Value=@("Manual")>Manual</SelectItem>
+                                            <SelectItem Value=@("Calculated")>Calculated</SelectItem>
+                                            <SelectItem Value=@("Automatic")>Automatic</SelectItem>
+                                    </Select>
+
+                                   </Field>
+                                <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                    <FieldLabel>L_Min</FieldLabel>
+                                    <NumericEdit @bind-Value="logdt.LMin" Disabled=@(dislmin==true)></NumericEdit>
+                                </Field>
+                                <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                    <FieldLabel>L_Max</FieldLabel>
+                                    <NumericEdit @bind-Value="logdt.LMax" Disabled=@(dislmin==true)></NumericEdit>
+                                </Field>
+                               </Fields>
+                            <Fields>
+                                <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                    <FieldLabel>Prscn</FieldLabel>
+                                    <NumericEdit @bind-Value="logdt.Prscn" Disabled=@(dislmin==true)></NumericEdit>
+                                </Field>
+                                <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                    <FieldLabel>Calculation Param</FieldLabel>
+                                    <NumericEdit @bind-Value="logdt.CalulationParams"></NumericEdit>
+                                </Field>
+                                <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                    <FieldLabel>Operator</FieldLabel>
+                                <TextEdit @bind-Value="logdt.Operator"></TextEdit>
+                                </Field>
+                            </Fields>
+                            <Fields>
+                                <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                    <FieldLabel>RefCol</FieldLabel>
+                                    <TextEdit @bind-Value="logdt.RefCol"></TextEdit>
+                                </Field>
+                            </Fields>
+                            @ChildContent1
+                        <Field Flex="Flex.JustifyContent.End.OnDesktop.JustifyContent.Center.OnMobile">
+                            @ChildContent
+                            <Button Clicked="Savedetails"  style="margin-top:10px;background:#659abb;color:#000;">SUBMIT</Button>
+                       </Field>
+
+
+
+                    </EditForm>
+
+                 </CardBody>
+            </Card>
+
+
+             <div class="card" style="overflow:auto;">
+                <table class="table table-scroll table-striped" style="overflow:auto; height:250px; font-size:12px;">
+                    <thead class="thead-dark" style="position:sticky;top:0;z-index:1">
+                        <tr>
+                            <th>Tagname</th>
+                            @*<th>UOM</th>*@
+                            <th>Data type</th>
+                            <th>Source</th>
+                            <th>L_Min</th>
+                            <th>L_Max</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                @if (logdetail != null)
+                {
+                    @foreach (var item in logdetail)
+                    {
+                              <tr>
+                                  <td>@item.DisplayName</td>
+                                 @* <td>@item.Unit</td>*@
+                                  <td>@item.DataType</td>
+                                  <td>@item.Source</td>
+                                  <td>@item.LMin</td>
+                                  <td>@item.LMax</td>
+
+                              </tr>
+
+                    }
+                }
+
+                    </tbody>
+                </table>
+            </div> 
+}
+
+       
+
+
+
+
+
+@code {
+    Modal logref { get; set; }
+    [Parameter]
+    public string log{ get; set; }
+    public string Dept{ get; set; }
+    public string SDept{ get; set; }
+
+    bool? Displayform { get; set; } = false;
+    bool? dislmin { get; set; } = true;
+    Formdata datas = new();
+    TblLogbookDetailSchema logdt = new();
+    IEnumerable<TblLogbookDetailSchemaMOD> logdetail;
+    IEnumerable<TblTagMaster> tagmst;
+    IEnumerable<TblUommaster> uommst;
+    TblTagMaster tag;
+    TblUommaster uom;
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent1 { get; set; }
+    [Parameter]
+    public EventCallback<bool> mstlogChanged { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        datas.Department = Dept;
+        datas.SubDepartment = SDept;
+        datas.logbook = log;
+        tagmst = await httpservice.Get<List<TblTagMaster>>("TagMasters");
+        uommst = await httpservice.Get<List<TblUommaster>>("Uommasters");
+        logdetail = await httpservice.Get<List<TblLogbookDetailSchemaMOD>>("LogbookDetailSchemas/" + datas.logbook);
+    }
+    //async void handleUOM(object value)
+    //{
+    //    logdt.Element = (int)value;
+    //    tag = (await httpservice.Get<List<TblTagMaster>>("TagMasters/")).First(a => (a.Id == logdt.Element));
+    //    uommst = (await httpservice.Get<List<TblUommaster>>("Uommasters/")).Where(a => (a.Id == tag.Uom));
+    //    (logdt.Uom) = Convert.ToInt32(uommst.First().Id);
+    //    StateHasChanged();
+    //}
+
+    async void Savedetails()
+    {
+        try
+        {
+            logdt.CreatedBy = "Admin";
+            logdt.LogbookId = datas.logbook;
+            var savedata = await httpservice.Post<string>("LogbookDetailSchemas", logdt);
+            if (savedata != null)
+            {
+                await App.Current.MainPage.DisplayAlert("Message", savedata, "ok");
+
+            }
+            else
+            {
+                await App.Current.MainPage.DisplayAlert("Message", "Error", "ok");
+            }
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+
+        }
+
+        logdetail = await httpservice.Get<List<TblLogbookDetailSchemaMOD>>("LogbookDetailSchemas/" + datas.logbook);
+        logdt = new();
+        StateHasChanged();
+
+
+    }
+    async void submit()
+    {
+
+        logdetail = await httpservice.Get<List<TblLogbookDetailSchemaMOD>>("LogbookDetailSchemas/" + datas.logbook);
+        Displayform = true;
+        StateHasChanged();
+    }
+    //void handleSource(string arg)
+    //{
+    //    if(arg == "Calculated")
+    //    {
+    //        Displayform = true;
+
+    //    }
+    //}    
+    void handleData()
+    {
+
+    }
+    void handleDatas()
+    {
+        Displayform = true;
+    }
+
+    void handleType(string val)
+    {
+        logdt.DataType = val;
+        if (logdt.DataType == "Number")
+        {
+            dislmin = false;
+
+        }
+        else
+        {
+            dislmin = true;
+        }
+
+    }
+}

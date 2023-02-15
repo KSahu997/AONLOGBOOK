@@ -1,0 +1,82 @@
+﻿@page "/LoginPage"
+
+@inject NavigationManager nav
+@using AONLOGBOOK.SHARED.CModels;
+@using Newtonsoft.Json;
+
+<style>
+    body{
+      background-image: linear-gradient(70deg, #2b5876, #4e437663);
+    }
+    .card{
+        border: 1px solid rgb(0 0 0 / 28%);
+        color:whitesmoke;
+    }
+    .form-control{
+       background: #e7e0c959;
+    }
+    .icon {
+  padding: 10px;
+  background: dodgerblue;
+  color: white;
+  min-width: 50px;
+  text-align: center;
+}
+
+</style>
+
+<Div class="container d-flex justify-content-center" Style="margin-top:10%">
+    <Card class="w-50" Style="background-color:transparent; color:whitesmoke;">
+        <CardHeader Style="background:#11324D; color:whitesmoke;">Login Here</CardHeader>
+        <CardBody>
+            <EditForm Model="@log" OnValidSubmit="Submit">
+                <DataAnnotationsValidator />
+                <Div class="row">
+                    <Div class="col-md-12">
+                        <Label>Username</Label>
+            
+                        <TextEdit @bind-Text="log.Username" type="text"></TextEdit>
+                    </Div>
+                    <Div class="col-md-12">
+                        <Label>Password</Label>
+                        <TextEdit @bind-Text="log.Password" type="Password"></TextEdit>
+                    </Div>
+                </Div>
+                <Div class="row justify-content-center m-2">
+                    <Button Type="ButtonType.Submit" Style="background:#E7E0C9;">Login</Button>
+                   
+                </Div>
+
+            </EditForm>
+        </CardBody>
+    </Card>
+</Div>
+
+
+@code {
+    public Login log = new Login();
+
+    async void Submit()
+    {
+        if (log.Username == "Admin" && log.Password == "admin@123")
+        {
+            UserData us = new UserData()
+                {
+                    username = log.Username,
+                    Company = "samsung",
+                    Plant = "Plant1",
+                    Department = "Dept2",
+                    SubDepartment = "SubD1"
+                };
+
+            User.userdata = us;
+            await SecureStorage.SetAsync("user", JsonConvert.SerializeObject(us));
+            nav.NavigateTo("/");
+        }
+        else
+           {
+                await App.Current.MainPage.DisplayAlert("Login", "Incorrect Credentials!", "OK");
+            }
+    }
+}
+

@@ -1,0 +1,105 @@
+﻿@page "/UOMMaster"
+@inject IHttpService httpservices
+<style>
+    .table-scroll tbody {
+        position: absolute;
+        overflow-y: scroll;
+        overflow-x: scroll;
+        height: 200px;
+    }
+
+    .table-scroll tr {
+        width: 100%;
+        table-layout: fixed;
+        display: inline-table;
+    }
+
+    .table-scroll thead > tr > th {
+        border: none;
+    }
+</style>
+
+<Div class="container" Padding="Padding.Is3">
+ <Fields>
+       <Field ColumnSize="ColumnSize.Is3.OnDesktop.Is12.OnMobile">
+            <Badge Color="Color.Info"><BarIcon IconName="IconName.Flask"></BarIcon></Badge><h4 class="mb-4">UOM Master</h4>
+        </Field>
+           <Field ColumnSize="ColumnSize.Is2.OnDesktop.Is12.OnMobile">
+               </Field>
+   </Fields>
+    <Card Padding="Padding.Is2" Margin="Margin.Is2">
+        <EditForm Model="@uom" OnValidSubmit="submit" >
+            <Fields>
+                    <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                        <FieldLabel>Unit name</FieldLabel>
+                        <TextEdit @bind-Text="uom.Unit"></TextEdit>
+                    </Field>
+                     <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                      <Button Type="ButtonType.Submit" Color="Color.Info" Style="margin-top:8px;">Submit</Button>
+                    </Field>
+                    
+                </Fields>
+        </EditForm>
+              
+     </Card>  
+    
+<Table Hoverable Bordered>
+        <TableHeader ThemeContrast="ThemeContrast.None" Background="Background.Secondary" TextColor="TextColor.White">
+        <TableRow>
+           
+            <TableHeaderCell>Sl no.</TableHeaderCell>
+            <TableHeaderCell>Unit</TableHeaderCell>
+            
+        </TableRow>
+    </TableHeader>
+    <TableBody>
+        
+             @if (uommst != null)
+                {
+                int sl = 1;
+                @foreach (var item in uommst)
+                    {
+                    <TableRow>
+                        <TableRowCell>@sl</TableRowCell>
+                        <TableRowCell>@item.Unit</TableRowCell>
+                         
+                    </TableRow>
+                   
+                    }
+                }
+       
+        
+    </TableBody>
+</Table>
+    
+ </Div>   
+
+
+
+@code {
+    TblUommaster uom = new();
+    IEnumerable<TblUommaster> uommst;
+
+    protected override async Task OnInitializedAsync()
+    {
+        uommst = await httpservices.Get<List<TblUommaster>>("Uommasters");
+        StateHasChanged();
+    }
+
+    async void submit()
+    {
+        var savedata = await httpservices.Post<string>("Uommasters", uom);
+        if (savedata != null)
+        {
+            await App.Current.MainPage.DisplayAlert("Message", savedata, "ok");
+
+        }
+        else
+        {
+            await App.Current.MainPage.DisplayAlert("Message", "Error", "ok");
+        }
+        uom = new();
+        await OnInitializedAsync();
+        StateHasChanged();
+    }
+}
