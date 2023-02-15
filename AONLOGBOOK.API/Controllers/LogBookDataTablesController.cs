@@ -47,7 +47,7 @@ namespace AONLogbookAPI.Controllers
             return tblLogBookDataTable;
         }
         [HttpGet("{Logbook_Id}/{Shift}")]
-        public async Task<IEnumerable<LogDataReport>> GetTblLogBookDataTableByIds(string Logbook_Id, string Shift)
+        public async Task<IEnumerable<LogDataReport>> GetTblLogBookDataTableByIds(string Logbook_Id, DateTime Shift)
         {
 
             return await _ccontext.TblLogDataReports.FromSqlRaw("SPLogDataReport'" + Logbook_Id + "','" + Shift + "'").ToListAsync();
