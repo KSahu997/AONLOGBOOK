@@ -16,5 +16,6 @@ namespace AONLOGBOOK.SHARED.CModels
         public string? Shift { get; set; }
         public DateTime? date { get; set; }
         public string? CreatedBy { get; set; }
+        public int? StatusF { get; set; }
     }
 }

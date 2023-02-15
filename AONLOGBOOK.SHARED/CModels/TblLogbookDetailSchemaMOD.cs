@@ -18,7 +18,7 @@ namespace AONLOGBOOK.SHARED.CModels
         public string? DisplayName { get; set; }
 
        // public string? Unit { get; set; }
-        public int? Uom { get; set; }
+        public string? Uom { get; set; }
 
         public string? Source { get; set; }
 

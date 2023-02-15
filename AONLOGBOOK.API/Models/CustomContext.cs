@@ -74,7 +74,10 @@ namespace AONLOGBOOK.API.Models
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Uom).HasColumnName("UOM");
+                entity.Property(e => e.Uom)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("UOM");
 
             });
             modelBuilder.Entity<LogData>(entity =>
@@ -120,6 +123,9 @@ namespace AONLOGBOOK.API.Models
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("Sub_deptId");
+                entity.Property(e => e.MarkforDeletion)
+                   .HasMaxLength(50)
+                   .IsUnicode(false);
             });
 
             modelBuilder.Entity<LogDataReport>(entity =>

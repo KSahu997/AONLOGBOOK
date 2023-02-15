@@ -95,7 +95,7 @@ namespace AONLOGBOOK.API.Controllers
         { 
             try
             {
-                string sqlQuery = "EXEC [dbo].[insertLog]  @data,@Company,@Plant,@DeptId,@subDeptId,@CreatedBy,@DateTime,@Shift,@LogbookId";
+                string sqlQuery = "EXEC [dbo].[insertLog]  @data,@Company,@Plant,@DeptId,@subDeptId,@CreatedBy,@DateTime,@Shift,@MarkforDeletion,@LogbookId";
                 SqlParameter[] @params =
                 { 
             // Create parameters    
@@ -107,6 +107,7 @@ namespace AONLOGBOOK.API.Controllers
             new SqlParameter {ParameterName="@CreatedBy",Direction=ParameterDirection.Input,Value=logdt.TblLogHead.CreatedBy},
             new SqlParameter {ParameterName="@DateTime",Direction=ParameterDirection.Input,Value=logdt.TblLogHead.date},
             new SqlParameter {ParameterName="@Shift",Direction=ParameterDirection.Input,Value=logdt.TblLogHead.Shift},
+            new SqlParameter{ParameterName="@MarkforDeletion",Direction=ParameterDirection.Input,Value=logdt.TblLogHead.StatusF},
             new SqlParameter {ParameterName="@LogbookId",Direction=ParameterDirection.Input,Value=logdt.TblLogHead.LogbookId}
             };
 
