@@ -46,11 +46,11 @@ namespace AONLogbookAPI.Controllers
 
             return tblLogBookDataTable;
         }
-        [HttpGet("{Logbook_Id}/{Shift}")]
-        public async Task<IEnumerable<LogDataReport>> GetTblLogBookDataTableByIds(string Logbook_Id, DateTime Shift)
+        [HttpGet("{Logbook_Id}/{date}")]
+        public async Task<IEnumerable<LogDataReport>> GetTblLogBookDataTableByIds(string Logbook_Id, DateTime date)
         {
 
-            return await _ccontext.TblLogDataReports.FromSqlRaw("SPLogDataReport'" + Logbook_Id + "','" + Shift + "'").ToListAsync();
+            return await _ccontext.TblLogDataReports.FromSqlRaw("SPLogDataReport'" + Logbook_Id + "','" + date.ToString("yyyy-MM-dd HH:mm:ss") + "'").ToListAsync();
 
         }
 

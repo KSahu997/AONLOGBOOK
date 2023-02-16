@@ -8,7 +8,7 @@ namespace AONLOGBOOK.SHARED.Models
         public Guid Id { get; set; }
         public string? LogbookId { get; set; }
         public string? HeaderId { get; set; }
-        public int? Element { get; set; }
+        public string? Element { get; set; }
         public string? DataType { get; set; }
         public string? Uom { get; set; }
         public int? Show { get; set; }

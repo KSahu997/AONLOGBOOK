@@ -98,7 +98,7 @@ namespace AONLogbookAPI.Controllers
         [HttpPost]
         public async Task<ActionResult> PostTblLogbookDetailSchema(TblLogbookDetailSchema tblLogbookDetailSchema)
         {
-            string sqlQuery = "EXEC [dbo].[sp_LogBookSchema] @Type,@LogbookId ,@Element ,@DataType,@UOM,@source,@L_min,@L_max,@Prscn,@By,@refcol,@cal_param,@operator,@message=@message OUT ";
+            string sqlQuery = "EXEC [dbo].[sp_LogBookSchema] @Type,@LogbookId ,@Element ,@DataType,@UOM,@source,@L_min,@L_max,@Prscn,@By,@refcol,@cal_param,@operator,@ismandatory,@message=@message OUT ";
             SqlParameter[] @params =
             { 
             // Create parameters    
@@ -115,11 +115,12 @@ namespace AONLogbookAPI.Controllers
                 new SqlParameter {ParameterName="refcol",Direction=ParameterDirection.Input,Value=(object)tblLogbookDetailSchema.RefCol??DBNull.Value}, 
                 new SqlParameter {ParameterName="cal_param",Direction=ParameterDirection.Input,Value=(object)tblLogbookDetailSchema.CalulationParams??DBNull.Value},
                 new SqlParameter {ParameterName="operator",Direction=ParameterDirection.Input,Value=(object)tblLogbookDetailSchema.Operator??DBNull.Value},
+                new SqlParameter {ParameterName="ismandatory",Direction=ParameterDirection.Input,Value=(object)tblLogbookDetailSchema.IsMandatory??DBNull.Value},
 
                     new SqlParameter {ParameterName="@message",SqlDbType=SqlDbType.NVarChar,Size=50,Direction = ParameterDirection.Output}
             };
             await _context.Database.ExecuteSqlRawAsync(sqlQuery, @params);
-            return Ok(@params[13].Value);
+            return Ok(@params[14].Value);
         }
 
         // DELETE: api/LogbookDetailSchemas/5

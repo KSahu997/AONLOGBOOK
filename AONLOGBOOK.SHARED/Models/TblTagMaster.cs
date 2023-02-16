@@ -5,8 +5,8 @@ namespace AONLOGBOOK.SHARED.Models
 {
     public partial class TblTagMaster
     {
-        public long Id { get; set; }
-        public string TagName { get; set; } = null!;
+        public Guid Id { get; set; }
+        public string? TagName { get; set; }
         public string? DisplayName { get; set; }
         public long? Uom { get; set; }
         public string? Description { get; set; }

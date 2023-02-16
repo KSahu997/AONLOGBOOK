@@ -96,8 +96,11 @@
                                     <FieldLabel>RefCol</FieldLabel>
                                     <TextEdit @bind-Value="logdt.RefCol"></TextEdit>
                                 </Field>
+                                <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                                    <Check TValue="bool" Checked="@ismandatory" CheckedChanged="@Oncheckedchange">IsMandatory</Check>
+                                </Field>
                             </Fields>
-                            @ChildContent1
+                       
                         <Field Flex="Flex.JustifyContent.End.OnDesktop.JustifyContent.Center.OnMobile">
                             @ChildContent
                             <Button Clicked="Savedetails"  style="margin-top:10px;background:#659abb;color:#000;">SUBMIT</Button>
@@ -146,19 +149,13 @@
             </div> 
 }
 
-       
-
-
-
-
-
 @code {
     Modal logref { get; set; }
     [Parameter]
     public string log{ get; set; }
     public string Dept{ get; set; }
     public string SDept{ get; set; }
-
+    bool ismandatory;
     bool? Displayform { get; set; } = false;
     bool? dislmin { get; set; } = true;
     Formdata datas = new();
@@ -170,8 +167,7 @@
     TblUommaster uom;
     [Parameter]
     public RenderFragment ChildContent { get; set; }
-    [Parameter]
-    public RenderFragment ChildContent1 { get; set; }
+   
     [Parameter]
     public EventCallback<bool> mstlogChanged { get; set; }
     protected override async Task OnInitializedAsync()
@@ -198,6 +194,7 @@
         {
             logdt.CreatedBy = "Admin";
             logdt.LogbookId = datas.logbook;
+            logdt.IsMandatory = Convert.ToInt16(ismandatory);
             var savedata = await httpservice.Post<string>("LogbookDetailSchemas", logdt);
             if (savedata != null)
             {
@@ -258,5 +255,9 @@
             dislmin = true;
         }
 
+    }
+    void Oncheckedchange(bool value)
+    {
+        ismandatory = value;
     }
 }

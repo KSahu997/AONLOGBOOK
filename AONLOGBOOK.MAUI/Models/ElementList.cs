@@ -12,6 +12,8 @@ namespace AONLOGBOOK.MAUI.Models
         public string? ElementType { get; set; }
 
         public DateTime? DateValue { get; set; }
+        public DateTime? DateOnlyValue { get; set; }
+        public TimeSpan? TimeValue { get; set; }
         public string? StringValue { get; set; }
         public int? IntegerValue { get; set; }
         public float? FloatValue { get; set; }

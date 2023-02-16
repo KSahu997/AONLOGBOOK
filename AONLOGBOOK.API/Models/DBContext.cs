@@ -26,6 +26,9 @@ namespace AONLOGBOOK.API.Models
         public virtual DbSet<TblLogBookDataTableHeader> TblLogBookDataTableHeaders { get; set; } = null!;
         public virtual DbSet<TblLogbookDetailSchema> TblLogbookDetailSchemas { get; set; } = null!;
         public virtual DbSet<TblLogbookMaster> TblLogbookMasters { get; set; } = null!;
+        public virtual DbSet<TblLookup> TblLookups { get; set; } = null!;
+        public virtual DbSet<TblLookupParam> TblLookupParams { get; set; } = null!;
+        public virtual DbSet<TblLookupValue> TblLookupValues { get; set; } = null!;
         public virtual DbSet<TblPlantMaster> TblPlantMasters { get; set; } = null!;
         public virtual DbSet<TblShiftMaster> TblShiftMasters { get; set; } = null!;
         public virtual DbSet<TblSubDeptMaster> TblSubDeptMasters { get; set; } = null!;
@@ -425,6 +428,10 @@ namespace AONLOGBOOK.API.Models
                     .HasColumnName("Del_Flag")
                     .HasDefaultValueSql("((0))");
 
+                entity.Property(e => e.Element)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.HeaderId)
                     .HasMaxLength(50)
                     .IsUnicode(false)
@@ -542,6 +549,156 @@ namespace AONLOGBOOK.API.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.SubDepartment).IsUnicode(false);
+            });
+
+            modelBuilder.Entity<TblLookup>(entity =>
+            {
+                entity.ToTable("tbl_Lookup");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("ID")
+                    .HasDefaultValueSql("(newid())");
+
+                entity.Property(e => e.CompanyId)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("Company_ID");
+
+                entity.Property(e => e.CreatedBy)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("Created_By");
+
+                entity.Property(e => e.CreatedOn)
+                    .HasColumnType("datetime")
+                    .HasColumnName("Created_On");
+
+                entity.Property(e => e.DelFlag)
+                    .HasColumnName("Del_Flag")
+                    .HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PlantId)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("Plant_Id");
+
+                entity.Property(e => e.UpdatedBy)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("Updated_By");
+
+                entity.Property(e => e.UpdatedOn)
+                    .HasColumnType("datetime")
+                    .HasColumnName("Updated_On");
+            });
+
+            modelBuilder.Entity<TblLookupParam>(entity =>
+            {
+                entity.ToTable("tbl_Lookup_Param");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("ID")
+                    .HasDefaultValueSql("(newid())");
+
+                entity.Property(e => e.CompanyId)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("Company_ID");
+
+                entity.Property(e => e.CreatedBy)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("Created_By");
+
+                entity.Property(e => e.CreatedOn)
+                    .HasColumnType("datetime")
+                    .HasColumnName("Created_On");
+
+                entity.Property(e => e.DelFlag)
+                    .HasColumnName("Del_Flag")
+                    .HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.LookupId)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("Lookup_ID");
+
+                entity.Property(e => e.Param)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PlantId)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("Plant_ID");
+
+                entity.Property(e => e.UpdatedBy)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("Updated_By");
+
+                entity.Property(e => e.UpdatedOn)
+                    .HasColumnType("datetime")
+                    .HasColumnName("Updated_On");
+            });
+
+            modelBuilder.Entity<TblLookupValue>(entity =>
+            {
+                entity.ToTable("tbl_LookupValues");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("ID")
+                    .HasDefaultValueSql("(newid())");
+
+                entity.Property(e => e.CompanyId)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("Company_ID");
+
+                entity.Property(e => e.CreatedBy)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("Created_By");
+
+                entity.Property(e => e.CreatedOn)
+                    .HasColumnType("datetime")
+                    .HasColumnName("Created_On");
+
+                entity.Property(e => e.DelFlag)
+                    .HasColumnName("Del_Flag")
+                    .HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.LookupId)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("Lookup_ID");
+
+                entity.Property(e => e.NameValue)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("Name_Value");
+
+                entity.Property(e => e.ParamValues)
+                    .IsUnicode(false)
+                    .HasColumnName("Param_Values");
+
+                entity.Property(e => e.PlantId)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("Plant_ID");
+
+                entity.Property(e => e.UpdatedBy)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("Updated_By");
+
+                entity.Property(e => e.UpdatedOn)
+                    .HasColumnType("datetime")
+                    .HasColumnName("Updated_On");
             });
 
             modelBuilder.Entity<TblPlantMaster>(entity =>
@@ -711,30 +868,33 @@ namespace AONLOGBOOK.API.Models
 
             modelBuilder.Entity<TblTagMaster>(entity =>
             {
-                entity.HasKey(e => e.TagName)
-                    .HasName("PK_tbl_Element_Master_1");
-
                 entity.ToTable("tbl_Tag_Master");
 
-                entity.Property(e => e.TagName)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("Tag_Name");
+                entity.HasIndex(e => e.Id, "IX_tbl_Tag_Master");
+
+                entity.HasIndex(e => e.TagName, "UTag_Name")
+                    .IsUnique();
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("ID")
+                    .HasDefaultValueSql("(newid())");
 
                 entity.Property(e => e.Description).HasMaxLength(50);
 
                 entity.Property(e => e.DisplayName)
                     .HasMaxLength(50)
                     .IsUnicode(false)
-                    .HasColumnName("Display_Name");
-
-                entity.Property(e => e.Id)
-                    .ValueGeneratedOnAdd()
-                    .HasColumnName("ID");
+                    .HasColumnName("Display_Name")
+                    .HasDefaultValueSql("(newid())");
 
                 entity.Property(e => e.IsDeleted)
                     .HasColumnName("Is_Deleted")
                     .HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.TagName)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("Tag_Name");
 
                 entity.Property(e => e.Uom).HasColumnName("UOM");
 

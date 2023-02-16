@@ -69,7 +69,7 @@
                         <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                             <FieldLabel>Logbook</FieldLabel>
                             <Validation Validator="ValidationRule.IsNotEmpty">
-                                <Select @bind-SelectedValue="formdatas.logbook">
+                                <Select SelectedValue="@formdatas.logbook" SelectedValueExpression="@(()=>formdatas.logbook)" SelectedValueChanged="@((string args)=>{handlelog(args);})">
                                     <SelectItem>--Select--</SelectItem>
                                     @if (logbooks != null)
                                     {
@@ -159,14 +159,14 @@
                                 {
                                     <FieldLabel>@ele.Label</FieldLabel>
                                     <Validation Validator="ValidationRule.None">
-                                        <DateEdit @bind-Date="ele.DateValue" InputMode="DateInputMode.Date"></DateEdit>
+                                        <DateEdit @bind-Date="ele.DateOnlyValue" InputMode="DateInputMode.Date"></DateEdit>
                                     </Validation>
                                 }
                                 else if (ele.ElementType == "Time")
                                 {
                                     <FieldLabel>@ele.Label</FieldLabel>
                                     <Validation Validator="ValidationRule.None">
-                                        <DateEdit @bind-Date="ele.DateValue" InputMode="DateInputMode.DateTime"></DateEdit>
+                                        <TimeEdit @bind-Time="ele.TimeValue" TValue="TimeSpan?"></TimeEdit>
                                     </Validation>
                                 }
                                 else if (ele.ElementType == "DateTime")
@@ -217,7 +217,7 @@
                             Shift : @item.ShiftPrefix<br />
                             Param Name: @item.ParamName<br/>
                             Value: @item.Value<br />
-                          @* Unit : @item.Unit <br />*@
+                             Unit : @item.Unit <br />
                         </p>
                     }
                 }
@@ -257,6 +257,7 @@
     }
     async void handleformgroup(string value)
     {
+        collapse1Visible = true;
         formdatas.Department = value;
         Console.WriteLine(value);
         subDepts = await httpservices.Get<List<TblSubDeptMaster>>("SubDeptMasters/" + formdatas.Department);
@@ -265,6 +266,7 @@
     }
     async void handleforms(string value)
     {
+        collapse1Visible = true;
         formdatas.SubDepartment = value;
         Console.WriteLine(value);
 
@@ -273,12 +275,18 @@
         //shiftdata = await httpservices.Get<List<TblShiftMaster>>("ShiftMasters/" + cmp + "/" + formdatas.Date?.ToString("MM-dd-yyyy HH:mm:ss"));
         StateHasChanged();
     }
+    async void handlelog(string value)
+    {
+        collapse1Visible=true;
+        formdatas.logbook = value;
+
+    }
     async void Submit()
     {
         try
         {
             dynamicform = new List<ElementList>();
-
+            logdatatable = new();
             logbookdetail = await httpservices.Get<List<TblLogbookDetailSchemaMOD>>("LogbookDetailSchemas/" + formdatas.logbook);
             if (logbookdetail.Count() == 0)
             {
@@ -292,7 +300,7 @@
              });
             }
             collapse1Visible = false;
-            //datareport = await httpservices.Get<List<LogDataReport>>("LogBookDataTables/" + formdatas.logbook + "/" + formdatas.Shift);
+            datareport = await httpservices.Get<List<LogDataReport>>("LogBookDataTables/" + formdatas.logbook + "/" + formdatas.Date?.ToString("yyyy-MM-dd HH:mm:ss"));
 
 
             StateHasChanged();
@@ -329,7 +337,7 @@
                     else if (a.ElementType == "Date")
                     {
                         logdata.ParamName = a.Label;
-                        logdata.Val = a.DateValue?.ToString("MM-dd-yyyy");
+                        logdata.Val = a.DateOnlyValue?.ToString("MM-dd-yyyy");
                     }
                     else if (a.ElementType == "DateTime")
                     {
@@ -339,7 +347,7 @@
                     else if (a.ElementType == "Time")
                     {
                         logdata.ParamName = a.Label;
-                        logdata.Val = a.DateValue?.ToString("HH.mm.ss");
+                        logdata.Val = a.TimeValue?.ToString("HH:mm:ss");
                     }
                     else if (a.ElementType == "Boolean")
                     {
@@ -352,6 +360,7 @@
                     logdata.Shift = formdatas.Shift;
                     logdata.LogbookId = formdatas.logbook;
                     logdata.MarkforDeletion = "0";  
+                   
                     logdatatable.Add(logdata);
 
                 });

@@ -17,7 +17,8 @@ namespace AONLOGBOOK.SHARED.CModels
         public string? DeptId { get; set; }
         public string? SubDeptId { get; set; }
         public string? Shift { get; set; }
-        public string? Uom { get; set; }
+        
         public string? MarkforDeletion { get; set; }
+        public string? Uom { get; set; }
     }
 }

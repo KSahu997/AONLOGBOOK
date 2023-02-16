@@ -46,7 +46,9 @@ namespace AONLOGBOOK.API.Models
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("Calulation_Params");
-                entity.Property(e => e.Element).HasColumnName("Element");
+                entity.Property(e => e.Element)
+                     .HasMaxLength(50)
+                     .IsUnicode(false);
                 entity.Property(e => e.DataType)
                     .HasMaxLength(50)
                     .IsUnicode(false);

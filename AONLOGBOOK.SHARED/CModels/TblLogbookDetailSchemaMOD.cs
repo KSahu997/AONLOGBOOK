@@ -12,7 +12,7 @@ namespace AONLOGBOOK.SHARED.CModels
 
         //public string? LogbookId { get; set; }
 
-        public int? Element { get; set; }
+        public string? Element { get; set; }
 
         public string? DataType { get; set; }
         public string? DisplayName { get; set; }

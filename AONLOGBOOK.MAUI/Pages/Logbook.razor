@@ -39,21 +39,13 @@
 {
     @if (logmst != null)
     {
-        @*@if (logmst.L= null)
-        {*@
-
         <LogDetailSchema log="@logmst.LogbookId.ToString()" mstlogChanged="@HandleDataSaved">
-                <ChildContent>
+            <ChildContent>
                     <Button Color="Color.Secondary" Type="ButtonType.Button" @onclick="@back" Style="margin:2px;"><BarIcon IconName="IconName.Backward"></BarIcon></Button> 
-                    
-                </ChildContent>
-                <ChildContent1>
-                    <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
-                          <Check TValue="bool" Checked="@ismandatory" CheckedChanged="@Oncheckedchange">IsMandatory</Check>
-                    </Field>
-                </ChildContent1>
-            </LogDetailSchema>
-       @* }*@
+            </ChildContent>
+                
+       </LogDetailSchema>
+       
     }
 
 }
@@ -171,7 +163,7 @@ else
     string plantid;
     string Deptid;
     string log;
-    bool ismandatory;
+   
     [Parameter]
     public RenderFragment ChildContent { get; set; }
     TblLogBookDataTable logbook = new();
@@ -277,8 +269,5 @@ else
         isDialogOpen = false;
         logmst = null;
     }
-    void Oncheckedchange(bool value)
-    {
-        ismandatory = value;
-    }
+    
 }
