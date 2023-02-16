@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,12 +15,18 @@ namespace AONLOGBOOK.MAUI.Models
         public DateTime? DateValue { get; set; }
         public DateTime? DateOnlyValue { get; set; }
         public TimeSpan? TimeValue { get; set; }
+       // [Required(ErrorMessage ="Required")]
         public string? StringValue { get; set; }
+       // [Required(ErrorMessage ="Required")]
         public int? IntegerValue { get; set; }
+        //[Required(ErrorMessage ="Required")]
         public float? FloatValue { get; set; }
+
+        [Range(typeof(bool), "true", "true", ErrorMessage = "You gotta tick the box!")]
         public bool? BoolValue { get; set; }
         public Dictionary<string, string> options { get; set; }
         public int? Sequence { get; set; }
+        public int? IsMandatory { get; set; }
 
     }
 }

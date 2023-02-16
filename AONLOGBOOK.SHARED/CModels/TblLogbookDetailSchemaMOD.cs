@@ -11,11 +11,11 @@ namespace AONLOGBOOK.SHARED.CModels
         public Guid Id { get; set; }
 
         //public string? LogbookId { get; set; }
-
+        //public string? TagName { get; set; }
         public string? Element { get; set; }
 
         public string? DataType { get; set; }
-        public string? DisplayName { get; set; }
+        public string? displayname { get; set; }
 
        // public string? Unit { get; set; }
         public string? Uom { get; set; }
@@ -36,7 +36,7 @@ namespace AONLOGBOOK.SHARED.CModels
 
         public string? Operator { get; set; }
 
-
+        public int? IsMandatory { get; set; }
 
 
     }
