@@ -19,11 +19,13 @@ namespace AONLogbookAPI.Controllers
     {
         private readonly DBContext _context;
         private readonly CustomContext _ccontext;
+        private readonly IConfiguration _con;
 
-        public LogBookDataTablesController(DBContext context, CustomContext ccontext)
+        public LogBookDataTablesController(DBContext context, CustomContext ccontext, IConfiguration con)
         {
             _context = context;
             _ccontext = ccontext;
+            _con = con;
         }
 
         // GET: api/LogBookDataTables
@@ -47,10 +49,38 @@ namespace AONLogbookAPI.Controllers
             return tblLogBookDataTable;
         }
         [HttpGet("{Logbook_Id}/{date}")]
-        public async Task<IEnumerable<LogDataReport>> GetTblLogBookDataTableByIds(string Logbook_Id, DateTime date)
+        public async Task<ActionResult<DataTable>> GetTblLogBookDataTableByIds(string Logbook_Id, DateTime date)
         {
+            DataTable dt = new DataTable();
 
-            return await _ccontext.TblLogDataReports.FromSqlRaw("SPLogDataReport'" + Logbook_Id + "','" + date.ToString("yyyy-MM-dd HH:mm:ss") + "'").ToListAsync();
+            using (SqlConnection conn = new SqlConnection(_con.GetConnectionString("db").ToString()))
+            {
+                try
+                {
+                    if (conn.State != ConnectionState.Open)
+                        conn.Open();
+                    using (var cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = "SPLogDataReport";
+                        cmd.Parameters.Add(new SqlParameter("@LogBookID", Logbook_Id));
+                        cmd.Parameters.Add(new SqlParameter("@date", date.ToString("yyyy-MM-dd HH:mm:ss")));
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            dt.Load(reader);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+            return dt;      
 
         }
 

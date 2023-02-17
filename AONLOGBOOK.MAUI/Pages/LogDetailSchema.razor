@@ -26,62 +26,75 @@
                                     }
                                 </Select>
                                  </Field>
-                                    <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
-                                        <FieldLabel>UOM</FieldLabel>
-                                        <Select @bind-SelectedValue="logdt.Uom">
-                                            <SelectItem>--Select--</SelectItem>
-                                            @if (uommst != null)
-                                            {
-                                            @foreach (TblUommaster umm in uommst)
-                                            {
-                                                <SelectItem Value="@umm.Id">@umm.Unit</SelectItem>
-                                            }
-                                            }
-                                </Select>
-                            </Field>
-                            <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
-                                <FieldLabel>Type</FieldLabel>
-                                <Select TValue="string" SelectedValue="logdt.DataType" SelectedValueChanged="@((string a)=>{handleType(a);})" SelectedValueExpression="@(()=>logdt.DataType)"> 
-                                        <SelectItem>--Select--</SelectItem>
-                                        <SelectItem Value=@("Text")>Text</SelectItem>
-                                        <SelectItem Value=@("Number")>Number</SelectItem>
-                                        <SelectItem Value=@("DateTime")>DateTime</SelectItem>
-                                        <SelectItem Value=@("Date")>Date</SelectItem>
-                                        <SelectItem Value=@("Time")>Time</SelectItem>
-                                        <SelectItem Value=@("Choice")>Choice</SelectItem>
-                                        <SelectItem Value=@("Boolean")>Boolean</SelectItem>
-                                         <SelectItem Value=@("Lookup")>Lookup</SelectItem>
-
-                                </Select>
-                            </Field>
-                       </Fields>
-
-                               <Fields>
-                                   <Field ColumnSize="ColumnSize.Is4">
+                                  <Field ColumnSize="ColumnSize.Is4">
                                        <FieldLabel>Source</FieldLabel>
-                                    <Select @bind-SelectedValue="logdt.Source">
-
+                        <Select SelectedValue="logdt.Source" SelectedValueChanged="@((string a)=>{handlesrc(a);})" TValue="string" SelectedValueExpression="@(()=>logdt.Source)">
                                             <SelectItem >--Select--</SelectItem>
                                             <SelectItem Value=@("Manual")>Manual</SelectItem>
                                             <SelectItem Value=@("Calculated")>Calculated</SelectItem>
                                             <SelectItem Value=@("Automatic")>Automatic</SelectItem>
                                     </Select>
-
                                    </Field>
-                                <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
-                                    <FieldLabel>L_Min</FieldLabel>
-                                    <NumericEdit @bind-Value="logdt.LMin" Disabled=@(dislmin==true)></NumericEdit>
-                                </Field>
-                                <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
-                                    <FieldLabel>L_Max</FieldLabel>
-                                    <NumericEdit @bind-Value="logdt.LMax" Disabled=@(dislmin==true)></NumericEdit>
-                                </Field>
+                                   @if(cal == false){
+                        <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                            <FieldLabel>Type</FieldLabel>
+                            <Select TValue="string" SelectedValue="logdt.DataType" SelectedValueChanged="@((string a)=>{handleType(a);})" SelectedValueExpression="@(()=>logdt.DataType)">
+                                <SelectItem>--Select--</SelectItem>
+                                <SelectItem Value=@("Text")>Text</SelectItem>
+                                <SelectItem Value=@("Number")>Number</SelectItem>
+                                <SelectItem Value=@("DateTime")>DateTime</SelectItem>
+                                <SelectItem Value=@("Date")>Date</SelectItem>
+                                <SelectItem Value=@("Time")>Time</SelectItem>
+                                <SelectItem Value=@("Choice")>Choice</SelectItem>
+                                <SelectItem Value=@("Boolean")>Boolean</SelectItem>
+                                <SelectItem Value=@("Lookup")>Lookup</SelectItem>
+
+                            </Select>
+                        </Field>
+                                   }
+                   
+                                    
+                           
+                       </Fields>
+                               <Fields>
+                                   @if(dislmin == false){
+
+                                  
+                    <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                        <FieldLabel>UOM</FieldLabel>
+                        <Select @bind-SelectedValue="logdt.Uom">
+                            <SelectItem>--Select--</SelectItem>
+                            @if (uommst != null)
+                            {
+                                @foreach (TblUommaster umm in uommst)
+                                {
+                                    <SelectItem Value="@umm.Id">@umm.Unit</SelectItem>
+                                }
+                            }
+                        </Select>
+                    </Field>   }
+                    @if(dislmin == false || txt == true){
+                        <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                            <FieldLabel>L_Min</FieldLabel>
+                            <NumericEdit @bind-Value="logdt.LMin"></NumericEdit>
+                        </Field>
+                        <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                            <FieldLabel>L_Max</FieldLabel>
+                            <NumericEdit @bind-Value="logdt.LMax"></NumericEdit>
+                        </Field>
+
+                    }
+                              
                                </Fields>
                             <Fields>
-                                <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
-                                    <FieldLabel>Prscn</FieldLabel>
-                                    <NumericEdit @bind-Value="logdt.Prscn" Disabled=@(dislmin==true)></NumericEdit>
-                                </Field>
+                    @if (dislmin == false)
+                    {
+                        <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                            <FieldLabel>Prscn</FieldLabel>
+                            <NumericEdit @bind-Value="logdt.Prscn" ></NumericEdit>
+                        </Field>
+                                }
+                                
                                @* <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                                     <FieldLabel>Calculation Param</FieldLabel>
                                     <NumericEdit @bind-Value="logdt.CalulationParams"></NumericEdit>
@@ -90,15 +103,20 @@
                                     <FieldLabel>Operator</FieldLabel>
                                 <TextEdit @bind-Value="logdt.Operator"></TextEdit>
                                 </Field>*@
+                       
                             </Fields>
                             <Fields>
-                               @* <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                              @*  <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                                     <FieldLabel>RefCol</FieldLabel>
                                     <TextEdit @bind-Value="logdt.RefCol"></TextEdit>
                                 </Field>*@
-                                <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
-                                    <Check TValue="bool" Checked="@ismandatory" CheckedChanged="@Oncheckedchange">IsMandatory</Check>
-                                </Field>
+                        @if(cal == false){
+                        <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                            <Check TValue="bool" Checked="@ismandatory" CheckedChanged="@Oncheckedchange">IsMandatory</Check>
+                        </Field>
+                        }
+                  
+                               
                             </Fields>
                        
                         <Field Flex="Flex.JustifyContent.End.OnDesktop.JustifyContent.Center.OnMobile">
@@ -158,6 +176,7 @@
     bool ismandatory;
     bool? Displayform { get; set; } = false;
     bool? dislmin { get; set; } = true;
+    bool? txt { get; set; } = false;
     Formdata datas = new();
     TblLogbookDetailSchema logdt = new();
     IEnumerable<TblLogbookDetailSchemaMOD> logdetail;
@@ -165,9 +184,10 @@
     IEnumerable<TblUommaster> uommst;
     TblTagMaster tag;
     TblUommaster uom;
+    bool? cal { get; set; } = true;
     [Parameter]
     public RenderFragment ChildContent { get; set; }
-   
+
     [Parameter]
     public EventCallback<bool> mstlogChanged { get; set; }
     protected override async Task OnInitializedAsync()
@@ -248,13 +268,34 @@
         if (logdt.DataType == "Number")
         {
             dislmin = false;
-
+             StateHasChanged();
         }
         else
         {
             dislmin = true;
         }
+        if (logdt.DataType == "Text")
+        {
+            txt = true;
+            StateHasChanged();
+        }else{
+            txt = false;
+        }
 
+    }
+    void handlesrc(string val)
+    {
+        logdt.Source = val;
+        if(logdt.Source == "Calculated")
+        {
+            cal = true;
+            StateHasChanged();
+        }
+        else
+        {
+            cal = false;
+        }
+   
     }
     void Oncheckedchange(bool value)
     {
