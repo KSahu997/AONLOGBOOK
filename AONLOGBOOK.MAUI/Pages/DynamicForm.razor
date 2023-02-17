@@ -133,7 +133,7 @@
 @*        <Validations @ref="validations" Mode="ValidationMode.Manual">
 *@            <Card Margin="Margin.Is4.OnY" Background="Background.Transparent" Class="Card">
                 <CardHeader Style="background:linear-gradient(180deg, rgb(170 196 224 / 50%), transparent); color:#11324D;border-radius:15px;">
-                    <h4>@logbooks.First().LogbookName</h4>
+                <h4><Badge Color="Color.Info">@logbooks.First().LogbookName</Badge></h4>
                 </CardHeader>
                 <CardBody>
                     <CardText>
@@ -356,6 +356,7 @@
     }
     async void Submit()
     {
+
         try
         {
             dynamicform = new List<ElementList>();
