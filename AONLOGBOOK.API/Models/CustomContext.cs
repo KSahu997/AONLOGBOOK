@@ -135,74 +135,21 @@ namespace AONLOGBOOK.API.Models
                 entity.HasNoKey();
                 entity.ToTable("tbl_logbookDataReport");
 
-                //entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
-
-                //entity.Property(e => e.CompanyId)
-                //    .HasMaxLength(50)
-                //    .IsUnicode(false);
-
-                //entity.Property(e => e.CretedBy)
-                //    .HasMaxLength(50)
-                //    .IsUnicode(false);
-
-                //entity.Property(e => e.CretedOn).HasColumnType("datetime");
-
-                //entity.Property(e => e.DeptId)
-                //    .HasMaxLength(50)
-                //    .IsUnicode(false);
-
-                //entity.Property(e => e.HeaderId)
-                //    .HasMaxLength(100)
-                //    .IsUnicode(false)
-                //    .HasColumnName("Header_Id");
-
-                //entity.Property(e => e.LogDate).HasColumnType("datetime");
-
-                //entity.Property(e => e.LogbookId)
-                //   .HasMaxLength(50)
-                //   .IsUnicode(false);
-
-                //entity.Property(e => e.MarkforDeletion)
-                //    .HasMaxLength(50)
-                //    .IsUnicode(false);
-
-                //entity.Property(e => e.Mode)
-                //    .HasMaxLength(10)
-                //    .IsUnicode(false);
-
-                //entity.Property(e => e.ModifyBy)
-                //    .HasMaxLength(50)
-                //    .IsUnicode(false);
-
-                //entity.Property(e => e.ModifyOn).HasColumnType("datetime");
-
+                
                 entity.Property(e => e.ParamName)
                     .HasMaxLength(50)
                     .IsUnicode(false);
-              //  entity.Property(e => e.Unit).HasMaxLength(50);
+              
                 entity.Property(e => e.ShiftPrefix)
                   .HasMaxLength(2)
                   .IsUnicode(false)
                   .HasColumnName("Shift_prefix");
 
-                //entity.Property(e => e.Plantcode)
-                //    .HasMaxLength(50)
-                //    .IsUnicode(false)
-                //    .HasColumnName("plantcode");
-
-                //entity.Property(e => e.Shift)
-                //    .HasMaxLength(50)
-                //    .IsUnicode(false);
-
-                entity.Property(e => e.Sl)
+                    entity.Property(e => e.Sl)
                     .ValueGeneratedOnAdd()
                     .HasColumnName("sl");
 
-                //entity.Property(e => e.SubDeptid)
-                //    .HasMaxLength(50)
-                //    .IsUnicode(false)
-                //    .HasColumnName("Sub_deptid");
-
+              
                 entity.Property(e => e.Value)
                     .HasMaxLength(50)
                     .IsUnicode(false);

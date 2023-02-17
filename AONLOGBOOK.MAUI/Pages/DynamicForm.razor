@@ -2,6 +2,7 @@
 @using AONLOGBOOK.SHARED.Models;
 @using AONLOGBOOK.SHARED.CModels;
 @using AONLOGBOOK.MAUI.Models;
+@using System.Data;
 @inject IHttpService httpservices
 
 <style>
@@ -85,7 +86,7 @@
                             <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                                 <FieldLabel>Date</FieldLabel>
                                 <Validation Validator="ValidationRule.IsNotEmpty">
-                                <TextEdit  @bind-Text="@CurrentDate" TValue="string" Disabled />
+                                <TextEdit  @bind-Text="@CurrentDate"/>
                                 </Validation>
                             </Field>
                             <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
@@ -210,17 +211,19 @@
             <CardText>
                 @if (datareport != null)
                 {
-                    @foreach (LogDataReport item in datareport)
+                     @foreach(DataColumn dc in datareport.Columns)
+                {
+                    @dc.ColumnName;                   
+                }
+                @foreach(DataRow dr in datareport.Rows)
+                {
+                    @foreach(DataColumn dc in dr.ItemArray)
                     {
-                        <p>
-                            sl: @item.Sl<br />
-                            Shift : @item.ShiftPrefix<br />
-                            Param Name: @item.ParamName<br/>
-                            Value: @item.Value<br />
-                             Unit : @item.Unit <br />
-                        </p>
+                       @dc.ToString();
                     }
                 }
+                }
+               
             </CardText>
         </CardBody>
     </Card>
@@ -236,7 +239,7 @@
     IEnumerable<TblLogbookDetailSchema> logdtschema;
     IEnumerable<TblLogBookDataTable> logData;
     IEnumerable<TblShiftMaster> shiftdata;
-    IEnumerable<LogDataReport> datareport;
+    DataTable datareport;
     List<ElementList> dynamicform = new();
     string cmpId;
     string plantId;
@@ -300,7 +303,7 @@
              });
             }
             collapse1Visible = false;
-            datareport = await httpservices.Get<List<LogDataReport>>("LogBookDataTables/" + formdatas.logbook + "/" + formdatas.Date?.ToString("yyyy-MM-dd HH:mm:ss"));
+            datareport = await httpservices.Get<DataTable>("LogBookDataTables/" + formdatas.logbook + "/" + formdatas.Date?.ToString("yyyy-MM-dd HH:mm:ss"));
 
 
             StateHasChanged();

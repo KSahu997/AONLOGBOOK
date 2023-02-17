@@ -69,6 +69,13 @@
     .btnAdd:hover {
         color: #fff;
     }
+    .row{
+        margin: 20px;
+        padding: 20px;
+        border: 1px solid white;
+        border-radius: 10px;
+        box-shadow: 2px 2px 5px 5px #dcdfe7;
+    }
 </style>
 
 @if (isDialogOpen== true)
@@ -79,7 +86,7 @@
         {
      
         }
-          <CModal company="@selectedcompany" title=" Create New Company" mstDatasChanged="@HandleAddcompany">
+          <CModal company="@tblCompanyMaster" title=" Create New Company" mstDatasChanged="@HandleAddcompany">
                 <ChildContent1>
 
                     <EditForm Model="@tblCompanyMaster" OnValidSubmit="submit">
@@ -157,10 +164,9 @@ else
 
 
 <div class="Container">
-       <div class="row m-2">
-         <Heading Size="HeadingSize.Is4" Flex="Flex.JustifyContent.Center">COMPANIES</Heading>
-            <hr/>
-        <div class="col-md-12">
+       <div class="row" >
+         <Heading Size="HeadingSize.Is4" Flex="Flex.JustifyContent.Center.OnDesktop">COMPANY(s)</Heading>
+            <div class="col-md-12">
                 <Button class="btn" style="margin:10px;" Color="Color.Info" @onclick="@Addcompany"><BarIcon IconName="IconName.Add" ></BarIcon>
                   
                     Add
@@ -168,14 +174,14 @@ else
   
                           @if (companies != null)
                             {
-                                @foreach (var item in companies)
+                                @foreach (var item in companies.Where(a => (a.StatusF == 0)))
                                 {
                                  <div id="accordion">
                                         <div class="faq-container">
-                                             <div class="card w-100" style="border-top: 1px solid #FF6E31;">
+                                             <div class="card w-100" style="border-top: 1px solid #FF6E31;margin:10px;">
                                                 
                                         <details class="d-flex m-2">
-                                        <summary><i class="fa fa-city p-2" style="color:#243763;"></i>@item.CompanyName</summary>
+                                        <summary><i class="fa fa-city p-2" style="color:#243763;font-size:20px;"></i><Span style="font-size:18px;">@item.CompanyName</Span></summary>
                                         <p style="margin-left:10px;">
                                        <ListGroup>
                                            <ListGroupItem><b>Email</b>   @item.Email</ListGroupItem>
@@ -188,7 +194,7 @@ else
                                        </ListGroup>
                                        <Field>
                                                 <Button class="btn btnEdit p-1 m-1" style="font-size:13px;" Clicked="@(()=>handalEditcompany(item))"><i class="fa fa-pen p-2" /></Button>
-                                                <Button class="btn btn-danger p-1 m-1" style="font-size:13px;"><i class="fa fa-trash p-2" /></Button>
+                                                <Button class="btn btn-danger p-1 m-1" style="font-size:13px;" Clicked="@(()=>handalDelCompany(item))"><i class="fa fa-trash p-2" /></Button>
                                                 
 
                                        </Field>
@@ -214,49 +220,72 @@ else
     TblCompanyMaster? selectedcompany;
     TblPlantMaster selectedplant;
     bool? DispData;
+    bool? isedit = true;
     bool? isDialogOpen;
     async void submit()
     {
-        try
-        {
-            tblCompanyMaster.CreatedBy = "Admin";
-            var result = await httpservice.Post<string>("CompanyMasters",tblCompanyMaster);
-
-            if (result!=null)
+        //if(isedit == true)
+        //{
+            try
             {
-                await App.Current.MainPage.DisplayAlert("Message",result,"Ok");
+                tblCompanyMaster.CreatedBy = "Admin";
+                var result = await httpservice.Post<string>("CompanyMasters", tblCompanyMaster);
+
+                if (result!=null)
+                {
+                    await App.Current.MainPage.DisplayAlert("Message",result,"Ok");
+                }
+                else
+                {
+
+                    await App.Current.MainPage.DisplayAlert("Message","Error","Ok");
+
+                }
+
+                StateHasChanged();
+
             }
-            else
+            catch (Exception ex)
             {
+                if (tblCompanyMaster != null && tblCompanyMaster.CompanyName == tblCompanyMaster.CompanyName || tblCompanyMaster.CompanyName == "")
+                {
+                    await App.Current.MainPage.DisplayAlert("Message","Invalid Company name", "Ok");
+                }else   
 
-                await App.Current.MainPage.DisplayAlert("Message","Error","Ok");
-
+                    await App.Current.MainPage.DisplayAlert("Message", ex.Message, "Ok");
             }
-           
+            HandleCanceled(); 
             StateHasChanged();
-
-        }
-        catch (Exception ex)
-        {
-            if(tblCompanyMaster != null && tblCompanyMaster.CompanyName == tblCompanyMaster.CompanyName || tblCompanyMaster.CompanyName=="")
-            {
-                await App.Current.MainPage.DisplayAlert("Message","Invalid Company name", "Ok");
-            }else   
-
-                await App.Current.MainPage.DisplayAlert("Message", ex.Message, "Ok");
-        }
-        HandleCanceled();
-        StateHasChanged();
-        tblCompanyMaster.CompanyName = string.Empty;
-        tblCompanyMaster.Email = null;
-        tblCompanyMaster.PhoneNo = null;
-        tblCompanyMaster.Address = null;
-        tblCompanyMaster.Country = null;
-        tblCompanyMaster.State = null;
-        tblCompanyMaster.City = null;
-        tblCompanyMaster.PinCode = null;
-        tblCompanyMaster.GstNo = null;
+            tblCompanyMaster.CompanyName = null;
+            tblCompanyMaster.Email = null;
+            tblCompanyMaster.PhoneNo = null;
+            tblCompanyMaster.Address = null;
+            tblCompanyMaster.Country = null;
+            tblCompanyMaster.State = null;
+            tblCompanyMaster.City = null;
+            tblCompanyMaster.PinCode = null;
+            tblCompanyMaster.GstNo = null;
         await OnInitializedAsync();
+            
+        //}else{
+
+            //var editdata = await httpservice.Post<string>("CompanyMasters/upd", tblCompanyMaster);
+            //if (editdata != null)
+            //{
+            //    await App.Current.MainPage.DisplayAlert("Message", editdata, "Ok");
+            //}
+            //else
+            //{
+
+            //    await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
+
+            //}
+            //HandleCanceled();
+            //StateHasChanged();
+
+            //await OnInitializedAsync();
+        //}
+
     }
 
     protected override async Task OnInitializedAsync()
@@ -308,10 +337,29 @@ else
     {
         selectedcompany = item;
         isDialogOpen = true;
+        isedit = false;
     }
     void Onchanged()
     {
-        
+
+    }
+    async void handalDelCompany(TblCompanyMaster item){
+
+        item.StatusF = 1;
+        var result = await httpservice.Post<string>("CompanyMasters/del", item);
+
+        if (result != null)
+        {
+            await App.Current.MainPage.DisplayAlert("Message", result, "Ok");
+        }
+        else
+        {
+
+            await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
+
+        }
+
+        StateHasChanged();
     }
     //async void handleAddnewPlant(TblCompanyMaster item)
     //{
