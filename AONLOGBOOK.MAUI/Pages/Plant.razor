@@ -108,7 +108,7 @@ else
                 {
                     @foreach(TblCompanyMaster comp in companies)
                     {
-                        <SelectItem Value="@comp.CompanyId">@comp.CompanyName</SelectItem>
+                        <SelectItem Value="@comp.Id">@comp.CompanyName</SelectItem>
                     }
                 }
             </Select>
@@ -185,7 +185,7 @@ else
         {
             if (tblPlant.CompanyId != null && tblPlant.PlantName != "")
             {
-                tblPlant.CompanyId = companies.First(a => (a.CompanyId == cmpId)).Id.ToString();        
+                tblPlant.CompanyId = companies.First(a => (a.Id.ToString() == cmpId)).Id.ToString();        
                 tblPlant.CreatedBy = "Admin";
                 var result = await httpservice.Post<string>("PlantMasters", tblPlant);
 

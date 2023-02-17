@@ -149,8 +149,12 @@
                                         @if(ele.IsMandatory==1)
                                         {
                                         <Validations @ref="validations" Mode="ValidationMode.Manual">
-                                            <Validation Validator="ValidationRule.IsNotEmpty">
+                                            <Validation Validator="ValidateEmail">
                                                 <TextEdit @bind-Text="@ele.StringValue" Style="margin:auto;" InputMode="TextInputMode.Email"></TextEdit>
+                                           <Feedback>
+                                            
+                                            <ValidationError>Enter valid email!</ValidationError>
+                                           </Feedback>
                                             </Validation>
                                         </Validations>
                                         }
@@ -165,6 +169,9 @@
                                             <Validations @ref="validations" Mode="ValidationMode.Manual">
                                             <Validation Validator="ValidationRule.IsNotEmpty">
                                                 <TextEdit @bind-Text="@ele.StringValue" Style="margin:auto;"></TextEdit>
+                                                <Feedback>
+                                                    <ValidationError>Required @ele.Label</ValidationError>
+                                                </Feedback>
                                             </Validation>
                                             </Validations>
                                         }
@@ -183,6 +190,9 @@
                                         <Validations @ref="validations" Mode="ValidationMode.Manual">
                                         <Validation Validator="ValidationRule.None">
                                             <NumericEdit @bind-Value="ele.IntegerValue" Style="margin:auto;"></NumericEdit>
+                                            <Feedback>
+                                                    <ValidationError>Required @ele.Label</ValidationError>
+                                                </Feedback>
                                         </Validation>
                                         </Validations>
                                     }
@@ -198,7 +208,7 @@
                                     {
                                         <Validations @ref="validations" Mode="ValidationMode.Manual">
                                             <Validation Validator="ValidationRule.IsNotEmpty">
-                                                <DateEdit @bind-Date="ele.DateOnlyValue" InputMode="DateInputMode.Date"></DateEdit>
+                                                <DateEdit @bind-Date="ele.DateOnlyValue"></DateEdit>
                                             </Validation>
                                         </Validations>
                                     }
@@ -215,6 +225,9 @@
                                         <Validations @ref="validations" Mode="ValidationMode.Manual">
                                             <Validation Validator="ValidationRule.IsNotEmpty">
                                                 <TimeEdit @bind-Time="ele.TimeValue" TValue="TimeSpan?"></TimeEdit>
+                                                 <Feedback>
+                                                    <ValidationError>Required @ele.Label</ValidationError>
+                                                </Feedback>
                                             </Validation>
                                         </Validations>
                                     }
@@ -230,6 +243,9 @@
                                     { <Validations @ref="validations" Mode="ValidationMode.Manual">
                                         <Validation Validator="ValidationRule.None">
                                             <DateEdit @bind-Date="ele.DateValue" Style="margin:auto;"></DateEdit>
+                                             <Feedback>
+                                                    <ValidationError>Required @ele.Label</ValidationError>
+                                                </Feedback>
                                         </Validation>
                                         </Validations>
                                     }
@@ -248,6 +264,9 @@
                                             <Radio Group="Rgrp">Yes</Radio>
                                             <Radio Group="Rgrp">No</Radio>
                                         </RadioGroup>
+                                             <Feedback>
+                                                    <ValidationError>Required @ele.Label</ValidationError>
+                                                </Feedback>
                                         </Validation>
                                         </Validations>
                                     }
@@ -518,7 +537,7 @@
                     else if (a.ElementType == "Date")
                     {
                         logdata.ParamName = a.Label;
-                        logdata.Val = a.DateValue?.ToString("MM-dd-yyyy");
+                        logdata.Val = a.DateOnlyValue?.ToString("MM-dd-yyyy");
                     }
                     else if (a.ElementType == "DateTime")
                     {
@@ -583,5 +602,11 @@
         
     }
 
-   
+    void ValidateEmail(ValidatorEventArgs e)
+    {
+        var email = Convert.ToString(e.Value);
+
+        e.Status = string.IsNullOrEmpty(email) ? ValidationStatus.None :
+            email.Contains("@") ? ValidationStatus.Success : ValidationStatus.Error;
+    }
 }

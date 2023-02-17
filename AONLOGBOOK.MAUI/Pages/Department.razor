@@ -80,7 +80,7 @@ else
                 {
                     @foreach(TblPlantMaster plt in PlantList)
                     {
-                        <SelectItem Value="@plt.PlantId">@plt.PlantName</SelectItem>
+                        <SelectItem Value="@plt.Id">@plt.PlantName</SelectItem>
                     }
                 }
             </Select>
@@ -147,7 +147,7 @@ else
         {
             try
             {
-                Dept.CompanyId = PlantList.First(a => (a.PlantId == plantId)).CompanyId;
+                Dept.CompanyId = PlantList.First(a => (a.Id.ToString() == plantId)).CompanyId;
                 Dept.CreatedBy = "Admin";
                 var data = await httpservice.Post<string>("DeptMasters", Dept);
                 if (data != null)
@@ -176,7 +176,7 @@ else
     {
         companies = await httpservice.Get<List<TblCompanyMaster>>("CompanyMasters");
         Dept.PlantId = plantId;
-        DeptList = (await httpservice.Get<List<TblDeptMaster>>("DeptMasters")).Where(a => (a.PlantId == Dept.PlantId));
+        DeptList = (await httpservice.Get<List<TblDeptMaster>>("DeptMasters")).Where(a => (a.PlantId == plantId));
         StateHasChanged();
 
     }
