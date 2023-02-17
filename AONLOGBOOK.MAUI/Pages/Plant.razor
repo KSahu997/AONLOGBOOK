@@ -98,61 +98,76 @@
 else
 {
     <div class="Container">
-        <h4 class="fw-bold text" style="color:#243763;">Plant List</h4>
-        @*<p>Company Id:@tblPlant.CompanyId</p>*@
-        <Field ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile">
-            <FieldLabel>Company</FieldLabel>
-            <Select SelectedValue="tblPlant.CompanyId" SelectedValueChanged="@((string arg)=>{handlePlant(arg);})" SelectedValueExpression="@(()=>tblPlant.CompanyId)">
-                <SelectItem>--Select--</SelectItem>
-                @if(companies!=null)
-                {
-                    @foreach(TblCompanyMaster comp in companies)
-                    {
-                        <SelectItem Value="@comp.CompanyId">@comp.CompanyName</SelectItem>
-                    }
-                }
-            </Select>
+      <div class="row" style=" margin: 20px;
+        padding: 20px;
+        border: 1px solid grey;
+        border-radius: 10px;">
+       
+         <Field ColumnSize="ColumnSize.Is12.OnDesktop.Is12.OnMobile">
+                <Heading Size="HeadingSize.Is4" TextAlignment="TextAlignment.Center">Plant List</Heading>
+        </Field>
+              @*<p>Company Id:@tblPlant.CompanyId</p>*@
+           
+                
+                <Field ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile">
+                    <FieldLabel>Company</FieldLabel>
+                    <Select SelectedValue="tblPlant.CompanyId" SelectedValueChanged="@((string arg)=>{handlePlant(arg);})" SelectedValueExpression="@(()=>tblPlant.CompanyId)">
+                        <SelectItem>--Select--</SelectItem>
+                        @if (companies != null)
+                        {
+                            @foreach (TblCompanyMaster comp in companies)
+                            {
+                                <SelectItem Value="@comp.Id">@comp.CompanyName</SelectItem>
+                            }
+                        }
+                    </Select>
+                </Field>
+                <Field ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile" >
+                <Button Background="Background.Info"  @onclick="@AddPlant" Margin="Margin.Is4" Disabled=@(tblPlant.CompanyId==null||string.IsNullOrEmpty(tblPlant.CompanyId))>Add</Button>
+                </Field>
+         
+        </div>
+        <div class="row" style=" margin: 20px;
+        padding: 20px;
+        border: 1px solid white;
+        border-radius: 10px;
+        box-shadow: 2px 2px 5px 5px #dcdfe7;">
+                <div class="col-md-12">
 
-        </Field>
-        <Field ColumnSize="ColumnSize.Is5.OnDesktop.Is12.OnMobile">
-            @ChildContent
-            <Button class="m-2" style="margin-top:10px;background:#659abb;color:#000;" @onclick="@AddPlant" Disabled=@(tblPlant.CompanyId==null||string.IsNullOrEmpty(tblPlant.CompanyId))>Add</Button>
-        </Field>
-        <div class="row">
-            <div class="col-md-12">
-             
                     @if (PlantList != null)
                     {
                         @foreach (var item in PlantList)
                         {
-                        <div id="accordion">
-                            <div class="faq-container m-2 ">
-                        <div class="card w-100" style="border-top: 1px solid #FF6E31;">
-                                    <div class="row">
-                                        <details class="d-flex m-2">
-                                            <summary style="margin-left:10px;"><i class="fa fa-city p-2" style="color:#243763;"></i>@item.PlantName</summary>
-                                            <p style="margin-left:10px;">
-                                                <ListGroup>
-                                                    <ListGroupItem><b>Email</b>   @item.Email</ListGroupItem>  
-                                                    <ListGroupItem> <b>City</b>  @item.City</ListGroupItem>
-                                                    <ListGroupItem><b>Country</b>  @item.Country</ListGroupItem>
-                                                    <ListGroupItem><b>State</b>  @item.State</ListGroupItem>
-                                                    <ListGroupItem><b>Postal Code</b>  @item.PinCode</ListGroupItem>
-                                                </ListGroup>
-                                                <Field>
-                                                    <Button class="btn btnEdit p-1 m-1" style="font-size:13px;" Clicked="@(()=>handleEditPlant(item))"><i class="fa fa-pen p-2" /></Button>
-                                                    <Button class="btn btn-danger p-1 m-1" style="font-size:13px;"><i class="fa fa-trash p-2" /></Button>
-                                                </Field>
-                                           </p>
-                                        </details>
+                            <div id="accordion">
+                                <div class="faq-container m-2 ">
+                                    <div class="card w-100" style="border-top: 1px solid #FF6E31;">
+                                        <div class="row">
+                                            <details class="d-flex m-2">
+                                                <summary style="margin-left:10px;"><i class="fa fa-city p-2" style="color:#243763;"></i>@item.PlantName</summary>
+                                                <p style="margin-left:10px;">
+                                                    <ListGroup>
+                                                        <ListGroupItem><b>Email</b>   @item.Email</ListGroupItem>
+                                                        <ListGroupItem> <b>City</b>  @item.City</ListGroupItem>
+                                                        <ListGroupItem><b>Country</b>  @item.Country</ListGroupItem>
+                                                        <ListGroupItem><b>State</b>  @item.State</ListGroupItem>
+                                                        <ListGroupItem><b>Postal Code</b>  @item.PinCode</ListGroupItem>
+                                                    </ListGroup>
+                                                    <Field>
+                                                        <Button class="btn btnEdit p-1 m-1" style="font-size:13px;" Clicked="@(()=>handleEditPlant(item))"><i class="fa fa-pen p-2" /></Button>
+                                                        <Button class="btn btn-danger p-1 m-1" style="font-size:13px;"><i class="fa fa-trash p-2" /></Button>
+                                                    </Field>
+                                                </p>
+                                            </details>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            </div>
                         }
                     }
-            </div>
                 </div>
+            </div>
+   
+      
             </div>
 }
 

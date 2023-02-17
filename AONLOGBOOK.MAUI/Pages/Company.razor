@@ -168,7 +168,6 @@ else
          <Heading Size="HeadingSize.Is4" Flex="Flex.JustifyContent.Center.OnDesktop">COMPANY(s)</Heading>
             <div class="col-md-12">
                 <Button class="btn" style="margin:10px;" Color="Color.Info" @onclick="@Addcompany"><BarIcon IconName="IconName.Add" ></BarIcon>
-                  
                     Add
                 </Button>
   
@@ -178,10 +177,10 @@ else
                                 {
                                  <div id="accordion">
                                         <div class="faq-container">
-                                             <div class="card w-100" style="border-top: 1px solid #FF6E31;margin:10px;">
+                                             <div class="card w-100 mb-2" style="border-top: 1px solid #FF6E31;">
                                                 
                                         <details class="d-flex m-2">
-                                        <summary><i class="fa fa-city p-2" style="color:#243763;font-size:20px;"></i><Span style="font-size:18px;">@item.CompanyName</Span></summary>
+                                        <summary><i class="fa fa-city p-2" style="color:#243763;font-size:18px;"></i><Span style="font-size:16px;">@item.CompanyName</Span></summary>
                                         <p style="margin-left:10px;">
                                        <ListGroup>
                                            <ListGroupItem><b>Email</b>   @item.Email</ListGroupItem>
