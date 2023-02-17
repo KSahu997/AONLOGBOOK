@@ -20,5 +20,6 @@ namespace AONLOGBOOK.SHARED.CModels
         
         public string? MarkforDeletion { get; set; }
         public string? Uom { get; set; }
+        
     }
 }

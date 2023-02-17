@@ -42,6 +42,8 @@ namespace AONLOGBOOK.API.Models
                 //entity.Property(e => e.LogbookId)
                 //    .HasMaxLength(50)
                 //    .IsUnicode(false);
+               //entity.HasIndex(e => e.TagName, "UTag_Name")
+               //   .IsUnique();
                 entity.Property(e => e.CalulationParams)
                     .HasMaxLength(50)
                     .IsUnicode(false)
@@ -53,10 +55,11 @@ namespace AONLOGBOOK.API.Models
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.DisplayName)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("Display_Name");
+                entity.Property(e => e.displayname)
+                  .HasMaxLength(50)
+                  .IsUnicode(false)
+                  .HasColumnName("display_name");
+                  
                 entity.Property(e => e.RefCol)
                    .HasMaxLength(50)
                    .IsUnicode(false);
@@ -70,7 +73,7 @@ namespace AONLOGBOOK.API.Models
 
                 entity.Property(e => e.Operator).HasMaxLength(5);
                 entity.Property(e => e.Prscn).HasColumnName("prscn");
-
+                entity.Property(e => e.IsMandatory).HasColumnName("isMandatory");
 
                 entity.Property(e => e.Source)
                     .HasMaxLength(50)

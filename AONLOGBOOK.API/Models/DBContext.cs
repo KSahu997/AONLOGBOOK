@@ -441,7 +441,9 @@ namespace AONLOGBOOK.API.Models
                     .HasColumnName("isDashboardComponent")
                     .HasDefaultValueSql("((0))");
 
-                entity.Property(e => e.IsMandatory).HasColumnName("isMandatory");
+                entity.Property(e => e.IsMandatory)
+                    .HasColumnName("isMandatory")
+                    .HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.LMax)
                     .HasColumnName("L_Max")

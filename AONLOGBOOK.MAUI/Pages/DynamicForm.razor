@@ -131,8 +131,8 @@
    
     @if (dynamicform.Count() > 0)
     {
-        <Validations @ref="validations" Mode="ValidationMode.Manual">
-            <Card Margin="Margin.Is4.OnY" Background="Background.Transparent" Class="Card">
+@*        <Validations @ref="validations" Mode="ValidationMode.Manual">
+*@            <Card Margin="Margin.Is4.OnY" Background="Background.Transparent" Class="Card">
                 <CardHeader Style="background:linear-gradient(180deg, rgb(170 196 224 / 50%), transparent); color:#11324D;border-radius:15px;">
                     <h4>@logbooks.First().LogbookName</h4>
                 </CardHeader>
@@ -143,49 +143,121 @@
                             {
                                 @if (ele.ElementType == "Text")
                                 {
-
                                     <FieldLabel>@ele.Label</FieldLabel>
-                                    <Validation Validator="ValidationRule.IsNotEmpty">
-                                        <TextEdit @bind-Text="@ele.StringValue" Style="margin:auto;"></TextEdit>
-                                    </Validation>
+                                    @if(ele.Label=="Email")
+                                    {
+                                        @if(ele.IsMandatory==1)
+                                        {
+                                        <Validations @ref="validations" Mode="ValidationMode.Manual">
+                                            <Validation Validator="ValidationRule.IsNotEmpty">
+                                                <TextEdit @bind-Text="@ele.StringValue" Style="margin:auto;" InputMode="TextInputMode.Email"></TextEdit>
+                                            </Validation>
+                                        </Validations>
+                                        }
+                                        else
+                                        {
+                                            <TextEdit @bind-Text="@ele.StringValue" Style="margin:auto;" InputMode="TextInputMode.Email"></TextEdit>
+                                        }
+                                    }else
+                                    {
+                                        @if (ele.IsMandatory == 1)
+                                        {
+                                            <Validations @ref="validations" Mode="ValidationMode.Manual">
+                                            <Validation Validator="ValidationRule.IsNotEmpty">
+                                                <TextEdit @bind-Text="@ele.StringValue" Style="margin:auto;"></TextEdit>
+                                            </Validation>
+                                            </Validations>
+                                        }
+                                        else
+                                        {
+                                            <TextEdit @bind-Text="@ele.StringValue" Style="margin:auto;"></TextEdit>
+                                        }
+                                    }
+
                                 }
                                 else if (ele.ElementType == "Number")
                                 {
                                     <FieldLabel>@ele.Label</FieldLabel>
-                                    <Validation Validator="ValidationRule.None">
+                                    @if (ele.IsMandatory == 1)
+                                    {
+                                        <Validations @ref="validations" Mode="ValidationMode.Manual">
+                                        <Validation Validator="ValidationRule.None">
+                                            <NumericEdit @bind-Value="ele.IntegerValue" Style="margin:auto;"></NumericEdit>
+                                        </Validation>
+                                        </Validations>
+                                    }
+                                    else
+                                    {
                                         <NumericEdit @bind-Value="ele.IntegerValue" Style="margin:auto;"></NumericEdit>
-                                    </Validation>
+                                    }
                                 }
                                 else if (ele.ElementType == "Date")
                                 {
                                     <FieldLabel>@ele.Label</FieldLabel>
-                                    <Validation Validator="ValidationRule.None">
+                                    @if (ele.IsMandatory == 1)
+                                    {
+                                        <Validations @ref="validations" Mode="ValidationMode.Manual">
+                                            <Validation Validator="ValidationRule.IsNotEmpty">
+                                                <DateEdit @bind-Date="ele.DateOnlyValue" InputMode="DateInputMode.Date"></DateEdit>
+                                            </Validation>
+                                        </Validations>
+                                    }
+                                    else
+                                    {
                                         <DateEdit @bind-Date="ele.DateOnlyValue" InputMode="DateInputMode.Date"></DateEdit>
-                                    </Validation>
+                                    }
                                 }
                                 else if (ele.ElementType == "Time")
                                 {
                                     <FieldLabel>@ele.Label</FieldLabel>
-                                    <Validation Validator="ValidationRule.None">
-                                        <TimeEdit @bind-Time="ele.TimeValue" TValue="TimeSpan?"></TimeEdit>
-                                    </Validation>
+                                    @if (ele.IsMandatory == 1)
+                                    {
+                                        <Validations @ref="validations" Mode="ValidationMode.Manual">
+                                            <Validation Validator="ValidationRule.IsNotEmpty">
+                                                <TimeEdit @bind-Time="ele.TimeValue" TValue="TimeSpan?"></TimeEdit>
+                                            </Validation>
+                                        </Validations>
+                                    }
+                                    else
+                                    {
+                                       <TimeEdit @bind-Time="ele.TimeValue" TValue="TimeSpan?"></TimeEdit>
+                                    }
                                 }
                                 else if (ele.ElementType == "DateTime")
                                 {
                                     <FieldLabel>@ele.Label</FieldLabel>
-                                    <Validation Validator="ValidationRule.None">
+                                     @if (ele.IsMandatory == 1)
+                                    { <Validations @ref="validations" Mode="ValidationMode.Manual">
+                                        <Validation Validator="ValidationRule.None">
+                                            <DateEdit @bind-Date="ele.DateValue" Style="margin:auto;"></DateEdit>
+                                        </Validation>
+                                        </Validations>
+                                    }
+                                    else
+                                    {
                                         <DateEdit @bind-Date="ele.DateValue" Style="margin:auto;"></DateEdit>
-                                    </Validation>
+                                    }
                                 }
                                 else if (ele.ElementType == "Boolean")
                                 {
                                     <FieldLabel>@ele.Label</FieldLabel>
-                                    <Validation Validator="ValidationRule.None">
-                                        <RadioGroup TValue="string" Name="Rgrp">
-                                            <Radio Value="@("Yes")" Group="Rgrp">Yes</Radio>
-                                            <Radio Value="@("No")" Group="Rgrp">No</Radio>
+                                    @if (ele.IsMandatory == 1)
+                                    {<Validations @ref="validations" Mode="ValidationMode.Manual">
+                                        <Validation Validator="ValidationRule.IsChecked">
+                                            <RadioGroup TValue="string" Name="Rgrp" CheckedValue="@checkdynamicbool" CheckedValueChanged="@Onchecked">
+                                            <Radio Group="Rgrp">Yes</Radio>
+                                            <Radio Group="Rgrp">No</Radio>
                                         </RadioGroup>
-                                    </Validation>
+                                        </Validation>
+                                        </Validations>
+                                    }
+                                    else
+                                    {
+                                        <RadioGroup TValue="string" Name="Rgrp" CheckedValue="@checkdynamicbool" CheckedValueChanged="@Onchecked">
+                                            <Radio  Group="Rgrp">Yes</Radio>
+                                            <Radio  Group="Rgrp">No</Radio>
+                                        </RadioGroup>
+                                    }
                                 }
 
                         }
@@ -201,7 +273,7 @@
                 </CardBody>
             </Card>
 
-        </Validations>
+       @* </Validations>*@
     }
     <Card>
         <CardBody>
@@ -243,6 +315,7 @@
     List<ElementList> dynamicform = new();
     string cmpId;
     string plantId;
+    string checkdynamicbool;
     Formdata formdatas = new();
     List<LogData> logdatatable = new();
     LogDataList logdtList = new ();
@@ -299,7 +372,7 @@
             {
                 logbookdetail.ToList().ForEach(a =>
              {
-                 dynamicform.Add(new ElementList { Label = a.DisplayName, Sequence = a.Seq, ElementType = a.DataType });
+                 dynamicform.Add(new ElementList { Label = a.displayname, Sequence = a.Seq, ElementType = a.DataType ,IsMandatory=a.IsMandatory });
              });
             }
             collapse1Visible = false;
@@ -355,6 +428,7 @@
                     else if (a.ElementType == "Boolean")
                     {
                         logdata.ParamName = a.Label;
+                        a.BoolValue = Convert.ToBoolean(checkdynamicbool);
                         logdata.Val = a.BoolValue.ToString();
                     }
 
@@ -363,7 +437,7 @@
                     logdata.Shift = formdatas.Shift;
                     logdata.LogbookId = formdatas.logbook;
                     logdata.MarkforDeletion = "0";  
-                   
+
                     logdatatable.Add(logdata);
 
                 });
@@ -500,6 +574,12 @@
         {
 
         }
+    }
+
+    void Onchecked(string value)
+    {
+        checkdynamicbool = value;
+        
     }
 
    
