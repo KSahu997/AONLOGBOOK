@@ -10,6 +10,7 @@ using Microsoft.Data.SqlClient;
 using System.Data;
 using AONLOGBOOK.SHARED.Models;
 using AONLOGBOOK.SHARED.CModels;
+using Newtonsoft.Json;
 
 namespace AONLogbookAPI.Controllers
 {
@@ -52,7 +53,7 @@ namespace AONLogbookAPI.Controllers
         public async Task<ActionResult<DataTable>> GetTblLogBookDataTableByIds(string Logbook_Id, DateTime date)
         {
             DataTable dt = new DataTable();
-
+            
             using (SqlConnection conn = new SqlConnection(_con.GetConnectionString("db").ToString()))
             {
                 try

@@ -148,6 +148,7 @@ else
             try
             {
                 Dept.CompanyId = PlantList.First(a => (a.PlantId == plantId)).CompanyId;
+                Dept.PlantId = PlantList.First(a => (a.PlantId == plantId)).Id.ToString();
                 Dept.CreatedBy = "Admin";
                 var data = await httpservice.Post<string>("DeptMasters", Dept);
                 if (data != null)

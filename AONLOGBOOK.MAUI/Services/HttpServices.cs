@@ -45,21 +45,21 @@ namespace AONLOGBOOK.MAUI.Services
             return await sendRequest<T>(request);
         }
 
-        //public async Task<DataTable> GetDataTable(string uri)
-        //{
-        //    var request = new HttpRequestMessage(HttpMethod.Get, uri);
-        //    var response = await _httpClient.SendAsync(request);
+        public async Task<DataTable> GetDataTable(string uri)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, uri);
+            var response = await _httpClient.SendAsync(request);
 
-        //    await handleErrors(response);
+            await handleErrors(response);
 
-        //    var options = new JsonSerializerOptions
-        //    {
-        //        PropertyNameCaseInsensitive = true
-        //    };
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
 
-        //    string dataString = await response.Content.ReadAsStringAsync();
-        //    return (DataTable)Newtonsoft.Json.JsonConvert.DeserializeObject(dataString, (typeof(DataTable)));
-        //}
+            string dataString = await response.Content.ReadAsStringAsync();
+            return (DataTable)Newtonsoft.Json.JsonConvert.DeserializeObject(dataString, (typeof(DataTable)));
+        }
 
 
 

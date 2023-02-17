@@ -102,7 +102,7 @@
                 {
                     @foreach (TblPlantMaster pt in PlantList)
                     {
-                        <SelectItem Value="@pt.PlantId">@pt.PlantName</SelectItem>
+                        <SelectItem Value="@pt.Id">@pt.PlantName</SelectItem>
                     }
                 }
             </Select>
@@ -176,6 +176,7 @@
         {
             subdept.CreatedBy = "Admin";
             subdept.PlantId = deptlist.First(a => (a.PlantId == plantId)).PlantId;
+            subdept.DeptId = deptlist.First(a => (a.PlantId == plantId)).Id.ToString();
             subdept.CompanyId = deptlist.First(a => (a.PlantId == subdept.PlantId)).CompanyId;
             var data = await httpservice.Post<string>("SubDeptMasters", subdept);
             if (data != null)
