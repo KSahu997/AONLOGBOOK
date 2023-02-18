@@ -17,6 +17,24 @@
        
         transition:ease-in-out 5s;
     }
+
+    details 
+    {
+        margin-bottom: 18px;
+    }
+
+    details summary 
+    {
+       font-size: 13px;
+       cursor: pointer;
+    }
+
+    details p {
+      font-size: 13px;
+       line-height: 24px;
+       margin-top: 10px;
+            color: #545d7a;
+        }
 </style>
 
 <Div Class="container p-2">
@@ -27,7 +45,7 @@
     <Collapse Visible="@collapse1Visible">
         <CollapseHeader>
             <Heading Size="HeadingSize.Is6">
-                    <AccordionToggle><BarIcon IconName="IconName.AngleDown"></BarIcon>LOGBOOK</AccordionToggle>
+                    <AccordionToggle><BarIcon IconName="IconName.Book" TextColor="TextColor.Secondary" Margin="Margin.Is2"></BarIcon><Badge Color="Color.Info"> LOGBOOK</Badge></AccordionToggle>
             </Heading>
         </CollapseHeader>
         <CollapseBody>
@@ -297,25 +315,63 @@
     <Card>
         <CardBody>
             <CardTitle>
-                report
+                <Badge Color="Color.Info">Report</Badge>
             </CardTitle>
-            <CardText>
-                @if (datareport != null)
+            <CardBody>
+           
+              @if(datareport!=null)
                 {
-                     @foreach(DataColumn dc in datareport.Columns)
-                {
-                    @dc.ColumnName;                   
-                }
-                @foreach(DataRow dr in datareport.Rows)
-                {
-                    @foreach(DataColumn dc in dr.ItemArray)
+                   @foreach (var item in dts)
                     {
-                       @dc.ToString();
+                                <div id="accordion">
+                                    <div class="faq-container m-2 ">
+                                    <div class="card w-100" style="border-top: 1px solid #FF6E31;">
+                                         <details class="d-flex m-2">
+                                            <summary style="margin-left:10px; font-size:15px;" >
+                                                <BarIcon IconName="IconName.Clock" TextColor="TextColor.Secondary"></BarIcon>  <b>Date: @formdatas.Date?.ToString("dd.MM.yyyy")</b>
+                                                 <Badge Style="background-color:#dfc647; font-size:14px;" Padding="Padding.Is2"> Shift - @item.Rows[0]["Shift_Prefix"]</Badge>
+                                            </summary>
+                                                <p style="margin-left:5px;"> 
+                                               
+                                                     @foreach (DataRow row in item.Rows)
+                                                    {
+                                                        <ListGroup>
+                                                        @foreach (DataColumn col in item.Columns)
+                                                        {
+                                                            @if (col.ColumnName != "shift_prefix")
+                                                            {
+                                                                <ListGroupItem>
+                                                                    <Div Flex="Flex.JustifyContent.Between" Width="Width.Is100">
+
+                                                                        <b>
+
+                                                                            @col.ColumnName.ToString().ToUpper()
+
+                                                                        </b><span> @row[col.ColumnName]</span>
+
+                                                                    </Div>
+                                                                </ListGroupItem>
+                                                            }
+
+                                                        }
+                                                   
+                                                        <Field Flex="Flex.JustifyContent.Start" Margin="Margin.Is2" Padding="Padding.Is2">
+                                                            <Button Color="Color.Warning" Margin="Margin.Is2" Disabled="@(logdata.MarkforDeletion=="0")"><BarIcon IconName="IconName.Edit"></BarIcon></Button>
+                                                            <Button Color="Color.Danger" Margin="Margin.Is2"><BarIcon IconName="IconName.Delete"></BarIcon></Button>
+                                                            <Button Color="Color.Primary" Margin="Margin.Is2"><BarIcon IconName="IconName.Save"></BarIcon></Button>
+                                                        </Field>
+                                                        </ListGroup>
+                                                    }
+                                                 </p>   
+                                            </details>
+                                       
+                                    </div>
+                                </div>
+                            </div>
                     }
                 }
-                }
-               
-            </CardText>
+
+            </CardBody>
         </CardBody>
     </Card>
 
@@ -341,7 +397,8 @@
     DateTime? selectDate;
     string? CurrentDate;
     bool collapse1Visible = true;
-
+    List<DataTable> dts = new List<DataTable>();
+    LogData logdata = new();
     protected override async Task OnInitializedAsync()
     {
         //formdatas.Date = DateTime.Now;
@@ -396,8 +453,19 @@
              });
             }
             collapse1Visible = false;
-           // datareport = await httpservices.Get<DataTable>("LogBookDataTables/" + formdatas.logbook + "/" + formdatas.Date?.ToString("yyyy-MM-dd HH:mm:ss"));
-
+            datareport = await httpservices.GetDataTable("LogBookDataTables/" + formdatas.logbook + "/" + formdatas.Date?.ToString("yyyy-MM-dd HH:mm:ss"));
+            if(datareport!=null)
+            {
+               var datare = from rows in datareport.AsEnumerable()
+                             group rows by new { Shift = rows["Shift_Prefix"] }
+                into grp
+                select grp;
+               
+                foreach (var item in datare)
+                {
+                    dts.Add(item.CopyToDataTable());
+                }
+            }
 
             StateHasChanged();
 
@@ -416,7 +484,7 @@
                 var a = dynamicform;
                 a.ForEach(a =>
                 {
-                    LogData logdata = new();
+                    
                     logdata.Uom = logdtschema.First(a => (a.LogbookId == formdatas.logbook)).Uom;
                     logdata.SubDeptId = formdatas.SubDepartment;
                     logdata.DeptId = formdatas.Department;

@@ -16,7 +16,7 @@ namespace AONLOGBOOK.MAUI.Services
 
     public interface IHttpService
     {
-       
+        Task<DataTable> GetDataTable(string uri);
         Task<T> Get<T>(string uri);
        
         Task Post(string uri, object value);
