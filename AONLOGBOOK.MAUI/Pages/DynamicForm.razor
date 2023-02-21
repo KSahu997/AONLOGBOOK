@@ -329,7 +329,9 @@
                                          <details class="d-flex m-2">
                                             <summary style="margin-left:10px; font-size:15px;" >
                                                 <BarIcon IconName="IconName.Clock" TextColor="TextColor.Secondary"></BarIcon>  <b>Date: @formdatas.Date?.ToString("dd.MM.yyyy")</b>
-                                                 <Badge Style="background-color:#dfc647; font-size:14px;" Padding="Padding.Is2"> Shift - @item.Rows[0]["Shift_Prefix"]</Badge>
+                                            <Badge Style="background-color:#dfc647; font-size:14px;" Padding="Padding.Is2">
+                                                Shift - @item.Rows[0]["Shift_prefix"]
+                                                  </Badge>
                                             </summary>
                                                 <p style="margin-left:5px;"> 
                                                
@@ -338,7 +340,7 @@
                                                         <ListGroup>
                                                         @foreach (DataColumn col in item.Columns)
                                                         {
-                                                            @if (col.ColumnName != "shift_prefix")
+                                                            @if (col.ColumnName != "shift_prefix" && col.ColumnName!="header_Id" && col.ColumnName!="status_F" )
                                                             {
                                                                 <ListGroupItem>
                                                                     <Div Flex="Flex.JustifyContent.Between" Width="Width.Is100">
@@ -356,7 +358,7 @@
                                                         }
                                                    
                                                         <Field Flex="Flex.JustifyContent.Start" Margin="Margin.Is2" Padding="Padding.Is2">
-                                                            <Button Color="Color.Warning" Margin="Margin.Is2" Disabled="@(logdata.MarkforDeletion=="0")"><BarIcon IconName="IconName.Edit"></BarIcon></Button>
+                                                        <Button Color="Color.Warning" Margin="Margin.Is2" Disabled="@(Convert.ToInt32(row["status_F"])==0)" onclick="@(()=>handleitem(item))"><BarIcon IconName="IconName.Edit"></BarIcon></Button>
                                                             <Button Color="Color.Danger" Margin="Margin.Is2"><BarIcon IconName="IconName.Delete"></BarIcon></Button>
                                                             <Button Color="Color.Primary" Margin="Margin.Is2"><BarIcon IconName="IconName.Save"></BarIcon></Button>
                                                         </Field>
@@ -456,11 +458,11 @@
             datareport = await httpservices.GetDataTable("LogBookDataTables/" + formdatas.logbook + "/" + formdatas.Date?.ToString("yyyy-MM-dd HH:mm:ss"));
             if(datareport!=null)
             {
-               var datare = from rows in datareport.AsEnumerable()
-                             group rows by new { Shift = rows["Shift_Prefix"] }
-                into grp
-                select grp;
-               
+                var datare = from rows in datareport.AsEnumerable()
+                             group rows by new { Shift = rows["Shift_prefix"] }
+                 into grp
+                             select grp;
+
                 foreach (var item in datare)
                 {
                     dts.Add(item.CopyToDataTable());
@@ -484,7 +486,7 @@
                 var a = dynamicform;
                 a.ForEach(a =>
                 {
-                    
+
                     logdata.Uom = logdtschema.First(a => (a.LogbookId == formdatas.logbook)).Uom;
                     logdata.SubDeptId = formdatas.SubDepartment;
                     logdata.DeptId = formdatas.Department;
@@ -667,7 +669,7 @@
     void Onchecked(string value)
     {
         checkdynamicbool = value;
-        
+
     }
 
     void ValidateEmail(ValidatorEventArgs e)
@@ -676,5 +678,10 @@
 
         e.Status = string.IsNullOrEmpty(email) ? ValidationStatus.None :
             email.Contains("@") ? ValidationStatus.Success : ValidationStatus.Error;
+    }
+
+    void handleitem(DataTable val)
+    {
+        
     }
 }
