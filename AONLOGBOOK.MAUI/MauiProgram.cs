@@ -35,11 +35,12 @@ namespace AONLOGBOOK.MAUI
             {
                 var httpClientHandler = new HttpClientHandler();
                 httpClientHandler.ServerCertificateCustomValidationCallback = (message, certificate, chain, sslPolicyErrors) => true;
-                HttpClient client = new HttpClient();
+                HttpClient client = new HttpClient(httpClientHandler);
 
                 //var ApiUrl = new Uri("http://59.94.37.53:6070/api/");
                 //var ApiUrl = new Uri("http://192.168.0.135:6070/api/");
                 var ApiUrl = new Uri("https://localhost:7222/api/");
+                //var ApiUrl = new Uri("https://aonapps.in:7070/api/");
                 client.BaseAddress = ApiUrl;
                 //client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("admin", "@admin123");
                 return client;

@@ -57,17 +57,17 @@
                         <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                             <FieldLabel>Department</FieldLabel>
                             <Validation Validator="ValidationRule.IsNotEmpty">
-                                <Select SelectedValue="@formdatas.Department" SelectedValueExpression="@(()=>formdatas.Department)" SelectedValueChanged="@((string args)=>{handleformgroup(args);})">
-                                    <SelectItem>--Select--</SelectItem>
                                     @if (departments != null)
                                     {
+                                <Select SelectedValue="@formdatas.Department" SelectedValueExpression="@(()=>formdatas.Department)" SelectedValueChanged="@((string args)=>{handleformgroup(args);})">
+                                    <SelectItem>--Select--</SelectItem>
                                         @foreach (TblDeptMaster dept in departments)
                                         {
                                             <SelectItem Value="@dept.Id">@dept.DeptName</SelectItem>
                                         }
-                                    }
 
                                 </Select>
+                                    }
                             </Validation>
                         </Field>
                         <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
@@ -318,60 +318,105 @@
                 <Badge Color="Color.Info">Report</Badge>
             </CardTitle>
             <CardBody>
-           
+                <Container Breakpoint="Breakpoint.Desktop">
+
+                </Container>
+
               @if(datareport!=null)
                 {
-                   @foreach (var item in dts)
-                    {
-                                <div id="accordion">
-                                    <div class="faq-container m-2 ">
-                                    <div class="card w-100" style="border-top: 1px solid #FF6E31;">
-                                         <details class="d-flex m-2">
-                                            <summary style="margin-left:10px; font-size:15px;" >
-                                                <BarIcon IconName="IconName.Clock" TextColor="TextColor.Secondary"></BarIcon>  <b>Date: @formdatas.Date?.ToString("dd.MM.yyyy")</b>
-                                            <Badge Style="background-color:#dfc647; font-size:14px;" Padding="Padding.Is2">
-                                                Shift - @item.Rows[0]["Shift_prefix"]
-                                                  </Badge>
-                                            </summary>
-                                                <p style="margin-left:5px;"> 
-                                               
-                                                     @foreach (DataRow row in item.Rows)
+           <Div Display="Display.Block.None.OnDesktop" >
+                @foreach (var item in dts)
+                {
+                    <div id="accordion">
+                        <div class="faq-container m-2 ">
+                            <div class="card w-100" style="border-top: 1px solid #FF6E31;">
+                                <details class="d-flex m-2">
+                                    <summary style="margin-left:10px; font-size:15px;" >
+                                        <BarIcon IconName="IconName.Clock" TextColor="TextColor.Secondary"></BarIcon>  <b>Date: @formdatas.Date?.ToString("dd.MM.yyyy")</b>
+                                        <Badge Style="background-color:#dfc647; font-size:14px;" Padding="Padding.Is2">
+                                            Shift - @item.Rows[0]["Shift_prefix"]
+                                        </Badge>
+                                    </summary>
+                                    <p style="margin-left:5px;"> 
+
+                                        @foreach (DataRow row in item.Rows)
+                                        {
+                                            <ListGroup>
+                                                @foreach (DataColumn col in item.Columns)
+                                                {
+                                                    @if (col.ColumnName != "shift_prefix" && col.ColumnName != "header_Id" && col.ColumnName != "status_F")
                                                     {
-                                                        <ListGroup>
-                                                        @foreach (DataColumn col in item.Columns)
-                                                        {
-                                                            @if (col.ColumnName != "shift_prefix" && col.ColumnName!="header_Id" && col.ColumnName!="status_F" )
-                                                            {
-                                                                <ListGroupItem>
-                                                                    <Div Flex="Flex.JustifyContent.Between" Width="Width.Is100">
+                                                        <ListGroupItem>
+                                                            <Div Flex="Flex.JustifyContent.Between" Width="Width.Is100">
 
-                                                                        <b>
+                                                                <b>
 
-                                                                            @col.ColumnName.ToString().ToUpper()
+                                                                    @col.ColumnName.ToString().ToUpper()
 
-                                                                        </b><span> @row[col.ColumnName]</span>
+                                                                </b><span> @row[col.ColumnName]</span>
 
-                                                                    </Div>
-                                                                </ListGroupItem>
-                                                            }
-
-                                                        }
-                                                   
-                                                        <Field Flex="Flex.JustifyContent.Start" Margin="Margin.Is2" Padding="Padding.Is2">
-                                                        <Button Color="Color.Warning" Margin="Margin.Is2" Disabled="@(Convert.ToInt32(row["status_F"])==0)" onclick="@(()=>handleitem(item))"><BarIcon IconName="IconName.Edit"></BarIcon></Button>
-                                                            <Button Color="Color.Danger" Margin="Margin.Is2"><BarIcon IconName="IconName.Delete"></BarIcon></Button>
-                                                            <Button Color="Color.Primary" Margin="Margin.Is2"><BarIcon IconName="IconName.Save"></BarIcon></Button>
-                                                        </Field>
-                                                        </ListGroup>
+                                                            </Div>
+                                                        </ListGroupItem>
                                                     }
-                                                 </p>   
-                                            </details>
-                                       
-                                    </div>
-                                </div>
+
+                                                }
+
+                                                <Field Flex="Flex.JustifyContent.Start" Margin="Margin.Is2" Padding="Padding.Is2">
+                                                    <Button Color="Color.Warning" Margin="Margin.Is2" Disabled="@(Convert.ToInt32(row["status_F"])==0)" onclick="@(()=>handleitem(item))"><BarIcon IconName="IconName.Edit"></BarIcon></Button>
+                                                    <Button Color="Color.Danger" Margin="Margin.Is2"><BarIcon IconName="IconName.Delete"></BarIcon></Button>
+                                                    <Button Color="Color.Primary" Margin="Margin.Is2"><BarIcon IconName="IconName.Save"></BarIcon></Button>
+                                                </Field>
+                                            </ListGroup>
+                                        }
+                                    </p>   
+                                </details>
+
                             </div>
-                    }
+                        </div>
+                    </div>
                 }
+                }
+                           </Div>
+                                      <Div Display="Display.None.Block.OnDesktop" >
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    @foreach (DataColumn col in dts.First().Columns)
+                                    {
+                                        @if (col.ColumnName != "shift_prefix" && col.ColumnName != "header_Id" && col.ColumnName != "status_F")
+                                        {
+                                        <TableHeaderCell>@col.ColumnName</TableHeaderCell>
+                                        }
+                                    }
+                                        <TableHeaderCell>Operation</TableHeaderCell>
+                                </TableRow>                            
+                            </TableHeader>
+                            <TableBody>
+                                @foreach (var item in dts)
+                                {
+                                    <TableRowGroup Title=@item.Rows[0]["Shift_prefix"].ToString()>
+                                        @foreach (DataRow row in item.Rows)
+                                        {
+                                            <TableRow>
+                                            @foreach (DataColumn col in item.Columns)
+                                            {
+                                                @if (col.ColumnName != "shift_prefix" && col.ColumnName != "header_Id" && col.ColumnName != "status_F")
+                                                {
+                                                    <TableRowCell>@row[col.ColumnName]</TableRowCell>
+                                                }
+                                            }
+                                                <TableRowCell>Operation</TableRowCell>
+
+                                            </TableRow>
+                                        }
+                                    </TableRowGroup>
+                                } 
+                            </TableBody>
+                        </Table>
+                                          </Div>
+
+                }
+
 
             </CardBody>
         </CardBody>
@@ -404,9 +449,16 @@
     protected override async Task OnInitializedAsync()
     {
         //formdatas.Date = DateTime.Now;
-        CurrentDate = DateTime.Now.ToString("MM-dd-yyyy");
-        departments = await httpservices.Get<List<TblDeptMaster>>("DeptMasters");
-        logdtschema = await httpservices.Get<List<TblLogbookDetailSchema>>("LogbookDetailSchemas");
+        try{
+
+            CurrentDate = DateTime.Now.ToString("MM-dd-yyyy");
+            departments = await httpservices.Get<List<TblDeptMaster>>("DeptMasters");
+            logdtschema = await httpservices.Get<List<TblLogbookDetailSchema>>("LogbookDetailSchemas");
+        }
+        catch(Exception ex)
+        {
+            
+        }
         StateHasChanged();
     }
     async void handleformgroup(string value)
