@@ -31,9 +31,9 @@
     IEnumerable<TblLookup> lookuplist;
     IEnumerable<TblDeptMaster> Deptlist;
     List<LookupElement> DynamicForm = new();
+
     protected override async Task OnInitializedAsync()
     {
-       
         lookuplist = await httpservice.Get<List<TblLookup>>("Lookups");
     }
 

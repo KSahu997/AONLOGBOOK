@@ -3,12 +3,6 @@
 
 @inject IHttpService httpservice
 <style>
-    .Container{
-        margin:10px;
-    }
-    body {
-        background: #F6F5F5;
-    }
     .btnEdit {
         background-color: #11324D;
         color: whitesmoke;
@@ -19,21 +13,6 @@
         color: whitesmoke;
     }
 
-    details {
-        margin-bottom: 18px;
-    }
-
-        details summary {
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        details p {
-            font-size: 13px;
-            line-height: 24px;
-            margin-top: 10px;
-            color: #545d7a;
-        }
     ::marker {
         content: close-quote;
         unicode-bidi: isolate;
@@ -42,21 +21,6 @@
         text-indent: 0px !important;
         text-align: start !important;
         text-align-last: start !important;
-    }
-
-    .b-layout-content {
-        margin-left: -30px;
-        flex: 1;
-        margin-right: -30px;
-        padding: 0px;
-    }
-    #accordion{
-        margin-left: -30px;
-        margin-right: -30px;
-    }
-
-    .list-group{
-         margin-left: -10px;
     }
 </style>
 
@@ -134,10 +98,13 @@
 else
 {
     <div class="Container">
-     
+      <div class="row" style=" margin: 20px;
+        padding: 20px;
+        border: 1px solid grey;
+        border-radius: 10px;">
+       
          <Field ColumnSize="ColumnSize.Is12.OnDesktop.Is12.OnMobile">
                 <Heading Size="HeadingSize.Is4" TextAlignment="TextAlignment.Center">Plant List</Heading>
-                <Divider DividerType="DividerType.Dotted" />
         </Field>
               @*<p>Company Id:@tblPlant.CompanyId</p>*@
            
@@ -156,11 +123,11 @@ else
                     </Select>
                 </Field>
                 <Field ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile" >
-                <Button Background="Background.Info" TextColor="TextColor.Light"  @onclick="@AddPlant" Margin="Margin.Is4" Disabled=@(tblPlant.CompanyId==null||string.IsNullOrEmpty(tblPlant.CompanyId))>Add</Button>
+                <Button Background="Background.Info"  @onclick="@AddPlant" Margin="Margin.Is4" Disabled=@(tblPlant.CompanyId==null||string.IsNullOrEmpty(tblPlant.CompanyId))>Add</Button>
                 </Field>
-        @if(plist == true)
-        {
-            <Div class="row" style=" margin: 20px;
+         
+        </div>
+        <div class="row" style=" margin: 20px;
         padding: 20px;
         border: 1px solid white;
         border-radius: 10px;
@@ -174,33 +141,31 @@ else
                             <div id="accordion">
                                 <div class="faq-container m-2 ">
                                     <div class="card w-100" style="border-top: 1px solid #FF6E31;">
-
-                                        <details class="d-flex m-2">
-                                            <summary style="margin-left:10px;"><i class="fa fa-city p-2" style="color:#243763;"></i>@item.PlantName</summary>
-                                            <p style="margin-left:10px;">
-                                                <ListGroup>
-                                                    <ListGroupItem><b>Email</b>   @item.Email</ListGroupItem>
-                                                    <ListGroupItem> <b>City</b>  @item.City</ListGroupItem>
-                                                    <ListGroupItem><b>Country</b>  @item.Country</ListGroupItem>
-                                                    <ListGroupItem><b>State</b>  @item.State</ListGroupItem>
-                                                    <ListGroupItem><b>Postal Code</b>  @item.PinCode</ListGroupItem>
-                                                </ListGroup>
-                                                <Field>
-                                                    <Button class="btn btnEdit p-1 m-1" style="font-size:13px;" Clicked="@(()=>handleEditPlant(item))"><i class="fa fa-pen p-2" /></Button>
-                                                    <Button class="btn btn-danger p-1 m-1" style="font-size:13px;"><i class="fa fa-trash p-2" /></Button>
-                                                </Field>
-                                            </p>
-                                        </details>
-
+                                        <div class="row">
+                                            <details class="d-flex m-2">
+                                                <summary style="margin-left:10px;"><i class="fa fa-city p-2" style="color:#243763;"></i>@item.PlantName</summary>
+                                                <p style="margin-left:10px;">
+                                                    <ListGroup>
+                                                        <ListGroupItem><b>Email</b>   @item.Email</ListGroupItem>
+                                                        <ListGroupItem> <b>City</b>  @item.City</ListGroupItem>
+                                                        <ListGroupItem><b>Country</b>  @item.Country</ListGroupItem>
+                                                        <ListGroupItem><b>State</b>  @item.State</ListGroupItem>
+                                                        <ListGroupItem><b>Postal Code</b>  @item.PinCode</ListGroupItem>
+                                                    </ListGroup>
+                                                    <Field>
+                                                        <Button class="btn btnEdit p-1 m-1" style="font-size:13px;" Clicked="@(()=>handleEditPlant(item))"><i class="fa fa-pen p-2" /></Button>
+                                                        <Button class="btn btn-danger p-1 m-1" style="font-size:13px;"><i class="fa fa-trash p-2" /></Button>
+                                                    </Field>
+                                                </p>
+                                            </details>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         }
                     }
                 </div>
-            </Div>
-        }
-        
+            </div>
    
       
             </div>
@@ -222,7 +187,6 @@ else
     IEnumerable<TblPlantMaster> PlantList;
     bool? DispDatas;
     bool? isDialogOpen;
-    bool? plist { get; set; } = false;
     TblPlantMaster? selectedplant;
     protected override async Task OnInitializedAsync()
     {
@@ -269,7 +233,6 @@ else
     {
         selectedplant = item;
         DispDatas = true;
-
     }
     void handleDataSaved()
     {
@@ -312,6 +275,5 @@ else
         tblPlant.CompanyId = val;
         PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters")).Where(a => (a.CompanyId == tblPlant.CompanyId));
         cmpId = tblPlant.CompanyId;
-        plist = true;
     }
 }
