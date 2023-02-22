@@ -678,6 +678,9 @@ namespace AONLOGBOOK.API.Models
             {
                 entity.ToTable("tbl_Lookup");
 
+                entity.HasIndex(e => e.Name, "UName")
+                    .IsUnique();
+
                 entity.Property(e => e.Id)
                     .HasColumnName("ID")
                     .HasDefaultValueSql("(newid())");
