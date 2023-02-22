@@ -6,7 +6,7 @@ namespace AONLOGBOOK.SHARED.Models
     public partial class TblLookup
     {
         public Guid Id { get; set; }
-        public string? Name { get; set; }
+        public string Name { get; set; } = null!;
         public string? CompanyId { get; set; }
         public string? PlantId { get; set; }
         public string? UpdatedBy { get; set; }
