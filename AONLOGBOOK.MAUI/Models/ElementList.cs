@@ -11,9 +11,9 @@ namespace AONLOGBOOK.MAUI.Models
     {
         public string? Label { get; set; }
         public string? ElementType { get; set; }
-
+        public string? HeaderId {get; set; }
         public DateTime? DateValue { get; set; }
-        public DateOnly? DateOnlyValue { get; set; }
+        public DateTime? DateOnlyValue { get; set; }
         public TimeSpan? TimeValue { get; set; }
        // [Required(ErrorMessage ="Required")]
         public string? StringValue { get; set; }
@@ -27,6 +27,6 @@ namespace AONLOGBOOK.MAUI.Models
         public Dictionary<string, string> options { get; set; }
         public int? Sequence { get; set; }
         public int? IsMandatory { get; set; }
-
+        public string? Shift_prefix { get; set; }
     }
 }
