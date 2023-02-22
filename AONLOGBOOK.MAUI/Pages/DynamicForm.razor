@@ -110,7 +110,7 @@
                             <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                                 <FieldLabel>Time</FieldLabel>
                                 <Validation Validator="ValidationRule.IsNotEmpty">
-                                    @* <DateEdit InputMode="DateInputMode.DateTime" Date="formdatas.Date.ToString()" TValue="string"
+                                    @*<DateEdit InputMode="DateInputMode.DateTime" Date="formdatas.Date.ToString()" TValue="string"
                                     DateExpression="@(()=>formdatas.Date.ToString())" DateChanged="@((string arg)=>{handleshift(arg);})"></DateEdit>*@
                                     <TimeEdit Time="@formdatas.Date" TValue="DateTime?" TimeChanged="@handleshift" />
                                 </Validation>
