@@ -20,8 +20,10 @@ namespace AONLOGBOOK.API.Models
         public virtual DbSet<TblCompanyMaster> TblCompanyMasters { get; set; } = null!;
         public virtual DbSet<TblDeptMaster> TblDeptMasters { get; set; } = null!;
         public virtual DbSet<TblDocGenerateMaster> TblDocGenerateMasters { get; set; } = null!;
+        public virtual DbSet<TblEquipmentMaster> TblEquipmentMasters { get; set; } = null!;
         public virtual DbSet<TblFormGroupMaster> TblFormGroupMasters { get; set; } = null!;
         public virtual DbSet<TblFormMaster> TblFormMasters { get; set; } = null!;
+        public virtual DbSet<TblFunctionalLocationMaster> TblFunctionalLocationMasters { get; set; } = null!;
         public virtual DbSet<TblLogBookDataTable> TblLogBookDataTables { get; set; } = null!;
         public virtual DbSet<TblLogBookDataTableHeader> TblLogBookDataTableHeaders { get; set; } = null!;
         public virtual DbSet<TblLogbookDetailSchema> TblLogbookDetailSchemas { get; set; } = null!;
@@ -34,6 +36,7 @@ namespace AONLOGBOOK.API.Models
         public virtual DbSet<TblSubDeptMaster> TblSubDeptMasters { get; set; } = null!;
         public virtual DbSet<TblTagMaster> TblTagMasters { get; set; } = null!;
         public virtual DbSet<TblUommaster> TblUommasters { get; set; } = null!;
+        public virtual DbSet<TblWorkCenterMaster> TblWorkCenterMasters { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -184,7 +187,7 @@ namespace AONLOGBOOK.API.Models
                     .HasColumnName("Modified_On");
 
                 entity.Property(e => e.PlantId)
-                    .HasMaxLength(10)
+                    .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("Plant_Id");
 
@@ -204,6 +207,69 @@ namespace AONLOGBOOK.API.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.RunNo).HasColumnName("Run_No");
+            });
+
+            modelBuilder.Entity<TblEquipmentMaster>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("tbl_Equipment_Master");
+
+                entity.Property(e => e.CompanyId)
+                    .HasMaxLength(200)
+                    .IsUnicode(false)
+                    .HasColumnName("Company_ID");
+
+                entity.Property(e => e.DelFlag)
+                    .HasColumnName("Del_Flag")
+                    .HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.EquipmentCode)
+                    .HasMaxLength(200)
+                    .IsUnicode(false)
+                    .HasColumnName("Equipment_Code");
+
+                entity.Property(e => e.EquipmentName)
+                    .HasMaxLength(200)
+                    .IsUnicode(false)
+                    .HasColumnName("Equipment_Name");
+
+                entity.Property(e => e.FuncLocationId)
+                    .HasMaxLength(200)
+                    .IsUnicode(false)
+                    .HasColumnName("Func_Location_ID");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("ID")
+                    .HasDefaultValueSql("(newid())");
+
+                entity.Property(e => e.InsertedBy)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("Inserted_By");
+
+                entity.Property(e => e.InsertedOn)
+                    .HasColumnType("datetime")
+                    .HasColumnName("Inserted_On");
+
+                entity.Property(e => e.PlantId)
+                    .HasMaxLength(200)
+                    .IsUnicode(false)
+                    .HasColumnName("Plant_ID");
+
+                entity.Property(e => e.UpdatedBy)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("Updated_By");
+
+                entity.Property(e => e.UpdatedOn)
+                    .HasColumnType("datetime")
+                    .HasColumnName("Updated_On");
+
+                entity.Property(e => e.WorkCenterId)
+                    .HasMaxLength(200)
+                    .IsUnicode(false)
+                    .HasColumnName("WorkCenter_ID");
             });
 
             modelBuilder.Entity<TblFormGroupMaster>(entity =>
@@ -256,6 +322,61 @@ namespace AONLOGBOOK.API.Models
                 entity.Property(e => e.FormName).IsUnicode(false);
 
                 entity.Property(e => e.SeqSm).HasColumnName("Seq_sm");
+            });
+
+            modelBuilder.Entity<TblFunctionalLocationMaster>(entity =>
+            {
+                entity.ToTable("tbl_FunctionalLocation_Master");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("ID")
+                    .HasDefaultValueSql("(newid())");
+
+                entity.Property(e => e.CompanyId)
+                    .HasMaxLength(200)
+                    .IsUnicode(false)
+                    .HasColumnName("Company_ID");
+
+                entity.Property(e => e.DelFlag)
+                    .HasColumnName("Del_Flag")
+                    .HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.FunctionalLocation)
+                    .IsUnicode(false)
+                    .HasColumnName("Functional_Location");
+
+                entity.Property(e => e.InsertedOn)
+                    .HasColumnType("datetime")
+                    .HasColumnName("Inserted_On");
+
+                entity.Property(e => e.InsetedBy)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("Inseted_By");
+
+                entity.Property(e => e.LocationCode)
+                    .HasMaxLength(200)
+                    .IsUnicode(false)
+                    .HasColumnName("Location_Code");
+
+                entity.Property(e => e.PlantId)
+                    .HasMaxLength(200)
+                    .IsUnicode(false)
+                    .HasColumnName("Plant_ID");
+
+                entity.Property(e => e.UpdatedBy)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("Updated_By");
+
+                entity.Property(e => e.UpdatedOn)
+                    .HasColumnType("datetime")
+                    .HasColumnName("Updated_On");
+
+                entity.Property(e => e.WorkCenterId)
+                    .HasMaxLength(200)
+                    .IsUnicode(false)
+                    .HasColumnName("WorkCenter_ID");
             });
 
             modelBuilder.Entity<TblLogBookDataTable>(entity =>
@@ -920,6 +1041,52 @@ namespace AONLOGBOOK.API.Models
                 entity.Property(e => e.DelFlag).HasColumnName("delFlag");
 
                 entity.Property(e => e.Unit).HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<TblWorkCenterMaster>(entity =>
+            {
+                entity.ToTable("tbl_WorkCenter_Master");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("ID")
+                    .HasDefaultValueSql("(newid())");
+
+                entity.Property(e => e.CompanyId)
+                    .HasMaxLength(200)
+                    .IsUnicode(false)
+                    .HasColumnName("Company_ID");
+
+                entity.Property(e => e.DelFlag)
+                    .HasColumnName("Del_Flag")
+                    .HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.InsertedBy)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("Inserted_By");
+
+                entity.Property(e => e.InsertedOn)
+                    .HasColumnType("datetime")
+                    .HasColumnName("Inserted_On");
+
+                entity.Property(e => e.PlantId)
+                    .HasMaxLength(200)
+                    .IsUnicode(false)
+                    .HasColumnName("Plant_ID");
+
+                entity.Property(e => e.UpdatedBy)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("Updated_By");
+
+                entity.Property(e => e.UpdatedOn)
+                    .HasColumnType("datetime")
+                    .HasColumnName("Updated_on");
+
+                entity.Property(e => e.WorkCenterName)
+                    .HasMaxLength(200)
+                    .IsUnicode(false)
+                    .HasColumnName("WorkCenter_Name");
             });
 
             OnModelCreatingPartial(modelBuilder);

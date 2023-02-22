@@ -27,13 +27,13 @@
    
 }
 </style>
-<BarBrand style="background:#dee2e6;color:#343a40;font-family: auto; padding:5px;">
-    <BarItem Class="m-2" style="font-size:25px;">
+<BarBrand style="background:#dbefed;color:#008080b8;font-family: sans-serif; padding:5px;font-size: 28px;">
+    <BarItem Class="m-2">
        
-        <Span style="animation:ease-in; color:#ff9139;">AON</Span>LOGBOOK
+        <Span style="animation:ease-in; font-size: 28px; color:#0b1fa7;font-family: sans-serif;">AON</Span>LOGBOOK
 </BarItem>
 </BarBrand>
-<BarMenu Style=" background: linear-gradient(233deg, #3e3c78db, transparent);
+<BarMenu Style=" background: linear-gradient(253deg, #5ad3b9fa, #342cab);
         color:white;">
     <BarStart>
         <BarItem>
@@ -48,7 +48,7 @@
                     <BarIcon IconName="IconName.BookReader" Style="color:#393939" />
                     Configuration
                 </BarDropdownToggle>
-                <BarDropdownMenu Style="background: linear-gradient(185deg, #b3b8e7, rgb(0 0 0 / 10%));">
+                <BarDropdownMenu Style="background: linear-gradient(243deg, #5ad3b9fa, rgb(0 0 0 / 10%));">
                     <BarDropdownItem To="Company"><BarIcon IconName="IconName.City" Style="color:#393939"></BarIcon>Company(s)</BarDropdownItem>
                     <BarDropdownItem To="Plant"><BarIcon IconName="IconName.Building" Style="color:#393939"></BarIcon>Plant(s)</BarDropdownItem>
                     <BarDropdownItem To="Department"><BarIcon IconName="IconName.LayerGroup" Style="color:#393939"></BarIcon>Department(s)</BarDropdownItem>
@@ -64,7 +64,7 @@
         </BarItem>
          <BarItem>
             <BarLink To="DynamicForm">
-                <BarIcon IconName="IconName.FolderOpen" Style="color:#393939"></BarIcon>Logbook Entry
+                <BarIcon IconName="IconName.Receipt" Style="color:#393939"></BarIcon>Logbook Entry
             </BarLink>
         </BarItem>
         <BarItem>
@@ -73,12 +73,25 @@
                     <BarIcon IconName="IconName.Edit" Style="color:#393939" />
                     Element Master
                 </BarDropdownToggle>
-                <BarDropdownMenu Style="background: linear-gradient(185deg, #b3b8e7, rgb(0 0 0 / 10%));">
+                <BarDropdownMenu Style="background: linear-gradient(243deg, #5ad3b9fa, rgb(0 0 0 / 10%));">
                     <BarDropdownItem To="TagMaster"><BarIcon IconName="IconName.Tag" Style="color:#393939"></BarIcon>Tag Master</BarDropdownItem>
                     <BarDropdownItem To="UOMMaster"><BarIcon IconName="IconName.Flask" Style="color:#393939"></BarIcon>UOM Master</BarDropdownItem>
                 </BarDropdownMenu>
             </BarDropdown>
            
+        </BarItem>
+        <BarItem>
+            <BarDropdown>
+                <BarDropdownToggle>
+                    <BarIcon IconName="IconName.Tablet" Style="color:#393939" />
+                    Lookup Master
+                </BarDropdownToggle>
+                <BarDropdownMenu Style="background: linear-gradient(185deg, #b3b8e7, rgb(0 0 0 / 10%));">
+                    <BarDropdownItem To="LookupCreation"><BarIcon IconName="IconName.List" Style="color:#393939"></BarIcon>Lookup Creation</BarDropdownItem>
+
+                </BarDropdownMenu>
+            </BarDropdown>
+
         </BarItem>
           <BarItem>
            

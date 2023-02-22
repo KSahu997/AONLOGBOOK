@@ -338,7 +338,7 @@
                                                         <ListGroup>
                                                         @foreach (DataColumn col in item.Columns)
                                                         {
-                                                            @if (col.ColumnName != "shift_prefix")
+                                                            @if (col.ColumnName != "shift_prefix" || col.ColumnName != "Header_Id")
                                                             {
                                                                 <ListGroupItem>
                                                                     <Div Flex="Flex.JustifyContent.Between" Width="Width.Is100">
