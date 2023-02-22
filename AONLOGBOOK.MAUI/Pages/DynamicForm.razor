@@ -104,17 +104,17 @@
                             <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                                 <FieldLabel>Date</FieldLabel>
                                 <Validation Validator="ValidationRule.IsNotEmpty">
-                                <TextEdit  @bind-Text="@CurrentDate"/>
+                                <DateEdit Date="@CurrentDate" TValue="DateTime?" InputMode="DateInputMode.DateTime" DateChanged="@handleshift"/>
                                 </Validation>
                             </Field>
-                            <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                           @* <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                                 <FieldLabel>Time</FieldLabel>
                                 <Validation Validator="ValidationRule.IsNotEmpty">
                                     @* <DateEdit InputMode="DateInputMode.DateTime" Date="formdatas.Date.ToString()" TValue="string"
                                     DateExpression="@(()=>formdatas.Date.ToString())" DateChanged="@((string arg)=>{handleshift(arg);})"></DateEdit>*@
-                                    <TimeEdit Time="@formdatas.Date" TValue="DateTime?" TimeChanged="@handleshift" />
+                                    @*<TimeEdit Time="@CurrentTime" TValue="TimeSpan?" TimeChanged="@handleshift"  />
                                 </Validation>
-                            </Field>
+                            </Field>*@
                             <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                                 <FieldLabel>Shift</FieldLabel>
                                 <Validation Validator="ValidationRule.IsNotEmpty">
@@ -149,6 +149,7 @@
    
     @if (dynamicform.Count() > 0)
     {
+       
 @*        <Validations @ref="validations" Mode="ValidationMode.Manual">
 *@            <Card Margin="Margin.Is4.OnY" Background="Background.Transparent" Class="Card">
                 <CardHeader Style="background:linear-gradient(180deg, rgb(170 196 224 / 50%), transparent); color:#11324D;border-radius:15px;">
@@ -309,7 +310,7 @@
 
                 </CardBody>
             </Card>
-
+     
        @* </Validations>*@
     }
     <Card>
@@ -358,7 +359,7 @@
                                                         }
                                                    
                                                         <Field Flex="Flex.JustifyContent.Start" Margin="Margin.Is2" Padding="Padding.Is2">
-                                                        <Button Color="Color.Warning" Margin="Margin.Is2" Disabled="@(Convert.ToInt32(row["status_F"])==0)" onclick="@(()=>handleitem(item))"><BarIcon IconName="IconName.Edit"></BarIcon></Button>
+                                                        <Button Color="Color.Warning" Margin="Margin.Is2" Disabled="@(Convert.ToInt32(row["status_F"])==0)" onclick="@(()=>handleitem(row))"><BarIcon IconName="IconName.Edit"></BarIcon></Button>
                                                             <Button Color="Color.Danger" Margin="Margin.Is2"><BarIcon IconName="IconName.Delete"></BarIcon></Button>
                                                             <Button Color="Color.Primary" Margin="Margin.Is2"><BarIcon IconName="IconName.Save"></BarIcon></Button>
                                                         </Field>
@@ -397,17 +398,20 @@
     List<LogData> logdatatable = new();
     LogDataList logdtList = new ();
     DateTime? selectDate;
-    string? CurrentDate;
+    DateTime? CurrentDate;
+   // TimeSpan? CurrentTime;
     bool collapse1Visible = true;
     List<DataTable> dts = new List<DataTable>();
     LogData logdata = new();
     protected override async Task OnInitializedAsync()
     {
         //formdatas.Date = DateTime.Now;
-        CurrentDate = DateTime.Now.ToString("MM-dd-yyyy");
+        CurrentDate=DateTime.Now;
+        //CurrentTime = DateTime.Now.TimeOfDay;
         departments = await httpservices.Get<List<TblDeptMaster>>("DeptMasters");
         logdtschema = await httpservices.Get<List<TblLogbookDetailSchema>>("LogbookDetailSchemas");
         StateHasChanged();
+
     }
     async void handleformgroup(string value)
     {
@@ -443,6 +447,7 @@
             dynamicform = new List<ElementList>();
             logdatatable = new();
             logbookdetail = await httpservices.Get<List<TblLogbookDetailSchemaMOD>>("LogbookDetailSchemas/" + formdatas.logbook);
+            //        formdatas.Date = Convert.ToDateTime(time.ToString().Replace("00-00-0000", CurrentDate?.ToString("MM-dd-yyyy")));
             if (logbookdetail.Count() == 0)
             {
                 await App.Current.MainPage.DisplayAlert("Dynamic Form", "Sorry there is no elements in the form", "OK");
@@ -565,12 +570,13 @@
 
     }
 
-    async void handleshift(DateTime? time)
+    async void handleshift(DateTime? date)
     {
 
         try
         {
-            formdatas.Date = Convert.ToDateTime(time.ToString().Replace("00-00-0000", CurrentDate));
+            formdatas.Date = date;
+            //formdatas.Date = Convert.ToDateTime(time.ToString().Replace("00-00-0000", CurrentDate?.ToString("MM-dd-yyyy")));
             string cmp = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).CompanyId;
             shiftdata = await httpservices.Get<List<TblShiftMaster>>("ShiftMasters/" + cmp + "/" + formdatas.Date?.ToString("MM-dd-yyyy HH:mm:ss"));
             StateHasChanged();
@@ -617,7 +623,7 @@
                     else if (a.ElementType == "Time")
                     {
                         logdata.ParamName = a.Label;
-                        logdata.Val = a.DateValue?.ToString("HH.mm.ss");
+                        logdata.Val = a.TimeValue?.ToString("HH.mm.ss");
                     }
                     else if (a.ElementType == "Boolean")
                     {
@@ -680,8 +686,78 @@
             email.Contains("@") ? ValidationStatus.Success : ValidationStatus.Error;
     }
 
-    void handleitem(DataTable val)
+    void handleitem(DataRow val)
     {
-        
+        DataTable dt = datareport.AsEnumerable().Where(a => a.Field<string>("header_Id") == val[1]).CopyToDataTable();
+
+        foreach(DataRow dr in dt.Rows)
+        {
+            foreach(DataColumn dc in dt.Columns)
+            {
+
+                dynamicform.ForEach(a =>
+                {
+                    a.HeaderId = dr["header_Id"].ToString();
+                    a.Shift_prefix = dr["Shift_prefix"].ToString();
+                    if(a.Label.ToUpper()==dc.ColumnName.ToString().ToUpper())
+                    {
+                        if (a.ElementType == "Text")
+                        {
+                            if(!string.IsNullOrEmpty(dr[dc.ColumnName].ToString()))
+                            {
+                                a.StringValue = dr[dc.ColumnName].ToString();
+                            }
+
+                        }
+                        else if (a.ElementType == "Number")
+                        {
+                            if(!string.IsNullOrEmpty(dr[dc.ColumnName].ToString()))
+                            {
+                                a.IntegerValue = Convert.ToInt32(dr[dc.ColumnName]);
+                            }
+
+                        }
+                        else if (a.ElementType == "Date")
+                        {
+                            if(!string.IsNullOrEmpty(dr[dc.ColumnName].ToString()))
+                            {
+                                DateTime d1 = Convert.ToDateTime(dr[dc.ColumnName]);
+                                a.DateOnlyValue = d1.Date;
+                            }
+
+                        }
+                        else if (a.ElementType == "DateTime")
+                        {
+                            if (!string.IsNullOrEmpty(dr[dc.ColumnName].ToString()))
+                            {
+
+                                a.DateValue = Convert.ToDateTime(dr[dc.ColumnName]);
+                            }
+                        }
+                        else if (a.ElementType == "Boolean")
+                        {
+                            if (!string.IsNullOrEmpty(dr[dc.ColumnName].ToString()))
+                            {
+                                a.BoolValue = Convert.ToBoolean(dr[dc.ColumnName]);
+                            }
+
+                        }
+                        else if(a.ElementType=="Time")
+                        {
+                            if (!string.IsNullOrEmpty(dr[dc.ColumnName].ToString()))
+                            {
+                             DateTime d = Convert.ToDateTime(dr[dc.ColumnName]);
+                            a.TimeValue = d.TimeOfDay;
+                                
+                            }
+                        }
+                       
+
+                    }
+
+                });
+            }
+        }
+        StateHasChanged();
     }
 }
