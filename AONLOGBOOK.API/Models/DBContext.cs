@@ -345,14 +345,14 @@ namespace AONLOGBOOK.API.Models
                     .IsUnicode(false)
                     .HasColumnName("Functional_Location");
 
+                entity.Property(e => e.InsertedBy)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("Inserted_By");
+
                 entity.Property(e => e.InsertedOn)
                     .HasColumnType("datetime")
                     .HasColumnName("Inserted_On");
-
-                entity.Property(e => e.InsetedBy)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("Inseted_By");
 
                 entity.Property(e => e.LocationCode)
                     .HasMaxLength(200)
