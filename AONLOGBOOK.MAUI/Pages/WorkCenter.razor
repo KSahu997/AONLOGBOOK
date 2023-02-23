@@ -1,46 +1,64 @@
 ﻿@page "/WorkCenter"
 
 @inject IHttpService httpservices
+@using System.Data;
+<Div class="container" Padding="Padding.Is3">
 
-<Div class="container-fluid" Padding="Padding.Is3">
-
-<Field>
+	<Field>
 		<Field ColumnSize="ColumnSize.Is3.OnDesktop.Is12.OnMobile">
 			<h4 class="mb-4">WorkCenter Master</h4>
 		</Field>
-</Field>
-<Card Padding="Padding.Is3" Margin="Margin.Is2">
-	<EditForm Model="@workcenter" OnInvalidSubmit="submit">
-	<Field>
-		<Field ColumnSize="ColumnSize.Is3.OnDesktop.Is12.OnMobile">
-		<FieldLabel>Work Center Name</FieldLabel>
-		<TextEdit @bind-Text="workcenter.WorkCenterName"></TextEdit>
-		</Field>
-		
-		<Field ColumnSize="ColumnSize.Is3.OnDesktop.Is12.OnMobile">
-			<Button Type="ButtonType.Submit" Color="Color.Success" Margin="Margin.Is3" style="margin-top:10px">Submit</Button>
-		</Field>
 	</Field>
+	<Card Padding="Padding.Is3" Margin="Margin.Is2">
+		<EditForm Model="@workcenter" OnValidSubmit="submit">
+			<Field>
+				<Field ColumnSize="ColumnSize.Is3.OnDesktop.Is12.OnMobile">
+					<FieldLabel>Work Center Name</FieldLabel>
+					<TextEdit @bind-Text="workcenter.WorkCenterName"></TextEdit>
+				</Field>
 
+				<Field ColumnSize="ColumnSize.Is3.OnDesktop.Is12.OnMobile">
+					<Button Type="ButtonType.Submit" Color="Color.Success" Margin="Margin.Is3" style="margin-top:10px">Submit</Button>
+				</Field>
+			</Field>
 
-	</EditForm>
+		</EditForm>
 
-</Card>
-<Table Hoverable Bordered>
-        <TableHeader ThemeContrast="ThemeContrast.None" Background="Background.Secondary" TextColor="TextColor.White">
+	</Card>
+	<Table Hoverable Bordered>
+		<TableHeader ThemeContrast="ThemeContrast.None" Background="Background.Secondary" TextColor="TextColor.White">
+
 			<TableRow>
-				<TableHeaderCell>ID</TableHeaderCell>
-				<TableHeaderCell>WorkCenterName</TableHeaderCell>
-				
+
+				<TableHeaderCell>SR_No</TableHeaderCell>
+				<TableHeaderCell>WorkCenter_Name</TableHeaderCell>
+				<TableHeaderCell>Action</TableHeaderCell>
 			</TableRow>
 		</TableHeader>
+		
 		<TableBody>
 
+			@if (workcentermst != null )
+			{
+				int SN = 1;
 
+			@foreach (TblWorkCenterMaster item in workcentermst.Where(a => (a.DelFlag == 0))){
+
+				<TableRow>
+
+						<TableRowCell>@SN</TableRowCell>
+						<TableRowCell>@item.WorkCenterName</TableRowCell>
+						<TableRowCell>
+							<Button Background="Background.Info" Clicked="@(()=>{Edit(item);})">EDIT</Button>
+							<Button Background="Background.Danger" Clicked="(()=>{Delete(item);})">DELETE</Button>
+						</TableRowCell>
+								
+				</TableRow>
+					SN++;
+				}
+			}
 		</TableBody>
-
-
-</Table>
+	</Table>
 
 
 
@@ -49,10 +67,115 @@
 @code {
 	TblWorkCenterMaster workcenter = new();
 
+	IEnumerable<TblWorkCenterMaster>?workcentermst;
+	DataTable workcenters;
+	IEnumerable<TblCompanyMaster> companymst;
+	IEnumerable<TblPlantMaster> plantmst;
+	bool isNew = true;
+	protected override async Task OnInitializedAsync()
+	{
+		companymst = await httpservices.Get<List<TblCompanyMaster>>("CompanyMasters");
+		plantmst = await httpservices.Get<List<TblPlantMaster>>("PlantMasters");
+		workcentermst = await httpservices.Get<List<TblWorkCenterMaster>>("WorkCenterMasters/GetList");
 
+		StateHasChanged();
+	}
+
+	async void Edit(TblWorkCenterMaster item)
+	{
+		workcenter = item;
+		isNew = false;
+		StateHasChanged();
+	}
+
+	async void Delete(TblWorkCenterMaster item)
+	{
+		try
+		{
+
+			item.DelFlag = 1;
+			var delt = await httpservices.Post<string>("WorkCenterMasters/delete", item);
+			if (delt != null)
+			{
+				await App.Current.MainPage.DisplayAlert("Message", delt, "ok");
+				isNew = true;
+				StateHasChanged();
+			}
+			else
+			{
+				await App.Current.MainPage.DisplayAlert("Message", "Error", "ok");
+			}
+		}
+		catch (Exception ex)
+		{
+			item.DelFlag = 0;
+
+		}
+
+	}
 	async void submit()
 	{
-		
+
+		if (isNew == true)
+		{
+
+			try
+			{
+				workcenter.CompanyId = companymst.First().Id.ToString();
+				workcenter.PlantId = plantmst.First(a => (a.CompanyId == workcenter.CompanyId)).Id.ToString();
+				workcenter.InsertedBy = "Admin";
+				var result = await httpservices.Post<string>("WorkCenterMasters", workcenter);
+
+				if (result != null)
+				{
+					await App.Current.MainPage.DisplayAlert("Message", result, "Ok");
+					StateHasChanged();
+
+				}
+				else
+				{
+					await App.Current.MainPage.DisplayAlert("Failed", "error", "Ok");
+				}
+
+			}
+
+			catch (Exception ex)
+			{
+
+			}
+			OnInitializedAsync();
+			workcenter = new();
+		}
+		else
+		{
+			try
+			{
+				workcenter.CompanyId = companymst.First().Id.ToString();
+				workcenter.PlantId = plantmst.First(a => (a.CompanyId == workcenter.CompanyId)).Id.ToString();
+				workcenter.InsertedBy = "Admin";
+				var result = await httpservices.Post<string>("WorkCenterMasters/update", workcenter);
+
+				if (result != null)
+				{
+					await App.Current.MainPage.DisplayAlert("Message", result, "Ok");
+					StateHasChanged();
+
+				}
+				else
+				{
+					await App.Current.MainPage.DisplayAlert("Failed", "error", "Ok");
+				}
+
+
+			}
+			catch(Exception ex)
+			{
+				
+			}
+			OnInitializedAsync();
+			workcenter = new();
+		}
 	}
+
 
 }

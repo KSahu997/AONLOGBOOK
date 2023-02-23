@@ -23,7 +23,7 @@ namespace AONLOGBOOK.API.Controllers
         private readonly IConfiguration _con;
         private readonly SqlADO _sql;
 
-        public WorkCenterMastersController(DBContext context,CustomContext ccontext, IConfiguration con,SqlADO sql)
+        public WorkCenterMastersController(DBContext context, CustomContext ccontext, IConfiguration con, SqlADO sql)
         {
             _context = context;
             _ccontext = ccontext;
@@ -32,14 +32,15 @@ namespace AONLOGBOOK.API.Controllers
         }
 
         //// GET: api/WorkCenterMasters
-        //[HttpGet]
-        //public async Task<ActionResult<IEnumerable<TblWorkCenterMaster>>> GetTblWorkCenterMasters()
-        //{
-        //    return await _context.TblWorkCenterMasters.Where(w=>w.DelFlag==0).ToListAsync();
-        //}
+        [HttpGet("GetList")]
+		public async Task<ActionResult<IEnumerable<TblWorkCenterMaster>>>GetTblWorkCenterList()
+		{
+			return await _context.TblWorkCenterMasters.ToListAsync();
+		}
 
-        // GET: api/WorkCenterMasters/5
-        [HttpGet("{id}")]
+
+		// GET: api/WorkCenterMasters/5
+		[HttpGet("{id}")]
         public async Task<ActionResult<TblWorkCenterMaster>> GetTblWorkCenterMaster(Guid id)
         {
             var tblWorkCenterMaster = await _context.TblWorkCenterMasters.FindAsync(id);
