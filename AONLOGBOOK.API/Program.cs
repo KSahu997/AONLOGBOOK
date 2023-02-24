@@ -1,4 +1,5 @@
 using AONLOGBOOK.API.Models;
+using AONLOGBOOK.API.Services;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DBContext>();
 builder.Services.AddDbContext<CustomContext>();
+builder.Services.AddScoped<SqlService>();
 
 var app = builder.Build();
 
