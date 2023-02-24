@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace AONLOGBOOK.MAUI.Models
 {
-    public class LookupElement
+    public  class Lookuplist
     {
-        public string paramName { get; set; }
-        public string paramValue { get; set; }
+        public string? label { get; set; }
+        public string? Value { get; set; }
     }
 }

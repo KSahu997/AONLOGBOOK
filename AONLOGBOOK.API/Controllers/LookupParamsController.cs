@@ -43,7 +43,15 @@ namespace AONLOGBOOK.API.Controllers
 
             return tblLookupParam;
         }
+        [HttpGet("{Lookupid}")]
+        public async Task<IEnumerable<TblLookupParam>> GetTblLookupParambyId(Guid Lookupid)
+        {
 
+            return await _context.TblLookupParams.FromSqlRaw("SP_Lookup_Param'" + Lookupid + "'").ToListAsync();
+
+
+
+        }
         // PUT: api/LookupParams/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -87,7 +95,7 @@ namespace AONLOGBOOK.API.Controllers
             new SqlParameter {ParameterName="@CompanyID",Direction=ParameterDirection.Input,Value=(object)tblLookupParam.CompanyId??DBNull.Value},
             new SqlParameter {ParameterName="@PlantID",Direction=ParameterDirection.Input,Value=(object)tblLookupParam.PlantId??DBNull.Value},
             new SqlParameter {ParameterName="@User",Direction =ParameterDirection.Input,Value =(object)tblLookupParam.CreatedBy??DBNull.Value},
-            new SqlParameter {ParameterName="@ID",Direction =ParameterDirection.Input,Value =(object)tblLookupParam.Id??DBNull.Value},
+            new SqlParameter {ParameterName="@ID",Direction =ParameterDirection.Input,Value =(object)tblLookupParam.LookupId??DBNull.Value},
             new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="INS"},
             new SqlParameter {ParameterName="@Param",Direction =ParameterDirection.Input,Value =(object)tblLookupParam.Param??DBNull.Value}            };
             await _context.Database.ExecuteSqlRawAsync(sqlQuery, @params);
