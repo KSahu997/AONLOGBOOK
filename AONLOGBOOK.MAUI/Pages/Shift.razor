@@ -19,7 +19,7 @@
                 <NumericPicker @bind-Value="@shift.Shifthour" />
             </Field>
             <Field>
-                <Button Type="ButtonType.Submit" style="background:#659abb;color:#000;">Add Shift</Button>
+                <Button Type="ButtonType.Submit" style="background:#659abb;color:#000;">@(isnew ? "Add Shift":"Update")</Button>
                 <Button Type="ButtonType.Reset" Background="Background.Secondary" TextColor="TextColor.Light">Reset</Button>
             </Field>
         </Fields>

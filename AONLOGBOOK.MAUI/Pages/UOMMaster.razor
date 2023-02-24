@@ -60,14 +60,15 @@
                
                 @foreach (TblUommaster item in uommst)
                 {
-                   
                     <TableRow>
-                        <TableRowCell>@sl</TableRowCell>
+                       
+                        <TableRowCell>@uommst.ToList().IndexOf(item)</TableRowCell>
                         <TableRowCell>@item.Unit</TableRowCell>
                        
                     </TableRow>
-                   sl++;
+                    
                 }
+                  
                
             }
        
