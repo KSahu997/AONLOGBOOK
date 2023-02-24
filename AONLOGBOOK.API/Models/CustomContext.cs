@@ -17,7 +17,9 @@ namespace AONLOGBOOK.API.Models
         public virtual DbSet<TblLogbookDetailSchemaMOD> TblLogbookDetailSchemaMODs { get; set; }
 
         public virtual DbSet<LogData> TblLogData { get; set; }
+        public virtual DbSet<lookupElement> TbllookupElement { get; set; }
         public virtual DbSet<LogDataReport> TblLogDataReports { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -154,6 +156,20 @@ namespace AONLOGBOOK.API.Models
 
               
                 entity.Property(e => e.Value)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
+            modelBuilder.Entity<lookupElement>(entity =>
+            {
+                entity.HasNoKey();
+                entity.ToTable("tbl_lookupElement");
+
+
+                entity.Property(e => e.paramName)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.paramValue)
                     .HasMaxLength(50)
                     .IsUnicode(false);
             });
