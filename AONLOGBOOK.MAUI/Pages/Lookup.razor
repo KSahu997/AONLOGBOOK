@@ -14,9 +14,9 @@
                 <SelectItem>--Select--</SelectItem>
                 @if (lookuplist != null)
                 {
-                    @foreach (TblLookup lookup in lookuplist.Where(a => (a.DelFlag != 1)))
+                    @foreach (TblLookup lookup in lookuplist.Where(a => (a.Del_Flag != 1)))
                     {
-                        <SelectItem Value="@lookup.Id">@lookup.Name</SelectItem>
+                        <SelectItem Value="@lookup.ID">@lookup.Name</SelectItem>
                     }
                 }
             </Select>
@@ -75,7 +75,7 @@
         try
         {
             dynamicform = new List<Lookuplist>();
-            paramlist = (await httpservice.Get<List<TblLookupParam>>("LookupParams")).Where(a => (a.LookupId == tblLookupValue.Lookup_ID));
+            paramlist = (await httpservice.Get<List<TblLookupParam>>("LookupParams")).Where(a => (a.Lookup_ID == tblLookupValue.Lookup_ID));
 
             if (paramlist.Count() == 0)
             {
@@ -111,10 +111,10 @@
                 });
                
                 lookupEle.CreatedBy = "Admin";
-                lookupEle.CompanyId = paramlist.First(a => (a.LookupId == tblLookupValue.Lookup_ID)).CompanyId;
-            lookupEle.PlantId = paramlist.First(a => (a.LookupId == tblLookupValue.Lookup_ID)).PlantId;
+                lookupEle.CompanyId = paramlist.First(a => (a.Lookup_ID == tblLookupValue.Lookup_ID)).Company_ID;
+            lookupEle.PlantId = paramlist.First(a => (a.Lookup_ID == tblLookupValue.Lookup_ID)).Plant_ID;
             lookupEle.LookupId = tblLookupValue.Lookup_ID;
-            lookupEle.NameValue = lookuplist.First(a => (a.Id.ToString() == tblLookupValue.Lookup_ID)).Name;
+            lookupEle.NameValue = lookuplist.First(a => (a.ID.ToString() == tblLookupValue.Lookup_ID)).Name;
 
                 var result = await httpservice.Post<string>("LookupValues", lookupEle);
                 if (result != null)
@@ -139,7 +139,7 @@
     async void handlelookup(string value)
     {
         tblLookupValue.Lookup_ID = value;
-        paramlist = (await httpservice.Get<List<TblLookupParam>>("LookupParams")).Where(a => (a.LookupId == tblLookupValue.Lookup_ID));
+        paramlist = (await httpservice.Get<List<TblLookupParam>>("LookupParams")).Where(a => (a.Lookup_ID == tblLookupValue.Lookup_ID));
         StateHasChanged();
     }
     void handleparam(string value)

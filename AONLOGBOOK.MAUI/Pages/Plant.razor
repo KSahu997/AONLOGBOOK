@@ -27,7 +27,7 @@
 @if (isDialogOpen == true)
 {
     @if(selectedplant != null ){
-        @if(selectedplant.Id != null)
+        @if(selectedplant.ID != null)
         {
             
         }
@@ -35,7 +35,7 @@
             <ChildContent1>
                 <EditForm Model="@tblPlant" OnValidSubmit="submit">
                     <div class="row m-2">
-                        <InputText @bind-Value="tblPlant.CompanyId" hidden></InputText>
+                        <InputText @bind-Value="tblPlant.Company_Id" hidden></InputText>
                        @* <div class="form-floating mb-3">
                            
                             <InputText @bind-Value="tblPlant.PlantName" class="form-control" id="floatingInput" placeholder="Plant Name" typeof="text" required />
@@ -46,7 +46,7 @@
                             
                                 <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                                     <FieldLabel>Plant name</FieldLabel>
-                                    <TextEdit @bind-Text="tblPlant.PlantName" Role="TextRole.Text"></TextEdit>
+                                    <TextEdit @bind-Text="tblPlant.Plant_Name" Role="TextRole.Text"></TextEdit>
                                 </Field>
                                 <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                                     <FieldLabel>Email</FieldLabel>
@@ -54,7 +54,7 @@
                                 </Field>
                                <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                                     <FieldLabel>Mobile</FieldLabel>
-                                    <TextEdit @bind-Text="tblPlant.PhoneNo" Role="TextRole.Telephone"></TextEdit>
+                                    <TextEdit @bind-Text="tblPlant.Phone_no" Role="TextRole.Telephone"></TextEdit>
                                 </Field>
                                 <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                                     <FieldLabel>Address</FieldLabel>
@@ -111,19 +111,19 @@ else
                 
                 <Field ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile">
                     <FieldLabel>Company</FieldLabel>
-                    <Select SelectedValue="tblPlant.CompanyId" SelectedValueChanged="@((string arg)=>{handlePlant(arg);})" SelectedValueExpression="@(()=>tblPlant.CompanyId)">
+                    <Select SelectedValue="tblPlant.Company_Id" SelectedValueChanged="@((string arg)=>{handlePlant(arg);})" SelectedValueExpression="@(()=>tblPlant.Company_Id)">
                         <SelectItem>--Select--</SelectItem>
                         @if (companies != null)
                         {
                             @foreach (TblCompanyMaster comp in companies)
                             {
-                                <SelectItem Value="@comp.Id">@comp.CompanyName</SelectItem>
+                                <SelectItem Value="@comp.ID">@comp.Company_Name</SelectItem>
                             }
                         }
                     </Select>
                 </Field>
                 <Field ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile" >
-                <Button Background="Background.Info"  @onclick="@AddPlant" Margin="Margin.Is4" Disabled=@(tblPlant.CompanyId==null||string.IsNullOrEmpty(tblPlant.CompanyId))>Add</Button>
+                <Button Background="Background.Info"  @onclick="@AddPlant" Margin="Margin.Is4" Disabled=@(tblPlant.Company_Id==null||string.IsNullOrEmpty(tblPlant.Company_Id))>Add</Button>
                 </Field>
          
         </div>
@@ -143,7 +143,7 @@ else
                                     <div class="card w-100" style="border-top: 1px solid #FF6E31;">
                                         <div class="row">
                                             <details class="d-flex m-2">
-                                                <summary style="margin-left:10px;"><i class="fa fa-city p-2" style="color:#243763;"></i>@item.PlantName</summary>
+                                                <summary style="margin-left:10px;"><i class="fa fa-city p-2" style="color:#243763;"></i>@item.Plant_Name</summary>
                                                 <p style="margin-left:10px;">
                                                     <ListGroup>
                                                         <ListGroupItem><b>Email</b>   @item.Email</ListGroupItem>
@@ -191,17 +191,17 @@ else
     protected override async Task OnInitializedAsync()
     {
         companies = await httpservice.Get<List<TblCompanyMaster>>("CompanyMasters");
-        tblPlant.CompanyId = cmpId;
-        PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters")).Where(a => (a.CompanyId == tblPlant.CompanyId));
+        tblPlant.Company_Id = cmpId;
+        PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters")).Where(a => (a.Company_Id == tblPlant.Company_Id));
     }
     async void submit()
     {
         try
         {
-            if (tblPlant.CompanyId != null && tblPlant.PlantName != "")
+            if (tblPlant.Company_Id != null && tblPlant.Plant_Name != "")
             {
-                tblPlant.CompanyId = companies.First(a => (a.Id.ToString() == cmpId)).Id.ToString();        
-                tblPlant.CreatedBy = "Admin";
+                tblPlant.Company_Id = companies.First(a => (a.ID.ToString() == cmpId)).ID.ToString();        
+                tblPlant.Created_By = "Admin";
                 var result = await httpservice.Post<string>("PlantMasters", tblPlant);
 
                 if (result != null)
@@ -223,9 +223,9 @@ else
         }
 
         HandleCancel();
-        PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters")).Where(a => (a.CompanyId == tblPlant.CompanyId));
+        PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters")).Where(a => (a.Company_Id == tblPlant.Company_Id));
         await OnInitializedAsync();
-        tblPlant.PlantName = string.Empty;
+        tblPlant.Plant_Name = string.Empty;
         StateHasChanged();
 
     }
@@ -250,7 +250,7 @@ else
     {
         selectedplant = new TblPlantMaster();
         isDialogOpen = true;
-        selectedplant.CompanyId = cmpId;
+        selectedplant.Company_Id = cmpId;
 
     }
     void HandleAddplant()
@@ -272,8 +272,8 @@ else
 
     async void handlePlant(string val)
     {
-        tblPlant.CompanyId = val;
-        PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters")).Where(a => (a.CompanyId == tblPlant.CompanyId));
-        cmpId = tblPlant.CompanyId;
+        tblPlant.Company_Id = val;
+        PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters")).Where(a => (a.Company_Id == tblPlant.Company_Id));
+        cmpId = tblPlant.Company_Id;
     }
 }

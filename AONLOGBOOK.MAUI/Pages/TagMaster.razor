@@ -20,11 +20,11 @@
                 <Fields>
                     <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                         <FieldLabel>Tag name</FieldLabel>
-                        <TextEdit @bind-Text="tagdata.TagName"></TextEdit>
+                        <TextEdit @bind-Text="tagdata.Tag_Name"></TextEdit>
                     </Field>
                      <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                         <FieldLabel>Display name</FieldLabel>
-                        <TextEdit @bind-Text="tagdata.DisplayName"></TextEdit>
+                        <TextEdit @bind-Text="tagdata.Display_Name"></TextEdit>
                     </Field>
                      <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                         <FieldLabel>Description</FieldLabel>
@@ -71,8 +71,8 @@
                     @foreach (var item in tagmst)
                     {
                     <TableRow>
-                        <TableRowCell><Badge Background="Background.Info" Padding="Padding.Is2">@item.TagName</Badge></TableRowCell>
-                        <TableRowCell>@item.DisplayName</TableRowCell>
+                        <TableRowCell><Badge Background="Background.Info" Padding="Padding.Is2">@item.Tag_Name</Badge></TableRowCell>
+                        <TableRowCell>@item.Display_Name</TableRowCell>
                          <TableRowCell>@item.Description</TableRowCell>
                     </TableRow>
                    

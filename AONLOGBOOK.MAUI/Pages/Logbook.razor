@@ -73,7 +73,7 @@ else
                 <Fields>
                     <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                         <FieldLabel>Department</FieldLabel>
-                <Select SelectedValue="tblSdept.DeptId" SelectedValueExpression="@(()=>tblSdept.DeptId)" SelectedValueChanged="@((string args)=>{handleSubDept(args);})">
+                <Select SelectedValue="tblSdept.Dept_Id" SelectedValueExpression="@(()=>tblSdept.Dept_Id)" SelectedValueChanged="@((string args)=>{handleSubDept(args);})">
                              <SelectItem>--Select--</SelectItem>
                      @if (deptList != null)
                             {
@@ -92,7 +92,7 @@ else
                             {
                                 @foreach (TblSubDeptMaster sdept in SdeptList)
                                 {
-                            <SelectItem Value="@sdept.Id">@sdept.SubDptName</SelectItem>
+                            <SelectItem Value="@sdept.Id">@sdept.SubDpt_Name</SelectItem>
                                 }
                             }
                         </Select> 
@@ -101,7 +101,7 @@ else
                 </Fields>
         <Field ColumnSize="ColumnSize.Is5.OnDesktop.Is12.OnMobile">
             @ChildContent
-            <Button class="m-2" style="margin-top:10px;background:#659abb;color:#000;" @onclick="@Addlogbook" Disabled="@(tblSdept.DeptId==null || logbookmst.SubDepartment==null)" >Add</Button>
+            <Button class="m-2" style="margin-top:10px;background:#659abb;color:#000;" @onclick="@Addlogbook" Disabled="@(tblSdept.Dept_Id==null || logbookmst.SubDepartment==null)" >Add</Button>
         </Field>
 
         @if (logbookMasters != null)
@@ -167,9 +167,9 @@ else
     async void handleSubDept(string value)
     {
 
-        tblSdept.DeptId = value;
-        SdeptList = await httpservice.Get<List<TblSubDeptMaster>>("SubDeptMasters/" + tblSdept.DeptId);
-        Deptid =  tblSdept.DeptId ;
+        tblSdept.Dept_Id = value;
+        SdeptList = await httpservice.Get<List<TblSubDeptMaster>>("SubDeptMasters/" + tblSdept.Dept_Id);
+        Deptid =  tblSdept.Dept_Id ;
         StateHasChanged();
     }
     async void handlelogbook(string value)
@@ -206,9 +206,9 @@ else
         try
         {
             // logbookmst.PlantCode =
-            logbookmst.Department = tblSdept.DeptId;
-            logbookmst.PlantCode = tblSdept.PlantId;
-            logbookmst.CompanyId = tblSdept.CompanyId;
+            logbookmst.Department = tblSdept.Dept_Id;
+            logbookmst.PlantCode = tblSdept.Plant_Id;
+            logbookmst.Company_Id = tblSdept.Company_Id;
 
             var data = await httpservice.Post<string>("LogbookMasters", logbookmst);
             if (data != null)

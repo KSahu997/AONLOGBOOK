@@ -82,7 +82,7 @@
 {
     @if(selectedcompany!= null)
     {
-        @if(selectedcompany.Id == null)
+        @if(selectedcompany.ID == null)
         {
      
         }
@@ -95,7 +95,7 @@
                         <Fields>
                             <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                                 <FieldLabel>Company Name</FieldLabel>
-                                <TextEdit @bind-Text="tblCompanyMaster.CompanyName" Role="TextRole.Text"></TextEdit>
+                                <TextEdit @bind-Text="tblCompanyMaster.Company_Name" Role="TextRole.Text"></TextEdit>
                             </Field>
                             <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                                 <FieldLabel>Email</FieldLabel>
@@ -103,7 +103,7 @@
                             </Field>
                             <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                                 <FieldLabel>Mobile Number</FieldLabel>
-                                <TextEdit @bind-Text="tblCompanyMaster.PhoneNo" Role="TextRole.Text"></TextEdit>
+                                <TextEdit @bind-Text="tblCompanyMaster.Phone_no" Role="TextRole.Text"></TextEdit>
                             </Field>
                         </Fields>
                         <Fields>
@@ -131,7 +131,7 @@
                             </Field>
                             <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                                 <FieldLabel>GSTIN</FieldLabel>
-                                <TextEdit @bind-Text="tblCompanyMaster.GstNo" Role="TextRole.Text"></TextEdit>
+                                <TextEdit @bind-Text="tblCompanyMaster.GST_no" Role="TextRole.Text"></TextEdit>
                             </Field>
                         </Fields>
                         <Fields>
@@ -173,19 +173,19 @@ else
   
                           @if (companies != null)
                             {
-                                @foreach (var item in companies.Where(a => (a.StatusF == 0)))
+                                @foreach (var item in companies.Where(a => (a.Status_F == 0)))
                                 {
                                  <div id="accordion">
                                         <div class="faq-container">
                                              <div class="card w-100 mb-2" style="border-top: 1px solid #FF6E31;">
                                                 
                                         <details class="d-flex m-2">
-                                        <summary><i class="fa fa-city p-2" style="color:#243763;font-size:18px;"></i><Span style="font-size:16px;">@item.CompanyName</Span></summary>
+                                        <summary><i class="fa fa-city p-2" style="color:#243763;font-size:18px;"></i><Span style="font-size:16px;">@item.Company_Name</Span></summary>
                                         <p style="margin-left:10px;">
                                        <ListGroup>
                                            <ListGroupItem><b>Email</b>   @item.Email</ListGroupItem>
-                                           <ListGroupItem> <b>Mobile Number</b>  @item.PhoneNo</ListGroupItem>
-                                                <ListGroupItem><b>GSTIN</b>  @item.GstNo</ListGroupItem>
+                                           <ListGroupItem> <b>Mobile Number</b>  @item.Phone_no</ListGroupItem>
+                                                <ListGroupItem><b>GSTIN</b>  @item.GST_no</ListGroupItem>
                                                 <ListGroupItem> <b>City</b>  @item.City</ListGroupItem>
                                                 <ListGroupItem><b>Country</b>  @item.Country</ListGroupItem>
                                                 <ListGroupItem><b>State</b>  @item.State</ListGroupItem>
@@ -225,45 +225,37 @@ else
     {
         //if(isedit == true)
         //{
-            try
+        try
+        {
+            tblCompanyMaster.Created_By = "Admin";
+            var result = await httpservice.Post<string>("CompanyMasters", tblCompanyMaster);
+
+            if (result!=null)
             {
-                tblCompanyMaster.CreatedBy = "Admin";
-                var result = await httpservice.Post<string>("CompanyMasters", tblCompanyMaster);
+                await App.Current.MainPage.DisplayAlert("Message",result,"Ok");
+            }
+            else
+            {
 
-                if (result!=null)
-                {
-                    await App.Current.MainPage.DisplayAlert("Message",result,"Ok");
-                }
-                else
-                {
-
-                    await App.Current.MainPage.DisplayAlert("Message","Error","Ok");
-
-                }
-
-                StateHasChanged();
+                await App.Current.MainPage.DisplayAlert("Message","Error","Ok");
 
             }
-            catch (Exception ex)
-            {
-                if (tblCompanyMaster != null && tblCompanyMaster.CompanyName == tblCompanyMaster.CompanyName || tblCompanyMaster.CompanyName == "")
-                {
-                    await App.Current.MainPage.DisplayAlert("Message","Invalid Company name", "Ok");
-                }else   
 
-                    await App.Current.MainPage.DisplayAlert("Message", ex.Message, "Ok");
-            }
-            HandleCanceled(); 
             StateHasChanged();
-            tblCompanyMaster.CompanyName = null;
-            tblCompanyMaster.Email = null;
-            tblCompanyMaster.PhoneNo = null;
-            tblCompanyMaster.Address = null;
-            tblCompanyMaster.Country = null;
-            tblCompanyMaster.State = null;
-            tblCompanyMaster.City = null;
-            tblCompanyMaster.PinCode = null;
-            tblCompanyMaster.GstNo = null;
+
+        }
+        catch (Exception ex)
+        {
+            if (tblCompanyMaster != null && tblCompanyMaster.Company_Name == tblCompanyMaster.Company_Name || tblCompanyMaster.Company_Name == "")
+            {
+                await App.Current.MainPage.DisplayAlert("Message","Invalid Company name", "Ok");
+            }else   
+
+                await App.Current.MainPage.DisplayAlert("Message", ex.Message, "Ok");
+        }
+        HandleCanceled(); 
+        StateHasChanged();
+        tblCompanyMaster = new();
         await OnInitializedAsync();
             
         //}else{
@@ -344,7 +336,7 @@ else
     }
     async void handalDelCompany(TblCompanyMaster item){
 
-        item.StatusF = 1;
+        item.Status_F = 1;
         var result = await httpservice.Post<string>("CompanyMasters/del", item);
 
         if (result != null)

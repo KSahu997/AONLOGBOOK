@@ -8,11 +8,11 @@
         <Fields>
             <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                 <FieldLabel>Shift</FieldLabel>
-                <TextEdit @bind-Text="shift.ShiftPrefix" Role="TextRole.Text" />
+                <TextEdit @bind-Text="shift.Shift_prefix" Role="TextRole.Text" />
             </Field>
             <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                 <FieldLabel>Start Time</FieldLabel>
-                <TimePicker TValue="TimeSpan?" @bind-Time="shift.ShiftStart" />
+                <TimePicker TValue="TimeSpan?" @bind-Time="shift.Shift_start" />
             </Field>
             <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                 <FieldLabel>Shift Hour</FieldLabel>
@@ -46,8 +46,8 @@
                                     {
                                     
                                         <TableRow>
-                                            <TableRowCell>@item.ShiftPrefix</TableRowCell>
-                                            <TableRowCell>@item.ShiftStart</TableRowCell>
+                                            <TableRowCell>@item.Shift_prefix</TableRowCell>
+                                            <TableRowCell>@item.Shift_start</TableRowCell>
                                             <TableRowCell>@item.Shifthour</TableRowCell>
                                             <TableRowCell>
                                                 <Button Clicked="@(()=>{EditShift(item);})" Background="Background.Warning">Edit</Button>
@@ -83,8 +83,8 @@
                             @foreach (var item in shiftlist.Where(a => (a.Delflag == 1)))
                                 {
                                     <TableRow>
-                                        <TableRowCell>@item.ShiftPrefix</TableRowCell>
-                                        <TableRowCell>@item.ShiftStart</TableRowCell>
+                                        <TableRowCell>@item.Shift_prefix</TableRowCell>
+                                        <TableRowCell>@item.Shift_start</TableRowCell>
                                         <TableRowCell>@item.Shifthour</TableRowCell>
                                         <TableRowCell>
                                          <Button Clicked="@(()=>{UnDelete(item);})" style="background:#659abb;color:#000;">UnDelete</Button>
@@ -161,7 +161,7 @@
         {
             try
             {
-                shift.CompanyId = companies.First().Id.ToString();
+                shift.CompanyId = companies.First().ID.ToString();
                 var savedata = await httpservice.Post<string>("ShiftMasters", shift);
                 if (savedata != null)
                 {
@@ -180,9 +180,9 @@
             }
 
             await OnInitializedAsync();
-            shift.ShiftPrefix = null;
+            shift.Shift_prefix = null;
             shift.Shifthour = null;
-            shift.ShiftStart = null;
+            shift.Shift_start = null;
             StateHasChanged();
         }
         else 
@@ -190,7 +190,7 @@
 
             try
             {
-                shift.CompanyId = companies.First().Id.ToString();
+                shift.CompanyId = companies.First().ID.ToString();
                 var editdata = await httpservice.Post<string>("ShiftMasters/upd", shift);
                 if (editdata != null)
                 {
@@ -210,9 +210,9 @@
 
 
             await OnInitializedAsync();
-            shift.ShiftPrefix = null;
+            shift.Shift_prefix = null;
             shift.Shifthour = null;
-            shift.ShiftStart = null;
+            shift.Shift_start = null;
             StateHasChanged();
         }
 

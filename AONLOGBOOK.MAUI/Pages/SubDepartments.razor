@@ -32,7 +32,7 @@
         @if (selectsdept.Id != null)
         {
 
-            <LogbookDoc sdept="@selectsdept.SubDptId" Deptid="@subdept.DeptId"  mstLogchanged="@handleDataSaved">
+            <LogbookDoc sdept="@selectsdept.Id" Deptid="@subdept.Dept_Id"  mstLogchanged="@handleDataSaved">
                 <ChildContent>
                     <button class="btn" style="color:#AD8E70;background:#243763;" @onclick="@back">
                         <span><i class="fa fa-backward"></i></span>
@@ -59,7 +59,7 @@
                    <Fields>
                        <Field ColumnSize="ColumnSize.Is12">
                            <FieldLabel>Sub Department Name</FieldLabel>
-                            <TextEdit @bind-Text="subdept.SubDptName"></TextEdit>
+                            <TextEdit @bind-Text="subdept.SubDpt_Name"></TextEdit>
                        </Field>
                    </Fields>
                    <Fields>
@@ -82,13 +82,13 @@
         <Fields>
             <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                 <FieldLabel>Company</FieldLabel>
-                <Select SelectedValue="tblPlant.CompanyId" SelectedValueChanged="@((string arg)=>{handlePlant(arg);})" SelectedValueExpression="@(()=>tblPlant.CompanyId)">
+                <Select SelectedValue="tblPlant.Company_Id" SelectedValueChanged="@((string arg)=>{handlePlant(arg);})" SelectedValueExpression="@(()=>tblPlant.Company_Id)">
                     <SelectItem>--Select--</SelectItem>
                     @if (companies != null)
                     {
                         @foreach (TblCompanyMaster comp in companies)
                         {
-                            <SelectItem Value="@comp.Id">@comp.CompanyName</SelectItem>
+                            <SelectItem Value="@comp.ID">@comp.Company_Name</SelectItem>
                         }
                     }
                 </Select>
@@ -102,14 +102,14 @@
                 {
                     @foreach (TblPlantMaster pt in PlantList)
                     {
-                        <SelectItem Value="@pt.Id">@pt.PlantName</SelectItem>
+                        <SelectItem Value="@pt.ID">@pt.Plant_Name</SelectItem>
                     }
                 }
             </Select>
         </Field>
         <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
             <FieldLabel>Department</FieldLabel>
-                <Select SelectedValue="subdept.DeptId" SelectedValueChanged="@((string arg)=>{handleSDept(arg);})" SelectedValueExpression="@(()=>subdept.DeptId)">
+                <Select SelectedValue="subdept.Dept_Id" SelectedValueChanged="@((string arg)=>{handleSDept(arg);})" SelectedValueExpression="@(()=>subdept.Dept_Id)">
                     <SelectItem>--Select--</SelectItem>
                     @if (deptlist != null)
                     {
@@ -124,7 +124,7 @@
        
         <Field ColumnSize="ColumnSize.Is5.OnDesktop.Is12.OnMobile">
             @ChildContent
-            <Button class="m-2" style="margin-top:10px;background:#659abb;color:#000;" @onclick="@Addsdept" Disabled=@(tblPlant.CompanyId==null||tblDept.Plant_Id==null||subdept.DeptId==null)>Add</Button>
+            <Button class="m-2" style="margin-top:10px;background:#659abb;color:#000;" @onclick="@Addsdept" Disabled=@(tblPlant.Company_Id==null||tblDept.Plant_Id==null||subdept.Dept_Id==null)>Add</Button>
         </Field>
             @if (SubDeptList != null)
             {
@@ -134,7 +134,7 @@
                     <div class="faq-container">
                         <div class="card w-100" style="border-top: 1px solid #FF6E31;">
                                 <details class="d-flex m-2">
-                                    <summary style="margin-left:10px;"><i class="fa fa-city p-2" style="color:#243763;"></i>@item.SubDptName</summary>
+                                    <summary style="margin-left:10px;"><i class="fa fa-city p-2" style="color:#243763;"></i>@item.SubDpt_Name</summary>
                                     <p style="margin-left:15px;">
                                         <Field>
                                             <Button class="btn btnEdit p-1 m-1" style="font-size:13px;" Clicked="@(()=>HandleEditSubDept(item))"><i class="fa fa-pen p-2" /></Button>
@@ -174,10 +174,10 @@
     {
         try
         {
-            subdept.CreatedBy = "Admin";
-            subdept.PlantId = deptlist.First(a => (a.Plant_Id == plantId)).Plant_Id;
-            subdept.DeptId = deptlist.First(a => (a.Plant_Id == plantId)).Id.ToString();
-            subdept.CompanyId = deptlist.First(a => (a.Plant_Id == subdept.PlantId)).Company_Id;
+            subdept.Created_By = "Admin";
+            subdept.Plant_Id = deptlist.First(a => (a.Plant_Id == plantId)).Plant_Id;
+            subdept.Dept_Id = deptlist.First(a => (a.Plant_Id == plantId)).Id.ToString();
+            subdept.Company_Id = deptlist.First(a => (a.Plant_Id == subdept.Plant_Id)).Company_Id;
             var data = await httpservice.Post<string>("SubDeptMasters", subdept);
             if (data != null)
             {
@@ -190,7 +190,7 @@
             }
             HandleCanceled();
             await OnInitializedAsync();
-            subdept.SubDptName = string.Empty;
+            subdept.SubDpt_Name = string.Empty;
             StateHasChanged();
 
         }
@@ -205,8 +205,8 @@
         companies = await httpservice.Get<List<TblCompanyMaster>>("CompanyMasters");
         //PlantList = await httpservice.Get<List<TblPlantMaster>>("PlantMasters");
         //deptlist = await httpservice.Get<List<TblDeptMaster>>("DeptMasters");
-        subdept.DeptId = deptId;
-        SubDeptList = (await httpservice.Get<List<TblSubDeptMaster>>("SubDeptMasters")).Where(a=>(a.DeptId == subdept.DeptId));
+        subdept.Dept_Id = deptId;
+        SubDeptList = (await httpservice.Get<List<TblSubDeptMaster>>("SubDeptMasters")).Where(a=>(a.Dept_Id == subdept.Dept_Id));
 
     }
     void HandleAddsdept()
@@ -218,7 +218,7 @@
     {
         selectsdept = new TblSubDeptMaster();
         isDialogOpen = true;
-        selectsdept.DeptId = deptId;
+        selectsdept.Dept_Id = deptId;
       
     }
     void HandleCanceled()
@@ -239,9 +239,9 @@
     //}
       async void handlePlant(string val)
     {
-        tblPlant.CompanyId = val;
-        PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters")).Where(a => (a.CompanyId == tblPlant.CompanyId));
-        cmpId = tblPlant.CompanyId;
+        tblPlant.Company_Id = val;
+        PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters")).Where(a => (a.Company_Id == tblPlant.Company_Id));
+        cmpId = tblPlant.Company_Id;
     }
     async void handleDept(string val)
     {
@@ -251,9 +251,9 @@
     }
     async void handleSDept(string val)
     {
-        subdept.DeptId = val;
-        SubDeptList = (await httpservice.Get<List<TblSubDeptMaster>>("SubDeptMasters")).Where(a => (a.DeptId == subdept.DeptId));
-        deptId = subdept.DeptId;
+        subdept.Dept_Id = val;
+        SubDeptList = (await httpservice.Get<List<TblSubDeptMaster>>("SubDeptMasters")).Where(a => (a.Dept_Id == subdept.Dept_Id));
+        deptId = subdept.Dept_Id;
     }
     void back()
     {

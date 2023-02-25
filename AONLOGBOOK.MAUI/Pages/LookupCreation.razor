@@ -37,7 +37,7 @@
 
             @if (lookuplist != null)
             {
-                @foreach (var item in lookuplist.Where(a=>(a.DelFlag == 0)))
+                @foreach (var item in lookuplist.Where(a=>(a.Del_Flag == 0)))
                 {
                     <TableRow>
                         <TableRowCell>@item.Name</TableRowCell>
@@ -72,9 +72,9 @@
         if(isedit == true){
             try
             {
-                tblLookup.CreatedBy = "Admin";
-                tblLookup.CompanyId = Deptlist.First().Company_Id.ToString();
-                tblLookup.PlantId = Deptlist.First().Plant_Id.ToString();
+                tblLookup.Created_By = "Admin";
+                tblLookup.Company_ID = Deptlist.First().Company_Id.ToString();
+                tblLookup.Plant_Id = Deptlist.First().Plant_Id.ToString();
                 var data = await httpservice.Post<string>("Lookups", tblLookup);
                 if (data != null)
                 {
@@ -96,9 +96,9 @@
         else
         {
             try{
-                tblLookup.CreatedBy = "Admin";
-                tblLookup.CompanyId = Deptlist.First().Company_Id.ToString();
-                tblLookup.PlantId = Deptlist.First().Plant_Id.ToString();
+                tblLookup.Created_By = "Admin";
+                tblLookup.Company_ID = Deptlist.First().Company_Id.ToString();
+                tblLookup.Plant_Id = Deptlist.First().Plant_Id.ToString();
                 var edata = await httpservice.Post<string>("Lookups/upd", tblLookup);
                 if (edata != null)
                 {
@@ -129,7 +129,7 @@
         try
         {
 
-            item.DelFlag = 1;
+            item.Del_Flag = 1;
             var deldata = await httpservice.Post<string>("Lookups/del", item);
             if (deldata != null)
             {
@@ -144,7 +144,7 @@
         }
         catch (Exception ex)
         {
-            item.DelFlag = 0;
+            item.Del_Flag = 0;
 
         }
     }

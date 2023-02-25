@@ -60,13 +60,13 @@ else
      <Fields>
         <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
             <FieldLabel>Company</FieldLabel>
-            <Select SelectedValue="plant.CompanyId" SelectedValueChanged="@((string arg)=>{handlePlant(arg);})" SelectedValueExpression="@(()=>plant.CompanyId)">
+            <Select SelectedValue="plant.Company_Id" SelectedValueChanged="@((string arg)=>{handlePlant(arg);})" SelectedValueExpression="@(()=>plant.Company_Id)">
                 <SelectItem>--Select Company--</SelectItem>
                 @if (companies != null)
                 {
                     @foreach (TblCompanyMaster comp in companies)
                     {
-                        <SelectItem Value="@comp.Id">@comp.CompanyName</SelectItem>
+                        <SelectItem Value="@comp.ID">@comp.Company_Name</SelectItem>
                     }
                 }
             </Select>
@@ -80,14 +80,14 @@ else
                 {
                     @foreach(TblPlantMaster plt in PlantList)
                     {
-                        <SelectItem Value="@plt.Id">@plt.PlantName</SelectItem>
+                        <SelectItem Value="@plt.ID">@plt.Plant_Name</SelectItem>
                     }
                 }
             </Select>
         </Field>
         <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
             @ChildContent
-            <Button Margin="Margin.Is3" style="margin-top:10px;background:#659abb;color:#000;" @onclick="@AddDept" Disabled=@(plant.CompanyId==null||Dept.Plant_Id==null)>Add</Button>
+            <Button Margin="Margin.Is3" style="margin-top:10px;background:#659abb;color:#000;" @onclick="@AddDept" Disabled=@(plant.Company_Id==null||Dept.Plant_Id==null)>Add</Button>
         </Field>
       </Fields>
         <div class="row">
@@ -147,7 +147,7 @@ else
         {
             try
             {
-                Dept.Company_Id = PlantList.First(a => (a.Id.ToString() == plantId)).CompanyId;
+                Dept.Company_Id = PlantList.First(a => (a.ID.ToString() == plantId)).Company_Id;
                 Dept.Created_By = "Admin";
                 var data = await httpservice.Post<string>("DeptMasters", Dept);
                 if (data != null)
@@ -212,8 +212,8 @@ else
     }
     async void handlePlant(string val)
     {
-        plant.CompanyId = val;
-        PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters")).Where(a => (a.CompanyId == plant.CompanyId));
+        plant.Company_Id = val;
+        PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters")).Where(a => (a.Company_Id == plant.Company_Id));
         StateHasChanged();
     }
     async void HandlePlantList(string val)
