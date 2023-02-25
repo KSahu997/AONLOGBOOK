@@ -4,11 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Data.SqlClient;
 using System;
 using AONLOGBOOK.SHARED.Models;
 using AONLOGBOOK.API.Services;
+using System.Data.SqlClient;
+
 namespace AONLogbookAPI.Controllers
 {
     [Route("api/[controller]")]
