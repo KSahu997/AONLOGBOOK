@@ -1,0 +1,273 @@
+﻿@page "/FunctionalLocation"
+@inject IHttpService httpservices
+
+
+@if (isDialogOpen == true)
+{
+	@if (selectedFncLoc != null)
+	{
+		<CModal FunctionalLocation="selectedFncLoc" title="Create Functional Location" mstDatasChanged="HandleAddFnc">
+			<ChildContent1>
+				<EditForm Model="@tblFunctionalLocation" OnValidSubmit="submit">
+					<div class="row m-2">
+						<Fields>
+							<Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+								<FieldLabel>Functional location</FieldLabel>
+								<TextEdit @bind-Text="tblFunctionalLocation.FunctionalLocation"></TextEdit>
+							</Field>
+							<Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+								<FieldLabel>Location Code</FieldLabel>
+								<TextEdit @bind-Text="tblFunctionalLocation.LocationCode"></TextEdit>
+							</Field>
+							<Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+							</Field>
+						</Fields>
+					</div>
+					<div class="row m-1">
+						<div class="col-md-12 d-flex mb-3 justify-content-center">
+							<Button Type="ButtonType.Submit" Color="Color.Success" class="mt-2" Margin="Margin.Is2">@(IsNew ? "SUBMIT" : "UPDATE")</Button>
+								<Button Type="ButtonType.Reset" Color="Color.Secondary" class="mt-2" Margin="Margin.Is2">RESET</Button>
+								<Button Type="ButtonType.Button" Color="Color.Warning" class="m-2" onclick="@HandleCancelled">CANCEL</Button>
+							</div>
+						</div>
+					</EditForm>
+				</ChildContent1>
+			</CModal>
+	}
+}
+<Div class="container" Padding="Padding.Is3">
+	<Field>
+		<Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+			<Heading Size="HeadingSize.Is4" TextAlignment="TextAlignment.Center">Functional Location</Heading>
+		</Field>
+	</Field>
+	<Card Padding="Padding.Is3" Margin="Margin.Is2">
+
+		<Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+			<FieldLabel>Work Center Name</FieldLabel>
+			<Select SelectedValue="tblFunctionalLocation.WorkCenterId" SelectedValueChanged="@((string args)=>{HandleFnc (args);})" SelectedValueExpression="@(()=>tblFunctionalLocation.WorkCenterId)">
+
+				<SelectItem>--SELECT--</SelectItem>
+				@if (workcentermst != null)
+				{
+					@foreach (TblWorkCenterMaster cms in workcentermst)
+					{
+						<SelectItem Value="@cms.Id">@cms.WorkCenterName</SelectItem>
+					}
+				}
+			</Select>
+		</Field>
+		<Field ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile">
+			<Button Background="Background.Primary" Margin="Margin.Is4" @onclick="@AddFncLoc" Disabled=@(tblFunctionalLocation.WorkCenterId==null|| string.IsNullOrEmpty(tblFunctionalLocation.WorkCenterId))>ADD</Button>
+		</Field>
+	</Card>
+</Div>
+	<div class="col-md-12">
+
+		@if (functionalList != null)
+		{
+			@foreach (var item in functionalList)
+			{
+				<div id="accordion">
+					<div class="faq-container m-2 ">
+						<div class="card w-100" style="border-top: 1px solid #FF6E31;">
+							<div class="row">
+								<details class="d-flex m-2">
+									<summary style="margin-left:10px"><b class="pt-2 fa fa-location" style="color:darkblue">@item.FunctionalLocation</b> </summary>
+									<p style="margin-left:10px">
+										<ListGroup>
+											<ListGroupItem><b>SR_No</b>  @(functionalList.ToList().IndexOf(item) + 1)</ListGroupItem>
+												<ListGroupItem><b>Functional Location</b>  @item.FunctionalLocation</ListGroupItem>
+												<ListGroupItem><b>Location Code</b>  @item.LocationCode</ListGroupItem>
+											</ListGroup>
+											<Field>
+												<Button class="mt-2" Background="Background.Info" Clicked="@(()=>{Edit(item);})">EDIT</Button>
+												<Button class="mt-2" Background="Background.Danger" Clicked="@(()=>{Delete(item);})">@(item.DelFlag != 1 ? "Delete" : "UnDelete")</Button>
+											</Field>
+										</p>
+									</details>
+								</div>
+							</div>
+
+						</div>
+					</div>
+			}
+		}
+	</div>
+@*
+	<Table Hoverable Bordered>
+		<TableHeader ThemeContrast="ThemeContrast.None" Background="Background.Secondary" TextColor="TextColor.White">
+
+			<TableRow>
+				<TableHeaderCell>SR_No</TableHeaderCell>
+				<TableHeaderCell>Functional Location</TableHeaderCell>
+				<TableHeaderCell>Location Code</TableHeaderCell>
+				<TableHeaderCell>Action</TableHeaderCell>
+			</TableRow>
+		</TableHeader>
+		<TableBody>
+			@if (functionalList != null)
+			{
+				@foreach (TblFunctionalLocationMaster item in functionalList)
+				{
+					<TableRow>
+						<TableRowCell>@(functionalList.ToList().IndexOf(item) + 1)</TableRowCell>
+							<TableRowCell>@item.FunctionalLocation</TableRowCell>
+							<TableRowCell>@item.LocationCode</TableRowCell>
+							<TableRowCell>
+								<Button Background="Background.Info" Clicked="@(()=>{Edit(item);})">EDIT</Button>
+								<Button Background="Background.Danger" Clicked="@(()=>{Delete(item);})">@(item.DelFlag != 1 ? "Delete" : "UnDelete")</Button>
+							</TableRowCell>
+						</TableRow>
+				}
+			}
+		</TableBody>
+
+	</Table>*@
+
+
+@code {
+	TblFunctionalLocationMaster tblFunctionalLocation = new();
+	IEnumerable<TblWorkCenterMaster> workcentermst;
+	IEnumerable<TblFunctionalLocationMaster> functionalList;
+	bool IsNew = true;
+	bool? DispDatas;
+	bool? isDialogOpen;
+	string WCIDcenter;
+
+	[Parameter]
+	public EventCallback<bool> mstDataChanged { get; set; }
+
+	[Parameter]
+	public RenderFragment ChildContent { get; set; }
+	TblFunctionalLocationMaster? selectedFncLoc;
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		workcentermst = (await httpservices.Get<List<TblWorkCenterMaster>>("WorkCenterMasters/GetList")).Where(a => a.DelFlag != 1);
+
+	}
+
+	void HandleAddFnc()
+	{
+		selectedFncLoc = null;
+		isDialogOpen = null;
+	}
+	void HandleCancelled()
+	{
+		selectedFncLoc = null;
+		DispDatas = false;
+		isDialogOpen = false;
+	}
+
+	async void HandleFnc(string value)
+	{
+		tblFunctionalLocation.WorkCenterId = value;
+
+		functionalList = (await httpservices.Get<List<TblFunctionalLocationMaster>>("FunctionalLocationMasters/GetList")).Where(a => (a.WorkCenterId == tblFunctionalLocation.WorkCenterId));
+		WCIDcenter = tblFunctionalLocation.WorkCenterId;
+		StateHasChanged();
+	}
+
+	async void AddFncLoc()
+	{
+		selectedFncLoc = new TblFunctionalLocationMaster();
+		isDialogOpen = true;
+		selectedFncLoc.WorkCenterId = WCIDcenter;
+	}
+	async void submit()
+	{
+		if (IsNew == true)
+		{
+			try
+			{
+
+
+				tblFunctionalLocation.InsertedBy = "Admin";
+				tblFunctionalLocation.CompanyId = workcentermst.First(a => (a.Id.ToString() == WCIDcenter)).CompanyId;
+				tblFunctionalLocation.PlantId = workcentermst.First(a => (a.Id.ToString() == WCIDcenter)).PlantId;
+				var result = await httpservices.Post<string>("FunctionalLocationMasters", tblFunctionalLocation);
+
+				if (result != null)
+				{
+					await App.Current.MainPage.DisplayAlert("Message", result, "Ok");
+
+				}
+				else
+				{
+					await App.Current.MainPage.DisplayAlert("Failed", "error", "Ok");
+				}
+			}
+			catch (Exception ex)
+			{
+
+			}
+			tblFunctionalLocation = new();
+			await OnInitializedAsync();
+			StateHasChanged();
+		}
+		else
+		{
+			try
+			{
+
+
+				tblFunctionalLocation.InsertedBy = "Admin";
+				var result = await httpservices.Post<string>("FunctionalLocationMasters/update", tblFunctionalLocation);
+
+				if (result != null)
+				{
+					await App.Current.MainPage.DisplayAlert("Message", result, "Ok");
+
+				}
+				else
+				{
+					await App.Current.MainPage.DisplayAlert("Failed", "error", "Ok");
+				}
+			}
+			catch (Exception ex)
+			{
+
+			}
+			tblFunctionalLocation = new();
+			await OnInitializedAsync();
+			StateHasChanged();
+
+		}
+	}
+
+	async void Edit(TblFunctionalLocationMaster item)
+	{
+		isDialogOpen = true;
+		selectedFncLoc = item;
+		tblFunctionalLocation = selectedFncLoc;
+		IsNew = false;
+
+		StateHasChanged();
+	}
+	async void Delete(TblFunctionalLocationMaster item)
+	{
+		try
+		{
+
+			item.DelFlag = item.DelFlag == 0 ? 1 : 0;
+			var delete = await httpservices.Post<string>("FunctionalLocationMasters/delete", item);
+			if (delete != null)
+			{
+				await App.Current.MainPage.DisplayAlert("Message", delete, "ok");
+				IsNew = true;
+				StateHasChanged();
+			}
+			else
+			{
+				await App.Current.MainPage.DisplayAlert("Message", "Error", "ok");
+			}
+		}
+		catch (Exception ex)
+		{
+			item.DelFlag = 0;
+
+		}
+	}
+}

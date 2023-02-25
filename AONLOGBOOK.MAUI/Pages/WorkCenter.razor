@@ -2,11 +2,13 @@
 
 @inject IHttpService httpservices
 @using System.Data;
+
+
 <Div class="container" Padding="Padding.Is3">
 
 	<Field>
 		<Field ColumnSize="ColumnSize.Is3.OnDesktop.Is12.OnMobile">
-			<h4 class="mb-4">WorkCenter Master</h4>
+			<Heading Size="HeadingSize.Is4" TextAlignment="TextAlignment.Center">Work Center</Heading>
 		</Field>
 	</Field>
 	<Card Padding="Padding.Is3" Margin="Margin.Is2">
@@ -16,52 +18,39 @@
 					<FieldLabel>Work Center Name</FieldLabel>
 					<TextEdit @bind-Text="workcenter.WorkCenterName"></TextEdit>
 				</Field>
-
 				<Field ColumnSize="ColumnSize.Is3.OnDesktop.Is12.OnMobile">
-					<Button Type="ButtonType.Submit" Color="Color.Success" Margin="Margin.Is3" style="margin-top:10px">Submit</Button>
+					<Button Type="ButtonType.Submit" Color="Color.Success" Margin="Margin.Is3" style="margin-top:10px">@(isNew ? "Submit" : "Update")</Button>
 				</Field>
 			</Field>
-
 		</EditForm>
-
 	</Card>
 	<Table Hoverable Bordered>
 		<TableHeader ThemeContrast="ThemeContrast.None" Background="Background.Secondary" TextColor="TextColor.White">
-
 			<TableRow>
-
 				<TableHeaderCell>SR_No</TableHeaderCell>
 				<TableHeaderCell>WorkCenter_Name</TableHeaderCell>
 				<TableHeaderCell>Action</TableHeaderCell>
 			</TableRow>
 		</TableHeader>
-		
 		<TableBody>
-
 			@if (workcentermst != null )
 			{
-				int SN = 1;
 
-			@foreach (TblWorkCenterMaster item in workcentermst.Where(a => (a.DelFlag == 0))){
-
+			@foreach (TblWorkCenterMaster item in workcentermst){
 				<TableRow>
-
-						<TableRowCell>@SN</TableRowCell>
+					
+						<TableRowCell>@(workcentermst.ToList().IndexOf(item)+1)</TableRowCell>
 						<TableRowCell>@item.WorkCenterName</TableRowCell>
 						<TableRowCell>
 							<Button Background="Background.Info" Clicked="@(()=>{Edit(item);})">EDIT</Button>
-							<Button Background="Background.Danger" Clicked="(()=>{Delete(item);})">DELETE</Button>
+							<Button Background="Background.Danger"  Clicked="@(()=>{Delete(item);})">@(item.DelFlag!=1?"Delete":"UnDelete")</Button>
 						</TableRowCell>
 								
 				</TableRow>
-					SN++;
 				}
 			}
 		</TableBody>
 	</Table>
-
-
-
 </Div>
 
 @code {
@@ -76,7 +65,7 @@
 	{
 		companymst = await httpservices.Get<List<TblCompanyMaster>>("CompanyMasters");
 		plantmst = await httpservices.Get<List<TblPlantMaster>>("PlantMasters");
-		workcentermst = await httpservices.Get<List<TblWorkCenterMaster>>("WorkCenterMasters/GetList");
+		workcentermst = (await httpservices.Get<List<TblWorkCenterMaster>>("WorkCenterMasters/GetList"));
 
 		StateHasChanged();
 	}
@@ -93,7 +82,7 @@
 		try
 		{
 
-			item.DelFlag = 1;
+			item.DelFlag = item.DelFlag==0?1:0;
 			var delt = await httpservices.Post<string>("WorkCenterMasters/delete", item);
 			if (delt != null)
 			{
@@ -165,8 +154,6 @@
 				{
 					await App.Current.MainPage.DisplayAlert("Failed", "error", "Ok");
 				}
-
-
 			}
 			catch(Exception ex)
 			{
@@ -176,6 +163,4 @@
 			workcenter = new();
 		}
 	}
-
-
 }
