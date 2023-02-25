@@ -9,7 +9,7 @@ using Microsoft.Data.SqlClient;
 using AONLOGBOOK.API.Models;
 using System;
 using AONLOGBOOK.SHARED.Models;
-
+using AONLOGBOOK.API.Services;
 namespace AONLogbookAPI.Controllers
 {
     [Route("api/[controller]")]
@@ -17,19 +17,36 @@ namespace AONLogbookAPI.Controllers
     public class CompanyMastersController : ControllerBase
     {
         private readonly DBContext _context;
-
-        public CompanyMastersController(DBContext context)
+        private readonly IConfiguration con;
+        private readonly SqlService _sql;
+        public CompanyMastersController(DBContext context,SqlService _sqlS,IConfiguration conn)
         {
             _context = context;
+            _sql = _sqlS;
+            con = conn;
+
         }
 
-        // GET: api/CompanyMasters
+        //// GET: api/CompanyMasters
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<TblCompanyMaster>>> GetTblCompanyMasters()
+        //{
+        //    return await _context.TblCompanyMasters.ToListAsync();
+        //}
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TblCompanyMaster>>> GetTblCompanyMasters()
-        {
-            return await _context.TblCompanyMasters.ToListAsync();
-        }
 
+        public async Task<ActionResult<IEnumerable<TblCompanyMaster>>>GetTblCompanyMasters()
+        {
+           SqlParameter[] @params = 
+           { 
+            // Create parameters    
+            new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="SEL"}
+           
+           };
+           return _sql.getDatas<TblCompanyMaster>("sp_Company_Master", @params);
+           
+        }
         // GET: api/CompanyMasters/5
         [HttpGet("{id}")]
         public async Task<ActionResult<TblCompanyMaster>> GetTblCompanyMaster(Guid id)
@@ -59,8 +76,9 @@ namespace AONLogbookAPI.Controllers
                 new SqlParameter {ParameterName="@Company_Name",Direction =ParameterDirection.Input,Value = tblCompanyMaster.CompanyName },
                 new SqlParameter {ParameterName="@message",SqlDbType=SqlDbType.NVarChar,Size=50,Direction = ParameterDirection.Output}
                 };
-            await _context.Database.ExecuteSqlRawAsync(sqlQuery, @params);
-            return Ok(@params[3].Value);
+            // await _context.Database.ExecuteSqlRawAsync(sqlQuery, @params);
+             _sql.postData(sqlQuery, @params);
+            return Ok(@params[4].Value);
         }
 
         // POST: api/CompanyMasters
@@ -68,8 +86,6 @@ namespace AONLogbookAPI.Controllers
         [HttpPost]
         public async Task<ActionResult> PostTblCompanyMaster(TblCompanyMaster tblCompanyMaster)
         {
-            
-                string sqlQuery = "EXEC[dbo].[sp_Company_Master]@Type,@Company_Name,@Attachment,@GST,@Address,@Country,@City,@State,@Pin,@Phone,@Email,@By,@message=@message OUT";
                 SqlParameter[] @params =
                 { 
             // Create parameters    
@@ -87,7 +103,8 @@ namespace AONLogbookAPI.Controllers
             new SqlParameter {ParameterName="@By",Direction=ParameterDirection.Input,Value=(object)tblCompanyMaster.CreatedBy??DBNull.Value},
             new SqlParameter {ParameterName="@message",SqlDbType=SqlDbType.NVarChar,Size=50,Direction = ParameterDirection.Output}
             };
-                await _context.Database.ExecuteSqlRawAsync(sqlQuery, @params);
+            //await _context.Database.ExecuteSqlRawAsync(sqlQuery, @params);
+            _sql.postData("sp_Company_Master", @params);
                 return Ok(@params[12].Value);
         }
 

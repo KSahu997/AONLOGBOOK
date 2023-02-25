@@ -142,35 +142,35 @@ namespace AONLOGBOOK.API.Models
 
                 entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
 
-                entity.Property(e => e.CompanyId)
+                entity.Property(e => e.Company_Id)
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("Company_Id");
 
-                entity.Property(e => e.CreatedBy)
+                entity.Property(e => e.Created_By)
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("Created_By");
 
-                entity.Property(e => e.CreatedOn)
+                entity.Property(e => e.Created_On)
                     .HasColumnType("datetime")
                     .HasColumnName("Created_On");
 
-                entity.Property(e => e.DeptId)
+                entity.Property(e => e.Dept_Id)
                     .HasMaxLength(10)
                     .IsUnicode(false)
                     .HasColumnName("Dept_Id");
 
-                entity.Property(e => e.DeptName)
+                entity.Property(e => e.Dept_Name)
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("Dept_Name");
 
-                entity.Property(e => e.DocDate)
+                entity.Property(e => e.Doc_Date)
                     .HasColumnType("datetime")
                     .HasColumnName("Doc_Date");
 
-                entity.Property(e => e.FYear)
+                entity.Property(e => e.F_Year)
                     .HasMaxLength(7)
                     .IsUnicode(false)
                     .HasColumnName("F_Year");
@@ -186,7 +186,7 @@ namespace AONLOGBOOK.API.Models
                     .HasColumnType("datetime")
                     .HasColumnName("Modified_On");
 
-                entity.Property(e => e.PlantId)
+                entity.Property(e => e.Plant_Id)
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("Plant_Id");

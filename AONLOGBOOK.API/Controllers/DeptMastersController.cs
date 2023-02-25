@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using AONLOGBOOK.API.Models;
+using AONLOGBOOK.API.Services;
 using AONLOGBOOK.SHARED.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,17 +18,24 @@ namespace AONLogbookAPI.Controllers
     public class DeptMastersController : ControllerBase
     {
         private readonly DBContext _context;
-
-        public DeptMastersController(DBContext context)
+        private readonly IConfiguration con;
+        private readonly SqlService _sql;
+        public DeptMastersController(DBContext context, SqlService _sqlS, IConfiguration conn)
         {
             _context = context;
+            _sql = _sqlS;
+            con = conn;
         }
 
         // GET: api/DeptMasters
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TblDeptMaster>>> GetTblDeptMasters()
         {
-            return await _context.TblDeptMasters.ToListAsync();
+            SqlParameter[] @params =
+            {
+                new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="SEL"}
+            };
+            return _sql.getDatas<TblDeptMaster>("sp_Department_Master", @params);
         }
 
         // GET: api/DeptMasters/5
@@ -85,10 +93,10 @@ namespace AONLogbookAPI.Controllers
             { 
             // Create parameters    
             new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="INS"},
-            new SqlParameter {ParameterName="@Department_Name",Direction =ParameterDirection.Input,Value = tblDeptMaster.DeptName },
-            new SqlParameter {ParameterName="@Plant_Id",Direction =ParameterDirection.Input,Value = (object)tblDeptMaster.PlantId??DBNull.Value },
-            new SqlParameter {ParameterName="@Company_ID",Direction =ParameterDirection.Input,Value = (object)tblDeptMaster.CompanyId??DBNull.Value },
-            new SqlParameter {ParameterName="@By",Direction=ParameterDirection.Input,Value=(object)tblDeptMaster.CreatedBy??DBNull.Value},
+            new SqlParameter {ParameterName="@Department_Name",Direction =ParameterDirection.Input,Value = tblDeptMaster.Dept_Name },
+            new SqlParameter {ParameterName="@Plant_Id",Direction =ParameterDirection.Input,Value = (object)tblDeptMaster.Plant_Id??DBNull.Value },
+            new SqlParameter {ParameterName="@Company_ID",Direction =ParameterDirection.Input,Value = (object)tblDeptMaster.Company_Id??DBNull.Value },
+            new SqlParameter {ParameterName="@By",Direction=ParameterDirection.Input,Value=(object)tblDeptMaster.Created_By??DBNull.Value},
             new SqlParameter {ParameterName="@message",SqlDbType=SqlDbType.NVarChar,Size=50,Direction = ParameterDirection.Output}
             };
             await _context.Database.ExecuteSqlRawAsync(sqlQuery, @params);

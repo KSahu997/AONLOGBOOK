@@ -73,8 +73,8 @@
             try
             {
                 tblLookup.CreatedBy = "Admin";
-                tblLookup.CompanyId = Deptlist.First().CompanyId.ToString();
-                tblLookup.PlantId = Deptlist.First().PlantId.ToString();
+                tblLookup.CompanyId = Deptlist.First().Company_Id.ToString();
+                tblLookup.PlantId = Deptlist.First().Plant_Id.ToString();
                 var data = await httpservice.Post<string>("Lookups", tblLookup);
                 if (data != null)
                 {
@@ -97,8 +97,8 @@
         {
             try{
                 tblLookup.CreatedBy = "Admin";
-                tblLookup.CompanyId = Deptlist.First().CompanyId.ToString();
-                tblLookup.PlantId = Deptlist.First().PlantId.ToString();
+                tblLookup.CompanyId = Deptlist.First().Company_Id.ToString();
+                tblLookup.PlantId = Deptlist.First().Plant_Id.ToString();
                 var edata = await httpservice.Post<string>("Lookups/upd", tblLookup);
                 if (edata != null)
                 {
