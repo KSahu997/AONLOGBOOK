@@ -5,16 +5,16 @@ namespace AONLOGBOOK.SHARED.Models
 {
     public partial class TblLookupValue
     {
-        public Guid Id { get; set; }
-        public string? LookupId { get; set; }
-        public string? NameValue { get; set; }
-        public string? ParamValues { get; set; }
-        public string? CompanyId { get; set; }
-        public string? PlantId { get; set; }
+        public Guid ID { get; set; }
+        public string? Lookup_ID { get; set; }
+        public string? Name_Value { get; set; }
+        public string? Param_Values { get; set; }
+        public string? Company_ID { get; set; }
+        public string? Plant_ID { get; set; }
+        public string? Created_By { get; set; }
+        public DateTime? Created_On { get; set; }
+        public int? Del_Flag { get; set; }
         public string? UpdatedBy { get; set; }
         public DateTime? UpdatedOn { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public int? DelFlag { get; set; }
     }
 }

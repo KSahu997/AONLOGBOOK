@@ -42,7 +42,7 @@
         <TableHeader ThemeContrast="ThemeContrast.None" Background="Background.Secondary" TextColor="TextColor.White">
             <TableRow>
 
-                <TableHeaderCell>Lookup</TableHeaderCell>
+               
                 <TableHeaderCell>Parameter</TableHeaderCell>
                 <TableHeaderCell>Action</TableHeaderCell>
             </TableRow>
@@ -54,7 +54,7 @@
                 @foreach (var item in paramlist.Where(a => (a.DelFlag == 0)))
                 {
                     <TableRow>
-                        <TableRowCell></TableRowCell>
+                      
                         <TableRowCell>@item.Param</TableRowCell>
                         <TableRowCell>
                             <Button Color="Color.Warning" Margin="Margin.Is2" Clicked="@(()=>{Editlookup(item);})"><BarIcon IconName="IconName.Edit"></BarIcon></Button>

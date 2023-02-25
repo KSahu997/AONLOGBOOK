@@ -661,43 +661,43 @@ namespace AONLOGBOOK.API.Models
             {
                 entity.ToTable("tbl_LookupValues");
 
-                entity.Property(e => e.Id)
+                entity.Property(e => e.ID)
                     .HasColumnName("ID")
                     .HasDefaultValueSql("(newid())");
 
-                entity.Property(e => e.CompanyId)
+                entity.Property(e => e.Company_ID)
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("Company_ID");
 
-                entity.Property(e => e.CreatedBy)
+                entity.Property(e => e.Created_By)
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("Created_By");
 
-                entity.Property(e => e.CreatedOn)
+                entity.Property(e => e.Created_On)
                     .HasColumnType("datetime")
                     .HasColumnName("Created_On");
 
-                entity.Property(e => e.DelFlag)
+                entity.Property(e => e.Del_Flag)
                     .HasColumnName("Del_Flag")
                     .HasDefaultValueSql("((0))");
 
-                entity.Property(e => e.LookupId)
+                entity.Property(e => e.Lookup_ID)
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("Lookup_ID");
 
-                entity.Property(e => e.NameValue)
+                entity.Property(e => e.Name_Value)
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("Name_Value");
 
-                entity.Property(e => e.ParamValues)
+                entity.Property(e => e.Param_Values)
                     .IsUnicode(false)
                     .HasColumnName("Param_Values");
 
-                entity.Property(e => e.PlantId)
+                entity.Property(e => e.Plant_ID)
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("Plant_ID");

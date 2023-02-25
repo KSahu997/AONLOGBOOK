@@ -9,6 +9,7 @@ using AONLOGBOOK.API.Models;
 using AONLOGBOOK.SHARED.Models;
 using System.Data;
 using Microsoft.Data.SqlClient;
+using AONLOGBOOK.API.Services;
 
 namespace AONLOGBOOK.API.Controllers
 {
@@ -17,17 +18,23 @@ namespace AONLOGBOOK.API.Controllers
     public class LookupsController : ControllerBase
     {
         private readonly DBContext _context;
+        private readonly SqlService _sql;
 
-        public LookupsController(DBContext context)
+        public LookupsController(DBContext context, SqlService sql)
         {
             _context = context;
+            _sql = sql; 
         }
 
         // GET: api/Lookups
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TblLookup>>> GetTblLookups()
         {
-            return await _context.TblLookups.ToListAsync();
+            SqlParameter[] @params =
+          {
+                 new SqlParameter {ParameterName="@Type",Direction =ParameterDirection.Input,Value="SEL"}
+            };
+            return _sql.getDatas<TblLookup>("SP_Lookup", @params);
         }
 
         // GET: api/Lookups/5
@@ -80,7 +87,7 @@ namespace AONLOGBOOK.API.Controllers
         [HttpPost]
         public async Task<ActionResult> PostTblLookup(TblLookup tblLookup)
         {
-            string sqlQuery = "EXEC [dbo].[SP_Lookup]@Name,@CompanyID,@PlantID,@User,@ID,@Type";
+           // string sqlQuery = "EXEC [dbo].[SP_Lookup]@Name,@CompanyID,@PlantID,@User,@ID,@Type";
             SqlParameter[] @params =
             { 
             // Create parameters    
@@ -91,30 +98,28 @@ namespace AONLOGBOOK.API.Controllers
             new SqlParameter {ParameterName="@ID",Direction =ParameterDirection.Input,Value =(object)tblLookup.Id??DBNull.Value},
             new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="INS"}
             };
-            await _context.Database.ExecuteSqlRawAsync(sqlQuery, @params);
-            return Ok(@params[0].Value);
+            _sql.postData("SP_Lookup",@params);
+            return Ok("Success");
         }
         [HttpPost("upd")]
         public async Task<ActionResult> PostTblLookupbyID(TblLookup tblLookup)
         {
-            string sqlQuery = "EXEC [dbo].[SP_Lookup]@Name,@CompanyID,@PlantID,@User,@ID,@Type";
+            //string sqlQuery = "EXEC [dbo].[SP_Lookup]@Name,@CompanyID,@PlantID,@User,@ID,@Type";
             SqlParameter[] @params =
             { 
             // Create parameters    
             new SqlParameter {ParameterName="@Name",Direction=ParameterDirection.Input,Value=(object)tblLookup.Name??DBNull.Value},
-            new SqlParameter {ParameterName="@CompanyID",Direction=ParameterDirection.Input,Value=(object)tblLookup.CompanyId??DBNull.Value},
-            new SqlParameter {ParameterName="@PlantID",Direction =ParameterDirection.Input,Value =(object)tblLookup.PlantId??DBNull.Value},
             new SqlParameter {ParameterName="@User",Direction =ParameterDirection.Input,Value =(object)tblLookup.CreatedBy??DBNull.Value},
             new SqlParameter {ParameterName="@ID",Direction =ParameterDirection.Input,Value =(object)tblLookup.Id??DBNull.Value},
             new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="UPD"}
             };
-            await _context.Database.ExecuteSqlRawAsync(sqlQuery, @params);
+            _sql.postData("SP_Lookup", @params);
             return Ok(@params[0].Value);
         }
         [HttpPost("del")]
         public async Task<ActionResult> PostTblLookupbyId(TblLookup tblLookup)
         {
-            string sqlQuery = "EXEC [dbo].[SP_Lookup]@Name,@CompanyID,@PlantID,@User,@ID,@Type";
+           // string sqlQuery = "EXEC [dbo].[SP_Lookup]@Name,@CompanyID,@PlantID,@User,@ID,@Type";
             SqlParameter[] @params =
             { 
             // Create parameters    
@@ -125,7 +130,7 @@ namespace AONLOGBOOK.API.Controllers
             new SqlParameter {ParameterName="@ID",Direction =ParameterDirection.Input,Value =(object)tblLookup.Id??DBNull.Value},
             new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="DEL"}
             };
-            await _context.Database.ExecuteSqlRawAsync(sqlQuery, @params);
+            _sql.postData("SP_Lookup", @params);
             return Ok(@params[0].Value);
         }
         // DELETE: api/Lookups/5

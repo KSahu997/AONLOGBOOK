@@ -11,6 +11,7 @@ using AONLOGBOOK.SHARED.CModels;
 using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Reflection;
+using AONLOGBOOK.API.Services;
 
 namespace AONLOGBOOK.API.Controllers
 {
@@ -20,18 +21,26 @@ namespace AONLOGBOOK.API.Controllers
     {
         private readonly DBContext _context;
         private readonly CustomContext _ccontext;
+        private readonly SqlService _sql;
 
-        public LookupValuesController(DBContext context, CustomContext ccontext)
+        public LookupValuesController(DBContext context, CustomContext ccontext, SqlService sql)
         {
             _context = context;
             _ccontext = ccontext;
+            _sql = sql;
         }
 
         // GET: api/LookupValues
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TblLookupValue>>> GetTblLookupValues()
         {
-            return await _context.TblLookupValues.ToListAsync();
+            SqlParameter[] @params =
+            {
+                 new SqlParameter {ParameterName="@Type",Direction =ParameterDirection.Input,Value="SEL"}
+            };
+            return _sql.getDatas<TblLookupValue>("SP_LookupValues", @params);
+             
+            
         }
 
         // GET: api/LookupValues/5
@@ -53,7 +62,7 @@ namespace AONLOGBOOK.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTblLookupValue(Guid id, TblLookupValue tblLookupValue)
         {
-            if (id != tblLookupValue.Id)
+            if (id != tblLookupValue.ID)
             {
                 return BadRequest();
             }
@@ -86,7 +95,7 @@ namespace AONLOGBOOK.API.Controllers
         {
             try
             {
-                string sqlQuery = "EXEC [dbo].[SP_LookupValues] @lookupParams,@nameValue,@companyID,@lookupID,@plantID,@by";
+               // string sqlQuery = "EXEC [dbo].[SP_LookupValues] @lookupParams,@nameValue,@companyID,@lookupID,@plantID,@by";
                 SqlParameter[] @params =
                 { 
             // Create parameters    
@@ -95,11 +104,12 @@ namespace AONLOGBOOK.API.Controllers
             new SqlParameter {ParameterName="@plantID",Direction=ParameterDirection.Input,Value=le.PlantId},
             new SqlParameter {ParameterName="@by",Direction=ParameterDirection.Input,Value=le.CreatedBy},            
             new SqlParameter {ParameterName="@lookupParams",Direction=ParameterDirection.Input,Value=ToDataTable<lookupElement>(le.Tbllookup),SqlDbType=SqlDbType.Structured,TypeName="dbo.tvpLookUp"},
-            new SqlParameter {ParameterName="@lookupID",Direction =ParameterDirection.Input,Value =le.LookupId }
+            new SqlParameter {ParameterName="@lookupID",Direction =ParameterDirection.Input,Value =le.LookupId },
+            new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="INS"}
             };
 
-                await _ccontext.Database.ExecuteSqlRawAsync(sqlQuery, @params);
-                return Ok("success");
+               _sql.postData("SP_LookupValues", @params);
+                return Ok("Success");
             }
             catch (Exception ex)
             {
@@ -129,7 +139,7 @@ namespace AONLOGBOOK.API.Controllers
 
         private bool TblLookupValueExists(Guid id)
         {
-            return _context.TblLookupValues.Any(e => e.Id == id);
+            return _context.TblLookupValues.Any(e => e.ID == id);
         }
         public DataTable ToDataTable<T>(List<T> items)
         {
