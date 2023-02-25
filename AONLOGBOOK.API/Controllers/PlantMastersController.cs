@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using AONLOGBOOK.API.Models;
+using AONLOGBOOK.API.Services;
 using AONLOGBOOK.SHARED.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,50 +18,35 @@ namespace AONLogbookAPI.Controllers
     public class PlantMastersController : ControllerBase
     {
         private readonly DBContext _context;
-
-        public PlantMastersController(DBContext context)
+        private readonly IConfiguration con;
+        private readonly SqlService _sql;
+        public PlantMastersController(DBContext context, SqlService _sqlS, IConfiguration conn)
         {
             _context = context;
+            _sql = _sqlS;
+            con = conn;
         }
 
         // GET: api/PlantMasters
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TblPlantMaster>>> GetTblPlantMasters()
         {
-            return await _context.TblPlantMasters.ToListAsync();
+            SqlParameter[] @params =
+            {
+                new SqlParameter{ParameterName="@Type",Direction=ParameterDirection.Input,Value="SEL"}
+            };
+            return _sql.getDatas<TblPlantMaster>("sp_Plant_Master", @params);
         }
 
-        //GET: api/PlantMasters/
-        //[HttpGet("{id}")]
-        //public async Task<ActionResult<TblPlantMaster>> GetTblPlantMaster(int id)
-        //{
-        //    var tblPlantMaster = await _context.TblPlantMasters.FindAsync(id);
-
-        //    if (tblPlantMaster == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return tblPlantMaster;
-        //}
-        //[HttpGet("{Company_Id}")]
-        //public async Task<TblPlantMaster> GetTblPlantMasterByCompanyID(string Company_Id)
-        //{
-        //    var tblPlantMaster = await _context.TblPlantMasters.FirstOrDefaultAsync((a) => a.CompanyId);
-
-
-        //    //if (tblPlantMaster == null)
-        //    //{
-        //    //    return NotFound();
-        //    //}
-
-        //    return tblPlantMaster;
-        //}
+        
         [HttpGet("{Company_Id}")]
         public async Task<IEnumerable<TblPlantMaster>> GetTblPlantMasterByCompanyID(string Company_Id)
         {
-
-            return await _context.TblPlantMasters.FromSqlRaw("Sp_ListPlant'"+Company_Id+"'").ToListAsync();
+            SqlParameter[] @params =
+           {
+                new SqlParameter{ParameterName="@company_id",Direction=ParameterDirection.Input,Value=Company_Id}
+            };
+            return _sql.getDatas<TblPlantMaster>("Sp_ListPlant", @params);
 
 
 
@@ -103,26 +89,26 @@ namespace AONLogbookAPI.Controllers
             public async Task<ActionResult> PostTblPlantMasters(TblPlantMaster tblPlantMaster)
             {
 
-                string sqlQuery = "EXEC[dbo].[sp_Plant_Master] @Plant_Name,@Address,@Country,@State,@City,@Pin,@Email,@Phone,@Company_Id,@By,@Type,@message=@message OUT";
+               // string sqlQuery = "EXEC[dbo].[sp_Plant_Master] @Plant_Name,@Address,@Country,@State,@City,@Pin,@Email,@Phone,@Company_Id,@By,@Type,@message=@message OUT";
                 SqlParameter[] @params =
                 { 
-            // Create parameters    
-            new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="INS"},
-            new SqlParameter {ParameterName="@Plant_Name",Direction=ParameterDirection.Input,Value=tblPlantMaster.PlantName},
-            new SqlParameter {ParameterName="@Address",Direction=ParameterDirection.Input,Value=(object)tblPlantMaster.Address??DBNull.Value},
-            new SqlParameter {ParameterName="@Country",Direction=ParameterDirection.Input,Value=(object)tblPlantMaster.Country??DBNull.Value},
-            new SqlParameter {ParameterName="@State",Direction=ParameterDirection.Input,Value=(object)tblPlantMaster.State??DBNull.Value},
-            new SqlParameter {ParameterName="@City",Direction=ParameterDirection.Input,Value=(object)tblPlantMaster.City??DBNull.Value},
-            new SqlParameter {ParameterName="@Pin",Direction =ParameterDirection.Input,Value = (object)tblPlantMaster.PinCode??DBNull.Value},
-            new SqlParameter {ParameterName="@Email",Direction =ParameterDirection.Input,Value = (object)tblPlantMaster.Email??DBNull.Value},
-            new SqlParameter {ParameterName="@Phone",Direction =ParameterDirection.Input,Value = (object)tblPlantMaster.PhoneNo??DBNull.Value},
-            new SqlParameter {ParameterName="@Company_Id",Direction =ParameterDirection.Input,Value = (object)tblPlantMaster.CompanyId??DBNull.Value},
-            new SqlParameter {ParameterName="@By",Direction=ParameterDirection.Input,Value=(object)tblPlantMaster.CreatedBy??DBNull.Value},
-            new SqlParameter {ParameterName="@message",SqlDbType=SqlDbType.NVarChar,Size=50,Direction = ParameterDirection.Output}
-            };
+                    // Create parameters    
+                    new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="INS"},
+                    new SqlParameter {ParameterName="@Plant_Name",Direction=ParameterDirection.Input,Value=tblPlantMaster.PlantName},
+                    new SqlParameter {ParameterName="@Address",Direction=ParameterDirection.Input,Value=(object)tblPlantMaster.Address??DBNull.Value},
+                    new SqlParameter {ParameterName="@Country",Direction=ParameterDirection.Input,Value=(object)tblPlantMaster.Country??DBNull.Value},
+                    new SqlParameter {ParameterName="@State",Direction=ParameterDirection.Input,Value=(object)tblPlantMaster.State??DBNull.Value},
+                    new SqlParameter {ParameterName="@City",Direction=ParameterDirection.Input,Value=(object)tblPlantMaster.City??DBNull.Value},
+                    new SqlParameter {ParameterName="@Pin",Direction =ParameterDirection.Input,Value = (object)tblPlantMaster.PinCode??DBNull.Value},
+                    new SqlParameter {ParameterName="@Email",Direction =ParameterDirection.Input,Value = (object)tblPlantMaster.Email??DBNull.Value},
+                    new SqlParameter {ParameterName="@Phone",Direction =ParameterDirection.Input,Value = (object)tblPlantMaster.PhoneNo??DBNull.Value},
+                    new SqlParameter {ParameterName="@Company_Id",Direction =ParameterDirection.Input,Value = (object)tblPlantMaster.CompanyId??DBNull.Value},
+                    new SqlParameter {ParameterName="@By",Direction=ParameterDirection.Input,Value=(object)tblPlantMaster.CreatedBy??DBNull.Value},
+                    new SqlParameter {ParameterName="@message",SqlDbType=SqlDbType.NVarChar,Size=50,Direction = ParameterDirection.Output}
+                };
             
-                await _context.Database.ExecuteSqlRawAsync(sqlQuery, @params);
-            return Ok(@params[11].Value);
+               _sql.postData("sp_Plant_Master", @params);
+                return Ok(@params[11].Value);
 
 
         }

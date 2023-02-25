@@ -30,7 +30,7 @@
                         <Validation Validator="ValidationRule.IsNotEmpty">
                        <Field ColumnSize="ColumnSize.Is12.OnDesktop.Is12.OnMobile">
                             <FieldLabel>Department Name</FieldLabel>
-                            <TextEdit @bind-Text="@Dept.DeptName"></TextEdit>
+                            <TextEdit @bind-Text="@Dept.Dept_Name"></TextEdit>
                              <Feedback>
                                  <ValidationSuccess/>
                                 <ValidationError>Enter name</ValidationError>
@@ -74,7 +74,7 @@ else
         </Field>
         <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
             <FieldLabel>Plant</FieldLabel>
-            <Select SelectedValue="Dept.PlantId" SelectedValueChanged="@((string arg)=>{HandlePlantList(arg);})"SelectedValueExpression="@(()=>Dept.PlantId)" >
+            <Select SelectedValue="Dept.Plant_Id" SelectedValueChanged="@((string arg)=>{HandlePlantList(arg);})"SelectedValueExpression="@(()=>Dept.Plant_Id)" >
                 <SelectItem>--Select Plant--</SelectItem>
                 @if(PlantList!=null)
                 {
@@ -87,7 +87,7 @@ else
         </Field>
         <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
             @ChildContent
-            <Button Margin="Margin.Is3" style="margin-top:10px;background:#659abb;color:#000;" @onclick="@AddDept" Disabled=@(plant.CompanyId==null||Dept.PlantId==null)>Add</Button>
+            <Button Margin="Margin.Is3" style="margin-top:10px;background:#659abb;color:#000;" @onclick="@AddDept" Disabled=@(plant.CompanyId==null||Dept.Plant_Id==null)>Add</Button>
         </Field>
       </Fields>
         <div class="row">
@@ -101,7 +101,7 @@ else
                             <div class="faq-container">
                                 <div class="card w-100" style="border-top: 1px solid #FF6E31;">
                                    <details class="d-flex m-2">
-                                    <summary style="margin-left:10px;"><i class="fa fa-city p-2" style="color:#243763;"></i>@item.DeptName</summary>
+                                    <summary style="margin-left:10px;"><i class="fa fa-city p-2" style="color:#243763;"></i>@item.Dept_Name</summary>
                                         <p style="margin-left:15px;">
                                              
                                         <Button class="btn btnEdit p-1" @onclick=@(()=>handleEditDept(item))><i class="fa fa-pen p-2" /></Button>
@@ -147,13 +147,13 @@ else
         {
             try
             {
-                Dept.CompanyId = PlantList.First(a => (a.Id.ToString() == plantId)).CompanyId;
-                Dept.CreatedBy = "Admin";
+                Dept.Company_Id = PlantList.First(a => (a.Id.ToString() == plantId)).CompanyId;
+                Dept.Created_By = "Admin";
                 var data = await httpservice.Post<string>("DeptMasters", Dept);
                 if (data != null)
                 {
                     await App.Current.MainPage.DisplayAlert("Message", data, "ok");
-                    Dept.DeptName = string.Empty;
+                    Dept.Dept_Name = string.Empty;
                 }
                 else
                 {
@@ -175,8 +175,8 @@ else
     protected override async Task OnInitializedAsync()
     {
         companies = await httpservice.Get<List<TblCompanyMaster>>("CompanyMasters");
-        Dept.PlantId = plantId;
-        DeptList = (await httpservice.Get<List<TblDeptMaster>>("DeptMasters")).Where(a => (a.PlantId == plantId));
+        Dept.Plant_Id = plantId;
+        DeptList = (await httpservice.Get<List<TblDeptMaster>>("DeptMasters")).Where(a => (a.Plant_Id == plantId));
         StateHasChanged();
 
     }
@@ -199,7 +199,7 @@ else
     {
         selectdept = new TblDeptMaster();
         isDialogOpen = true;
-        selectdept.PlantId = plantId;
+        selectdept.Plant_Id = plantId;
     }
     void back(){
         selectdept=null;
@@ -218,9 +218,9 @@ else
     }
     async void HandlePlantList(string val)
     {
-        Dept.PlantId = val;
-        DeptList = (await httpservice.Get<List<TblDeptMaster>>("DeptMasters")).Where(a => (a.PlantId == Dept.PlantId));
-        plantId = Dept.PlantId;
+        Dept.Plant_Id = val;
+        DeptList = (await httpservice.Get<List<TblDeptMaster>>("DeptMasters")).Where(a => (a.Plant_Id == Dept.Plant_Id));
+        plantId = Dept.Plant_Id;
         StateHasChanged();
     }
 }

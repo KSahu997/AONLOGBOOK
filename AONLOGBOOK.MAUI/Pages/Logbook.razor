@@ -7,30 +7,14 @@
     }
 
     input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
+    input::-webkit-inner-spin-button
+    {
         -webkit-appearance: none;
         margin: 0;
     }
 
     input[type=number] {
         -moz-appearance: textfield;
-    }
-
-    .table-scroll tbody {
-        position: absolute;
-        overflow-y: scroll;
-        overflow-x: scroll;
-        height: 250px;
-    }
-
-    .table-scroll tr {
-        width: 100%;
-        table-layout: fixed;
-        display: inline-table;
-    }
-
-    .table-scroll thead > tr > th {
-        border: none;
     }
 
 </style>
@@ -95,7 +79,7 @@ else
                             {
                                 @foreach (TblDeptMaster dept in deptList)
                                 {
-                                    <SelectItem Value="@dept.Id">@dept.DeptName</SelectItem>
+                                    <SelectItem Value="@dept.Id">@dept.Dept_Name</SelectItem>
                                 }
                             }
                 </Select>  
@@ -145,15 +129,8 @@ else
             }
         }
    </div>
-      
-     
-
-     
   
 }
-
-
-
 @code {
     IEnumerable<LogbookMaster> logbookMasters;
     TblLogbookMaster logbookmst = new();
