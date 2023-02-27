@@ -1,4 +1,5 @@
 ﻿using AONLOGBOOK.API.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,5 +27,10 @@ namespace AONLOGBOOK.API.Service
             }
             return param;
         }
-    }
+
+		internal ActionResult<T> SqlCall<T>(string v)
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

@@ -1,0 +1,202 @@
+﻿@page "/Equipment"
+
+@inject IHttpService httpservices
+@using System.Data;
+
+
+@if (isDialogOpen == true)
+{
+	@if (selectedequipment != null)
+	{
+		<CModal EquipmentMaster="selectedequipment" title="Create Equipment" mstDatasChanged="HandleAddFnc">
+			<ChildContent1>
+				<EditForm Model="@tblEquipmentMaster" OnValidSubmit="submit">
+					<div class="row m-2">
+						<Fields>
+							<Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+								<FieldLabel>Equipment Name</FieldLabel>
+								<TextEdit @bind-Text="tblEquipmentMaster.Equipment_Name"></TextEdit>
+							</Field>
+							<Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+								<FieldLabel>Equipment Code</FieldLabel>
+								<TextEdit @bind-Text="tblEquipmentMaster.Equipment_Code"></TextEdit>
+							</Field>
+							<Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+							</Field>
+						</Fields>
+					</div>
+					<div class="row m-1">
+						<div class="col-md-12 d-flex mb-3 justify-content-center">
+							<Button Type="ButtonType.Submit" Color="Color.Success" class="mt-2" Margin="Margin.Is2">@(IsNew ? "SUBMIT" : "UPDATE")</Button>
+								<Button Type="ButtonType.Reset" Color="Color.Secondary" class="mt-2" Margin="Margin.Is2">RESET</Button>
+								<Button Type="ButtonType.Button" Color="Color.Warning" class="m-2" onclick="@HandleCancelled">CANCEL</Button>
+							</div>
+						</div>
+					</EditForm>
+				</ChildContent1>
+			</CModal>
+	}
+}
+<Div class="container" Padding="Padding.Is3">
+	<Field>
+		<Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+			<Heading Size="HeadingSize.Is4" TextAlignment="TextAlignment.Center">Equipment</Heading>
+		</Field>
+	</Field>
+	<Card Padding="Padding.Is3" Margin="Margin.Is2">
+
+		<Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+			<FieldLabel>Work Center Name</FieldLabel>
+			<Select SelectedValue="tblEquipmentMaster.WorkCenter_ID" SelectedValueChanged="@((string args)=>{HandleFnc(args);})" SelectedValueExpression="@(()=>tblEquipmentMaster.WorkCenter_ID)">
+
+				<SelectItem>--SELECT--</SelectItem>
+				@if (workcentermst != null)
+				{
+					@foreach (TblWorkCenterMaster cms in workcentermst)
+					{
+						<SelectItem Value="@cms.Id">@cms.WorkCenterName</SelectItem>
+					}
+				}
+			</Select>
+		</Field>
+		<Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+			<FieldLabel>Functional Location</FieldLabel>
+			<Select SelectedValue="tblEquipmentMaster.Func_Location_ID" SelectedValueChanged="@((string args)=>{HandleEquipment(args);})" SelectedValueExpression="@(()=>tblEquipmentMaster.Func_Location_ID)">
+
+				<SelectItem>--SELECT--</SelectItem>
+				@if (functionalList != null)
+				{
+					@foreach (TblFunctionalLocationMaster fl in functionalList)
+					{
+						<SelectItem Value="@fl.Id">@fl.FunctionalLocation</SelectItem>
+					}
+				}
+			</Select>
+		</Field>
+		<Field ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile">
+			<Button Background="Background.Primary" Margin="Margin.Is4" @onclick="@AddEquipment" Disabled=@(tblEquipmentMaster.WorkCenter_ID==null|| string.IsNullOrEmpty(tblEquipmentMaster.WorkCenter_ID))>ADD</Button>
+		</Field>
+	</Card>
+</Div>
+<div class="col-md-12">
+
+	@if (equipmentlist != null)
+	{
+		@foreach (var item in equipmentlist)
+		{
+			<div id="accordion">
+				<div class="faq-container m-2 ">
+					<div class="card w-100" style="border-top: 1px solid #FF6E31;">
+						<div class="row">
+							<details class="d-flex m-2">
+								<summary style="margin-left:10px"><b class="pt-2 fa fa-location" style="color:darkblue">@item.Equipment_Name</b> </summary>
+								<p style="margin-left:10px">
+									<ListGroup>
+										<ListGroupItem><b>SR_No</b>  @(equipmentlist.ToList().IndexOf(item) + 1)</ListGroupItem>
+											<ListGroupItem><b>Equipment Name</b>  @item.Equipment_Name</ListGroupItem>
+											<ListGroupItem><b>Equipment Code</b>  @item.Equipment_Code</ListGroupItem>
+										</ListGroup>
+										<Field>
+											<Button class="mt-2" Background="Background.Info" Clicked="@(()=>{Edit(item);})">EDIT</Button>
+											<Button class="mt-2" Background="Background.Danger" Clicked="@(()=>{Delete(item);})">@(item.Del_Flag != 1 ? "Delete" : "UnDelete")</Button>
+										</Field>
+									</p>
+								</details>
+							</div>
+						</div>
+
+					</div>
+				</div>
+		}
+	}
+</div>
+
+
+
+@code {
+	TblEquipmentMaster tblEquipmentMaster = new();
+	IEnumerable<TblWorkCenterMaster> workcentermst;
+	IEnumerable<TblEquipmentMaster> equipmentlist;
+	IEnumerable<TblFunctionalLocationMaster> functionalList;
+	bool IsNew = true;
+	bool? DispDatas;
+	bool? isDialogOpen;
+	[Parameter]
+	public EventCallback<bool> mstDataChanged { get; set; }
+	string funcloc;
+	[Parameter]
+	public RenderFragment ChildContent { get; set; }
+	TblEquipmentMaster? selectedequipment;
+
+	protected override async Task OnInitializedAsync()
+	{
+		workcentermst = (await httpservices.Get<List<TblWorkCenterMaster>>("WorkCenterMasters/GetList")).Where(a => a.DelFlag != 1);
+		
+	}
+	async void submit(){
+
+	}
+	async void HandleEquipment(string value)
+	{
+		tblEquipmentMaster.Func_Location_ID = value;
+		
+	}
+	void HandleCancelled()
+	{
+		selectedequipment = null;
+		DispDatas = false;
+		isDialogOpen = false;
+	}
+	async void HandleFnc(string value)
+	{
+		tblEquipmentMaster.WorkCenter_ID = value;
+
+		functionalList = (await httpservices.Get<List<TblFunctionalLocationMaster>>("FunctionalLocationMasters/GetList")).Where(a => (a.WorkCenterId == tblEquipmentMaster.WorkCenter_ID));
+		funcloc = tblEquipmentMaster.WorkCenter_ID;
+		StateHasChanged();
+	}
+	async void AddEquipment()
+	{
+		selectedequipment = new TblEquipmentMaster();
+		isDialogOpen = true;
+		selectedequipment.Func_Location_ID = funcloc;
+	}
+	async void Edit(TblEquipmentMaster item)
+	{
+		isDialogOpen = true;
+		selectedequipment = item;
+		tblEquipmentMaster = selectedequipment;
+		IsNew = false;
+
+		StateHasChanged();
+	}
+	async void Delete(TblEquipmentMaster item)
+	{
+		try
+		{
+
+			item.Del_Flag = item.Del_Flag == 0 ? 1 : 0;
+			var delete = await httpservices.Post<string>("FunctionalLocationMasters/delete", item);
+			if (delete != null)
+			{
+				await App.Current.MainPage.DisplayAlert("Message", delete, "ok");
+				IsNew = true;
+				StateHasChanged();
+			}
+			else
+			{
+				await App.Current.MainPage.DisplayAlert("Message", "Error", "ok");
+			}
+		}
+		catch (Exception ex)
+		{
+			item.Del_Flag = 0;
+
+		}
+	}
+	void HandleAddFnc()
+	{
+		selectedequipment = null;
+		isDialogOpen = null;
+	}
+}

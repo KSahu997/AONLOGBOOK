@@ -215,26 +215,26 @@ namespace AONLOGBOOK.API.Models
 
                 entity.ToTable("tbl_Equipment_Master");
 
-                entity.Property(e => e.CompanyId)
+                entity.Property(e => e.Company_ID)
                     .HasMaxLength(200)
                     .IsUnicode(false)
                     .HasColumnName("Company_ID");
 
-                entity.Property(e => e.DelFlag)
+                entity.Property(e => e.Del_Flag)
                     .HasColumnName("Del_Flag")
                     .HasDefaultValueSql("((0))");
 
-                entity.Property(e => e.EquipmentCode)
+                entity.Property(e => e.Equipment_Code)
                     .HasMaxLength(200)
                     .IsUnicode(false)
                     .HasColumnName("Equipment_Code");
 
-                entity.Property(e => e.EquipmentName)
+                entity.Property(e => e.Equipment_Name)
                     .HasMaxLength(200)
                     .IsUnicode(false)
                     .HasColumnName("Equipment_Name");
 
-                entity.Property(e => e.FuncLocationId)
+                entity.Property(e => e.Func_Location_ID)
                     .HasMaxLength(200)
                     .IsUnicode(false)
                     .HasColumnName("Func_Location_ID");
@@ -243,16 +243,16 @@ namespace AONLOGBOOK.API.Models
                     .HasColumnName("ID")
                     .HasDefaultValueSql("(newid())");
 
-                entity.Property(e => e.InsertedBy)
+                entity.Property(e => e.Inserted_By)
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("Inserted_By");
 
-                entity.Property(e => e.InsertedOn)
+                entity.Property(e => e.Inserted_On)
                     .HasColumnType("datetime")
                     .HasColumnName("Inserted_On");
 
-                entity.Property(e => e.PlantId)
+                entity.Property(e => e.Plant_ID)
                     .HasMaxLength(200)
                     .IsUnicode(false)
                     .HasColumnName("Plant_ID");
@@ -266,7 +266,7 @@ namespace AONLOGBOOK.API.Models
                     .HasColumnType("datetime")
                     .HasColumnName("Updated_On");
 
-                entity.Property(e => e.WorkCenterId)
+                entity.Property(e => e.WorkCenter_ID)
                     .HasMaxLength(200)
                     .IsUnicode(false)
                     .HasColumnName("WorkCenter_ID");

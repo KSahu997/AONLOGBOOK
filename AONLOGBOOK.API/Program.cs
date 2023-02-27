@@ -1,5 +1,6 @@
 using AONLOGBOOK.API.Models;
 using AONLOGBOOK.API.Service;
+using AONLOGBOOK.API.Services;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +14,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DBContext>();
 builder.Services.AddDbContext<CustomContext>();
 builder.Services.AddScoped<SqlADO>();
-
+builder.Services.AddSingleton<SqlService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
