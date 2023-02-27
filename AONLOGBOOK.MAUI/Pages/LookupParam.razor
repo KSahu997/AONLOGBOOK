@@ -90,9 +90,9 @@
     }
     async void submit()
     {
-        tblLookupParam.Created_By = "Admin";
-        tblLookupParam.Company_ID = Deptlist.First().Company_Id.ToString();
-        tblLookupParam.Plant_ID = Deptlist.First().Plant_Id.ToString();
+        tblLookupParam.CreatedBy = "Admin";
+        tblLookupParam.CompanyId = Deptlist.First().Company_Id.ToString();
+        tblLookupParam.PlantId = Deptlist.First().Plant_Id.ToString();
         //  tblLookupParam.LookupId = lookuplist.First().Id.ToString();
         var data = await httpservice.Post<string>("LookupParams", tblLookupParam);
         if(data != null)
