@@ -3,16 +3,7 @@
 
 @inject IHttpService httpservice
 <style>
-    .btnEdit {
-        background-color: #11324D;
-        color: whitesmoke;
-    }
-
-    .btnAdd {
-        background-color: #11324D;
-        color: whitesmoke;
-    }
-
+    
     ::marker {
         content: close-quote;
         unicode-bidi: isolate;
@@ -136,12 +127,14 @@ else
 
                     @if (PlantList != null)
                     {
-                        @foreach (var item in PlantList)
-                        {
-                            <div id="accordion">
-                                <div class="faq-container m-2 ">
-                                    <div class="card w-100" style="border-top: 1px solid #FF6E31;">
-                                        <div class="row">
+                        
+                       <Div Display="Display.Block.None.OnDesktop" >
+                            @foreach (var item in PlantList)
+                            {
+                                <div id="accordion">
+                                    <div class="faq-container m-2 ">
+                                        <div class="card w-100" style="border-top: 1px solid #FF6E31;">
+                                      
                                             <details class="d-flex m-2">
                                                 <summary style="margin-left:10px;"><i class="fa fa-city p-2" style="color:#243763;"></i>@item.Plant_Name</summary>
                                                 <p style="margin-left:10px;">
@@ -153,22 +146,85 @@ else
                                                         <ListGroupItem><b>Postal Code</b>  @item.PinCode</ListGroupItem>
                                                     </ListGroup>
                                                     <Field>
-                                                        <Button class="btn btnEdit p-1 m-1" style="font-size:13px;" Clicked="@(()=>handleEditPlant(item))"><i class="fa fa-pen p-2" /></Button>
-                                                        <Button class="btn btn-danger p-1 m-1" style="font-size:13px;"><i class="fa fa-trash p-2" /></Button>
+                                                    <Dropdown>
+                                                        <Button Color="Color.Primary">Action</Button>
+                                                        <DropdownToggle Color="Color.Primary" Split />
+                                                        <DropdownMenu>
+                                                            <DropdownItem Clicked="@(()=>handleEditPlant(item))">Edit</DropdownItem>
+                                                            <DropdownDivider />
+                                                            <DropdownItem Clicked="@(()=>handalDelPlant(item))">Delete</DropdownItem>
+
+                                                        </DropdownMenu>
+                                                    </Dropdown>
+                                                      
                                                     </Field>
                                                 </p>
                                             </details>
+                                        
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        }
+                            }
+                        </Div>
                     }
+                <Div Display="Display.None.Block.OnDesktop">
+                    @if (companies != null)
+                    {
+                        <Table>
+                            <TableHeader>
+
+                                <TableRow>
+
+                                    <TableHeaderCell>Plant Name</TableHeaderCell>
+                                    <TableHeaderCell>Email</TableHeaderCell>
+                                    <TableHeaderCell>City</TableHeaderCell>
+                                    <TableHeaderCell>State</TableHeaderCell>
+                                    <TableHeaderCell>Country</TableHeaderCell>
+                                    <TableHeaderCell>Pin Code</TableHeaderCell>
+                                    <TableHeaderCell>Operation</TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                @foreach (var item in PlantList)
+                                {
+                                    <TableRowGroup Title="@item.Plant_Name">
+                                        <TableRow>
+                                            <TableRowCell>@item.Plant_Name</TableRowCell>
+                                            <TableRowCell>@item.Email</TableRowCell>
+                                            <TableRowCell>@item.City</TableRowCell>
+                                            <TableRowCell>@item.State</TableRowCell>
+                                            <TableRowCell>@item.Country</TableRowCell>
+                                            <TableRowCell>@item.PinCode</TableRowCell>
+
+
+                                            <TableRowCell>
+                                                <Dropdown>
+                                                    <Button Color="Color.Primary">Action</Button>
+                                                    <DropdownToggle Color="Color.Primary" Split />
+                                                    <DropdownMenu>
+                                                        <DropdownItem Clicked="@(()=>handleEditPlant(item))">Edit</DropdownItem>
+                                                        <DropdownDivider />
+                                                        <DropdownItem Clicked="@(()=>handalDelPlant(item))">Delete</DropdownItem>
+
+                                                    </DropdownMenu>
+                                                </Dropdown>
+                                            </TableRowCell>
+
+                                        </TableRow>
+
+                                    </TableRowGroup>
+                                }
+                            </TableBody>
+                        </Table>
+                    }
+
+                </Div>
+
                 </div>
             </div>
    
       
-            </div>
+     </div>
 }
 
 
@@ -187,53 +243,93 @@ else
     IEnumerable<TblPlantMaster> PlantList;
     bool? DispDatas;
     bool? isDialogOpen;
+    bool? isnew = true;
     TblPlantMaster? selectedplant;
     protected override async Task OnInitializedAsync()
     {
         companies = await httpservice.Get<List<TblCompanyMaster>>("CompanyMasters");
         tblPlant.Company_Id = cmpId;
-        PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters")).Where(a => (a.Company_Id == tblPlant.Company_Id));
+        PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters/ACT")).Where(a => (a.Company_Id == tblPlant.Company_Id));
     }
     async void submit()
     {
-        try
+        if(isnew==true)
         {
-            if (tblPlant.Company_Id != null && tblPlant.Plant_Name != "")
+            try
             {
-                tblPlant.Company_Id = companies.First(a => (a.ID.ToString() == cmpId)).ID.ToString();        
-                tblPlant.Created_By = "Admin";
-                var result = await httpservice.Post<string>("PlantMasters", tblPlant);
-
-                if (result != null)
+                if (tblPlant.Company_Id != null && tblPlant.Plant_Name != "")
                 {
-                    await App.Current.MainPage.DisplayAlert("Message", result, "Ok");
+                    tblPlant.Company_Id = companies.First(a => (a.ID.ToString() == cmpId)).ID.ToString();        
+                    tblPlant.Created_By = "Admin";
+                    var result = await httpservice.Post<string>("PlantMasters", tblPlant);
+
+                    if (result != null)
+                    {
+                        await App.Current.MainPage.DisplayAlert("Message", result, "Ok");
+
+                    }
+                    else
+                    {
+                        await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
+
+                    }
 
                 }
-                else
+
+            }catch(Exception ex)
+            {
+
+            }
+
+            HandleCancel();
+            PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters")).Where(a => (a.Company_Id == tblPlant.Company_Id));
+            await OnInitializedAsync();
+            tblPlant = new();
+            StateHasChanged();
+        }
+        else
+        {
+            try
+            {
+                if (tblPlant.Company_Id != null && tblPlant.Plant_Name != "")
                 {
-                    await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
+                    tblPlant.Company_Id = companies.First(a => (a.ID.ToString() == cmpId)).ID.ToString();
+                    tblPlant.Created_By = "Admin";
+                    tblPlant.Status_F = 0;
+                    var result = await httpservice.Post<string>("PlantMasters/UPD", tblPlant);
+
+                    if (result != null)
+                    {
+                        await App.Current.MainPage.DisplayAlert("Message", result, "Ok");
+
+                    }
+                    else
+                    {
+                        await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
+
+                    }
 
                 }
 
             }
+            catch (Exception ex)
+            {
 
-        }catch(Exception ex)
-        {
+            }
 
+            HandleCancel();
+            PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters")).Where(a => (a.Company_Id == tblPlant.Company_Id));
+            await OnInitializedAsync();
+            tblPlant = new();
+            StateHasChanged();
         }
-
-        HandleCancel();
-        PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters")).Where(a => (a.Company_Id == tblPlant.Company_Id));
-        await OnInitializedAsync();
-        tblPlant.Plant_Name = string.Empty;
-        StateHasChanged();
-
     }
-    async void handleAddnewDept(TblPlantMaster item)
-    {
-        selectedplant = item;
-        DispDatas = true;
-    }
+    //async void handleAddnewDept(TblPlantMaster item)
+    //{
+    //    selectedplant = item;
+
+    //    DispDatas = true;
+    //}
     void handleDataSaved()
     {
         selectedplant = null;
@@ -245,6 +341,7 @@ else
         selectedplant = null;
         DispDatas = false;
         isDialogOpen = false;
+
     }
     void AddPlant()
     {
@@ -267,7 +364,28 @@ else
     void handleEditPlant(TblPlantMaster item)
     {
         selectedplant = item;
+        tblPlant = selectedplant;
         isDialogOpen = true;
+        isnew = false;
+
+    }
+   async  void handalDelPlant(TblPlantMaster item)
+    {
+        item.Status_F = 1;
+        var result = await httpservice.Post<string>("PlantMasters/UPD", item);
+
+        if (result != null)
+        {
+            await App.Current.MainPage.DisplayAlert("Message", "Plant Deleted Successfully", "Ok");
+        }
+        else
+        {
+
+            await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
+
+        }
+
+        StateHasChanged();
     }
 
     async void handlePlant(string val)

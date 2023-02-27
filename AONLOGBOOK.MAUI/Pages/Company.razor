@@ -1,7 +1,7 @@
 ﻿@page "/Company"
 @using System.ComponentModel.DataAnnotations
 @using AONLOGBOOK.SHARED.Models;
-@inject IHttpService httpservice
+@inject IHttpService httpservice;
 
 <style>
    
@@ -30,20 +30,6 @@
             color: #545d7a;
         }
 
-    .card{
-        background-color:transparent;
-    }
-   
-    .buttonback{
-        background: #1c7266;
-        color:#fff;
-    }
-    
-    .btncancel{
-        background: linear-gradient(to top, #480b2a 0%, #fff 100%);
-        color:#fff;
-    }
-
     ::marker {
         content:close-quote;
         unicode-bidi: isolate;
@@ -54,28 +40,8 @@
         text-align-last: start !important;
     }
 
-    .btnEdit{
-        background-color:#11324D;
-        color:whitesmoke;
-    }
-    .btnEdit:hover{
-        color:#fff;
-    }
-    .btnAdd{
-        background-color: #11324D;
-        color: whitesmoke;
-    }
-
-    .btnAdd:hover {
-        color: #fff;
-    }
-    .row{
-        margin: 20px;
-        padding: 20px;
-        border: 1px solid white;
-        border-radius: 10px;
-        box-shadow: 2px 2px 5px 5px #dcdfe7;
-    }
+    
+   
 </style>
 
 @if (isDialogOpen== true)
@@ -86,7 +52,7 @@
         {
      
         }
-          <CModal company="@tblCompanyMaster" title=" Create New Company" mstDatasChanged="@HandleAddcompany">
+        <CModal company="@selectedcompany" title=" Create New Company" mstDatasChanged="@HandleAddcompany">
                 <ChildContent1>
 
                     <EditForm Model="@tblCompanyMaster" OnValidSubmit="submit">
@@ -164,7 +130,7 @@ else
 
 
 <div class="Container">
-       <div class="row" >
+       <div class="row m-3" >
          <Heading Size="HeadingSize.Is4" Flex="Flex.JustifyContent.Center.OnDesktop">COMPANY(s)</Heading>
             <div class="col-md-12">
                 <Button class="btn" style="margin:10px;" Color="Color.Info" @onclick="@Addcompany"><BarIcon IconName="IconName.Add" ></BarIcon>
@@ -173,6 +139,7 @@ else
   
                           @if (companies != null)
                             {
+                                <Div Display="Display.Block.None.OnDesktop" >
                                 @foreach (var item in companies.Where(a => (a.Status_F == 0)))
                                 {
                                  <div id="accordion">
@@ -182,31 +149,89 @@ else
                                         <details class="d-flex m-2">
                                         <summary><i class="fa fa-city p-2" style="color:#243763;font-size:18px;"></i><Span style="font-size:16px;">@item.Company_Name</Span></summary>
                                         <p style="margin-left:10px;">
-                                       <ListGroup>
-                                           <ListGroupItem><b>Email</b>   @item.Email</ListGroupItem>
-                                           <ListGroupItem> <b>Mobile Number</b>  @item.Phone_no</ListGroupItem>
+                                            <ListGroup>
+                                                <ListGroupItem><b>Email</b>   @item.Email</ListGroupItem>
+                                                <ListGroupItem> <b>Mobile Number</b>  @item.Phone_no</ListGroupItem>
                                                 <ListGroupItem><b>GSTIN</b>  @item.GST_no</ListGroupItem>
                                                 <ListGroupItem> <b>City</b>  @item.City</ListGroupItem>
                                                 <ListGroupItem><b>Country</b>  @item.Country</ListGroupItem>
                                                 <ListGroupItem><b>State</b>  @item.State</ListGroupItem>
                                                 <ListGroupItem><b>Postal Code</b>  @item.PinCode</ListGroupItem>
-                                       </ListGroup>
-                                       <Field>
-                                                <Button class="btn btnEdit p-1 m-1" style="font-size:13px;" Clicked="@(()=>handalEditcompany(item))"><i class="fa fa-pen p-2" /></Button>
-                                                <Button class="btn btn-danger p-1 m-1" style="font-size:13px;" Clicked="@(()=>handalDelCompany(item))"><i class="fa fa-trash p-2" /></Button>
-                                                
-
-                                       </Field>
-                                               
-                                                </p>
-                                         
-                                           </details>
-                                </div>
-
-                            </div>
-                                        </div>                                        
+                                            </ListGroup>
+                                            <Field>
+                                                    <Dropdown>
+                                                        <Button Color="Color.Primary">Action</Button>
+                                                        <DropdownToggle Color="Color.Primary" Split />
+                                                        <DropdownMenu>
+                                                            <DropdownItem Clicked="@(()=>handalEditcompany(item))">Edit</DropdownItem>
+                                                            <DropdownDivider />
+                                                            <DropdownItem Clicked="@(()=>handalDelCompany(item))">Delete</DropdownItem>
+                                                        </DropdownMenu>
+                                                    </Dropdown>
+                                            </Field>
+                                         </p>
+                                        </details>
+                                              </div>
+                                        </div>
+                                 </div>                                        
                                 }
+                                </Div>
                             }
+
+                           <Div Display="Display.None.Block.OnDesktop">
+                                @if (companies != null)
+                                {
+                                <Table>
+                                <TableHeader>
+
+                                <TableRow>
+                                   
+                                        <TableHeaderCell>Company_Name</TableHeaderCell>
+                                        <TableHeaderCell>Email</TableHeaderCell>
+                                        <TableHeaderCell>Phone_no</TableHeaderCell>
+                                        <TableHeaderCell>GST_no</TableHeaderCell>
+                                        <TableHeaderCell>City</TableHeaderCell>
+                                        <TableHeaderCell>State</TableHeaderCell>
+                                        <TableHeaderCell>Country</TableHeaderCell>
+                                        <TableHeaderCell>Operation</TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                @foreach (var item in companies)
+                                {
+                                    <TableRowGroup Title="@item.Company_Name">
+                                           <TableRow>
+                                               <TableRowCell>@item.Company_Name</TableRowCell>
+                                               <TableRowCell>@item.Email</TableRowCell>
+                                               <TableRowCell>@item.Phone_no</TableRowCell>
+                                               <TableRowCell>@item.GST_no</TableRowCell>
+                                               <TableRowCell>@item.City</TableRowCell>
+                                               <TableRowCell>@item.State</TableRowCell>
+                                               <TableRowCell>@item.Country</TableRowCell>
+                                                    
+                                                
+                                                <TableRowCell>
+                                                    <Dropdown>
+                                                        <Button Color="Color.Primary">Action</Button>
+                                                        <DropdownToggle Color="Color.Primary" Split />
+                                                        <DropdownMenu>
+                                                        <DropdownItem Clicked="@(()=>handalEditcompany(item))">Edit</DropdownItem>
+                                                            <DropdownDivider />
+                                                            <DropdownItem Clicked="@(()=>handalDelCompany(item))">Delete</DropdownItem>
+                                                            
+                                                        </DropdownMenu>
+                                                    </Dropdown>
+                                                </TableRowCell>
+
+                                            </TableRow>
+                                        
+                                    </TableRowGroup>
+                                }
+                            </TableBody>
+                        </Table>
+                                }
+
+                          </Div>
                       
         </div>
    </div>
@@ -219,86 +244,85 @@ else
     TblCompanyMaster? selectedcompany;
     TblPlantMaster selectedplant;
     bool? DispData;
-    bool? isedit = true;
+    bool? isnew = true;
     bool? isDialogOpen;
     async void submit()
     {
-        //if(isedit == true)
-        //{
-        try
+        if (isnew == true)
         {
-            tblCompanyMaster.Created_By = "Admin";
-            var result = await httpservice.Post<string>("CompanyMasters", tblCompanyMaster);
-
-            if (result!=null)
+            try
             {
-                await App.Current.MainPage.DisplayAlert("Message",result,"Ok");
+                tblCompanyMaster.Created_By = "Admin";
+                var result = await httpservice.Post<string>("CompanyMasters", tblCompanyMaster);
+
+                if (result != null)
+                {
+                    await App.Current.MainPage.DisplayAlert("Message", result, "Ok");
+                }
+                else
+                {
+
+                    await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
+
+                }
+
+                StateHasChanged();
+
             }
-            else
+            catch (Exception ex)
             {
+                if (tblCompanyMaster != null && tblCompanyMaster.Company_Name == tblCompanyMaster.Company_Name || tblCompanyMaster.Company_Name == "")
+                {
+                    await App.Current.MainPage.DisplayAlert("Message", "Invalid Company name", "Ok");
+                }
+                else
 
-                await App.Current.MainPage.DisplayAlert("Message","Error","Ok");
-
+                    await App.Current.MainPage.DisplayAlert("Message", ex.Message, "Ok");
             }
-
+            HandleCanceled();
             StateHasChanged();
-
+            tblCompanyMaster = new();
+            await OnInitializedAsync();
         }
-        catch (Exception ex)
+        else
         {
-            if (tblCompanyMaster != null && tblCompanyMaster.Company_Name == tblCompanyMaster.Company_Name || tblCompanyMaster.Company_Name == "")
-            {
-                await App.Current.MainPage.DisplayAlert("Message","Invalid Company name", "Ok");
-            }else   
-
-                await App.Current.MainPage.DisplayAlert("Message", ex.Message, "Ok");
+            tblCompanyMaster.Status_F = 0;
+            var editdata = await httpservice.Post<string>("companymasters/UPD", tblCompanyMaster);
+        if (editdata != null)
+        {
+            await App.Current.MainPage.DisplayAlert("message", editdata, "ok");
         }
-        HandleCanceled(); 
+        else
+        {
+
+            await App.Current.MainPage.DisplayAlert("message", "error", "ok");
+
+        }
+        HandleCanceled();
         StateHasChanged();
         tblCompanyMaster = new();
         await OnInitializedAsync();
-            
-        //}else{
-
-            //var editdata = await httpservice.Post<string>("CompanyMasters/upd", tblCompanyMaster);
-            //if (editdata != null)
-            //{
-            //    await App.Current.MainPage.DisplayAlert("Message", editdata, "Ok");
-            //}
-            //else
-            //{
-
-            //    await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
-
-            //}
-            //HandleCanceled();
-            //StateHasChanged();
-
-            //await OnInitializedAsync();
-        //}
+        }
 
     }
 
     protected override async Task OnInitializedAsync()
     {
-        companies = await httpservice.Get<List<TblCompanyMaster>>("CompanyMasters");
+        companies = await httpservice.Get<List<TblCompanyMaster>>("CompanyMasters/ACT");
         StateHasChanged();
     }
 
     public async Task HandleDataSaved()
     {
-        //GridLoad = true;
-        //reports = null;
         selectedcompany = null;
         DispData = null;
-        //reports = (await Http.GetFromJsonAsync<List<TblQuestionsBank>>("Trainning"));
-        //GridLoad = false;
+
     }
     void HandleCancel()
     {
         selectedplant = null;
         DispData = false;
-        // DisData = false;
+
     }
     void Addcompany()
     {
@@ -327,8 +351,9 @@ else
     void handalEditcompany(TblCompanyMaster item)
     {
         selectedcompany = item;
+        tblCompanyMaster = selectedcompany;
         isDialogOpen = true;
-        isedit = false;
+        isnew = false;
     }
     void Onchanged()
     {
@@ -337,7 +362,7 @@ else
     async void handalDelCompany(TblCompanyMaster item){
 
         item.Status_F = 1;
-        var result = await httpservice.Post<string>("CompanyMasters/del", item);
+        var result = await httpservice.Post<string>("CompanyMasters/UPD", item);
 
         if (result != null)
         {
