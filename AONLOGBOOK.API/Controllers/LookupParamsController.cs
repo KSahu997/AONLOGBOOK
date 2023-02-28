@@ -11,7 +11,7 @@ namespace AONLOGBOOK.API.Controllers
     [ApiController]
     public class LookupParamsController : ControllerBase
     {
-        private readonly Services.SqlService _sql;
+        private readonly SqlService _sql;
         public LookupParamsController(SqlService _sqlS)
         {
             _sql = _sqlS;
@@ -61,7 +61,7 @@ namespace AONLOGBOOK.API.Controllers
                 new SqlParameter {ParameterName="@CompanyID",Direction =ParameterDirection.Input,Value = tblLookupParam.Company_ID },
                 new SqlParameter {ParameterName="@LookupID",Direction =ParameterDirection.Input,Value = tblLookupParam.Lookup_ID },
                 new SqlParameter {ParameterName="@PlantID",Direction =ParameterDirection.Input,Value = tblLookupParam.Plant_ID},
-                new SqlParameter {ParameterName="@User",Direction =ParameterDirection.Input,Value = tblLookupParam.Created_By },
+                new SqlParameter {ParameterName="@User",Direction =ParameterDirection.Input,Value = tblLookupParam.Created_By},
                 new SqlParameter {ParameterName="@Param",Direction =ParameterDirection.Input,Value = tblLookupParam.Param }
             };
             _sql.postData("uspLookupParam", @params);
@@ -75,6 +75,7 @@ namespace AONLOGBOOK.API.Controllers
                 new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="UPD"},
                 new SqlParameter {ParameterName="@Param",Direction =ParameterDirection.Input,Value = tblLookupParam.Param},
                 new SqlParameter {ParameterName="@ID",Direction =ParameterDirection.Input,Value = tblLookupParam.ID},
+                new SqlParameter {ParameterName="@Delf",Direction =ParameterDirection.Input,Value = tblLookupParam.Del_Flag},
                 new SqlParameter {ParameterName="@User",Direction =ParameterDirection.Input,Value = tblLookupParam.Updated_By }
             };
             _sql.postData("uspLookupParam", @params);

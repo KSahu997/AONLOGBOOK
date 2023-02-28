@@ -12,7 +12,8 @@
     <Fields>
         <Field ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile">
             <FieldLabel>Lookup</FieldLabel>
-            <Select @bind-SelectedValue="tblLookupParam.Lookup_ID">
+            <Select SelectedValue="@tblLookupParam.Lookup_ID" SelectedValueChanged="@((string arg)=>{handlelookup(arg);})"
+                SelectedValueExpression="@(()=>tblLookupParam.Lookup_ID)">
                 <SelectItem>--Select--</SelectItem>
                 @if (lookuplist != null)
                 {
@@ -57,7 +58,7 @@
                       
                         <TableRowCell>@item.Param</TableRowCell>
                         <TableRowCell>
-                            <Button Color="Color.Warning" Margin="Margin.Is2" Clicked="@(()=>{Editlookup(item);})"><BarIcon IconName="IconName.Edit"></BarIcon></Button>
+                           @*<Button Color="Color.Warning" Margin="Margin.Is2" Clicked="@(()=>{Editlookup(item);})"><BarIcon IconName="IconName.Edit"></BarIcon></Button>*@
                             <Button Color="Color.Danger" Margin="Margin.Is2" Clicked="@(()=>{DelLookup(item);})"><BarIcon IconName="IconName.Delete"></BarIcon></Button>
                             @*                            <Button Color="Color.Primary" Margin="Margin.Is2" Clicked="@(()=>{AddParam(item);})">Add Parameter</Button>
                     *@
@@ -82,10 +83,10 @@
     protected override async Task OnInitializedAsync()
     {
 
-        Deptlist = await httpservice.Get<List<TblDeptMaster>>("DeptMasters");
-        lookuplist = await httpservice.Get<List<TblLookup>>("Lookups");
-        paramlist = await httpservice.Get<List<TblLookupParam>>("LookupParams");
-        StateHasChanged();
+        Deptlist = await httpservice.Get<List<TblDeptMaster>>("DeptMasters/ACT");
+        lookuplist = await httpservice.Get<List<TblLookup>>("LookupCreation/ACT");
+        paramlist = await httpservice.Get<List<TblLookupParam>>("LookupParams/ACT");
+
 
     }
     async void submit()
@@ -107,14 +108,35 @@
         tblLookupParam.Param = null;
         tblLookupParam.Lookup_ID = null;
         await OnInitializedAsync();
-      
+
     }
-    void Editlookup(TblLookupParam item)
+    async void DelLookup(TblLookupParam item)
     {
+        try
+        {
+            item.Del_Flag = 1;
+            var deldata = await httpservice.Post<string>("LookupParams/UPD", item);
+            if (deldata != null)
+            {
+                await App.Current.MainPage.DisplayAlert("Message", "Data Succesfully Deleted", "Ok");
+                StateHasChanged();
+            }
+            else
+            {
+                await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
+            }
+           
+        }
+        catch (Exception ex)
+        {
+            item.Del_Flag = 0;
+
+        }
+
         
     }
-    void DelLookup(TblLookupParam item)
+    async void handlelookup(string value)
     {
-
+        tblLookupParam.Lookup_ID = value;
     }
 }

@@ -37,7 +37,7 @@
 
             @if (lookuplist != null)
             {
-                @foreach (var item in lookuplist.Where(a=>(a.Del_Flag == 0)))
+                @foreach (var item in lookuplist.Where(a=>(a.Del_Flag !=1)))
                 {
                     <TableRow>
                         <TableRowCell>@item.Name</TableRowCell>
@@ -63,8 +63,8 @@
     bool? isedit = true;
     protected override async Task OnInitializedAsync()
     {
-        Deptlist = await httpservice.Get<List<TblDeptMaster>>("DeptMasters");
-        lookuplist = await httpservice.Get<List<TblLookup>>("Lookups");
+        Deptlist = await httpservice.Get<List<TblDeptMaster>>("DeptMasters/ACT");
+        lookuplist = await httpservice.Get<List<TblLookup>>("LookupCreation/ACT");
 
     }
     async void submit()
@@ -75,7 +75,7 @@
                 tblLookup.Created_By = "Admin";
                 tblLookup.Company_ID = Deptlist.First().Company_Id.ToString();
                 tblLookup.Plant_Id = Deptlist.First().Plant_Id.ToString();
-                var data = await httpservice.Post<string>("Lookups", tblLookup);
+                var data = await httpservice.Post<string>("LookupCreation", tblLookup);
                 if (data != null)
                 {
                     await App.Current.MainPage.DisplayAlert("Message", "Data Successfully Inserted", "ok");
@@ -96,13 +96,15 @@
         else
         {
             try{
-                tblLookup.Created_By = "Admin";
+                tblLookup.Updated_By = "Admin";
                 tblLookup.Company_ID = Deptlist.First().Company_Id.ToString();
                 tblLookup.Plant_Id = Deptlist.First().Plant_Id.ToString();
-                var edata = await httpservice.Post<string>("Lookups/upd", tblLookup);
+                var edata = await httpservice.Post<string>("LookupCreation/UPD", tblLookup);
                 if (edata != null)
                 {
                     await App.Current.MainPage.DisplayAlert("Message", "Data Successfully Updated", "ok");
+                    isedit = true;
+                    StateHasChanged();
                 }
                 else
                 {
@@ -130,7 +132,7 @@
         {
 
             item.Del_Flag = 1;
-            var deldata = await httpservice.Post<string>("Lookups/del", item);
+            var deldata = await httpservice.Post<string>("LookupCreation/UPD", item);
             if (deldata != null)
             {
                 await App.Current.MainPage.DisplayAlert("Message", "Data Successfully Deleted", "ok");

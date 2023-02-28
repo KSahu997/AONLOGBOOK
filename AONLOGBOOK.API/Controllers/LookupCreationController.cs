@@ -74,6 +74,7 @@ namespace AONLOGBOOK.API.Controllers
                 new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="UPD"},
                 new SqlParameter {ParameterName="@Name",Direction =ParameterDirection.Input,Value = tblLookup.Name },
                 new SqlParameter {ParameterName="@ID",Direction =ParameterDirection.Input,Value = tblLookup.ID},
+                new SqlParameter {ParameterName="@Delf",Direction =ParameterDirection.Input,Value = tblLookup.Del_Flag},
                 new SqlParameter {ParameterName="@User",Direction =ParameterDirection.Input,Value = tblLookup.Updated_By }
             };
             _sql.postData("uspLookup", @params);

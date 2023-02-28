@@ -66,7 +66,7 @@
    
     protected override async Task OnInitializedAsync()
     {
-        lookuplist = await httpservice.Get<List<TblLookup>>("Lookups");
+        lookuplist = await httpservice.Get<List<TblLookup>>("LookupCreation/ACT");
 
     }
 
