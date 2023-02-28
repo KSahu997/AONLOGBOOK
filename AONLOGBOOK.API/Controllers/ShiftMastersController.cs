@@ -66,6 +66,7 @@ namespace AONLOGBOOK.API.Controllers
                 new SqlParameter {ParameterName="@Company_Id",Direction =ParameterDirection.Input,Value = TblShiftMaster.CompanyId },
                 new SqlParameter {ParameterName="@Shift_start",Direction =ParameterDirection.Input,Value = TblShiftMaster.Shift_start},
                 new SqlParameter {ParameterName="@Shift_prefix",Direction =ParameterDirection.Input,Value = TblShiftMaster.Shift_prefix },
+                new SqlParameter {ParameterName="@by",Direction =ParameterDirection.Input,Value = TblShiftMaster.Created_by },
                 new SqlParameter {ParameterName="@Shift_hour",Direction =ParameterDirection.Input,Value = TblShiftMaster.Shifthour }
             };
             _sql.postData("uspShift", @params);
@@ -81,7 +82,9 @@ namespace AONLOGBOOK.API.Controllers
                 new SqlParameter {ParameterName="@Company_Id",Direction =ParameterDirection.Input,Value = TblShiftMaster.CompanyId },
                 new SqlParameter {ParameterName="@Shift_start",Direction =ParameterDirection.Input,Value = TblShiftMaster.Shift_start},
                 new SqlParameter {ParameterName="@Shift_prefix",Direction =ParameterDirection.Input,Value = TblShiftMaster.Shift_prefix },
-                new SqlParameter {ParameterName="@Shift_hour",Direction =ParameterDirection.Input,Value = TblShiftMaster.Shifthour }
+                new SqlParameter {ParameterName="@Shift_hour",Direction =ParameterDirection.Input,Value = TblShiftMaster.Shifthour },
+                new SqlParameter {ParameterName="@by",Direction =ParameterDirection.Input,Value = TblShiftMaster.Modified_by},
+                new SqlParameter {ParameterName="@delflag",Direction =ParameterDirection.Input,Value = TblShiftMaster.Delflag }
             };
             _sql.postData("uspShift", @params);
             return Ok(TblShiftMaster.Shift_prefix + " Updated"); 

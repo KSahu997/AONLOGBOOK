@@ -66,8 +66,8 @@ namespace AONLOGBOOK.API.Controllers
                 new SqlParameter {ParameterName="@Department_Name",Direction =ParameterDirection.Input,Value = TblDeptMaster.Dept_Name },
                 new SqlParameter {ParameterName="@Plant_Id",Direction =ParameterDirection.Input,Value = TblDeptMaster.Plant_Id },
                 new SqlParameter {ParameterName="@Company_ID",Direction =ParameterDirection.Input,Value = TblDeptMaster.Company_Id },
-                new SqlParameter {ParameterName="@By",Direction=ParameterDirection.Input,Value=TblDeptMaster.Created_By},
-                new SqlParameter {ParameterName="@By",Direction=ParameterDirection.Input,Value=TblDeptMaster.Created_By},
+                new SqlParameter {ParameterName="@By",Direction=ParameterDirection.Input,Value=TblDeptMaster.Created_By}
+
             };
             _sql.postData("uspDepartment", @params);
             return Ok(TblDeptMaster.Dept_Name + " Created"); ;
@@ -80,10 +80,10 @@ namespace AONLOGBOOK.API.Controllers
                 new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="UPD"},
                 new SqlParameter {ParameterName="@id",Direction=ParameterDirection.Input,Value=TblDeptMaster.Id},
                 new SqlParameter {ParameterName="@Department_Name",Direction =ParameterDirection.Input,Value = TblDeptMaster.Dept_Name },
-                new SqlParameter {ParameterName="@Plant_Id",Direction =ParameterDirection.Input,Value = TblDeptMaster.Plant_Id },
-                new SqlParameter {ParameterName="@Company_ID",Direction =ParameterDirection.Input,Value = TblDeptMaster.Company_Id },
-                new SqlParameter {ParameterName="@By",Direction=ParameterDirection.Input,Value=TblDeptMaster.Created_By},
-                new SqlParameter {ParameterName="@By",Direction=ParameterDirection.Input,Value=TblDeptMaster.Created_By},
+                //new SqlParameter {ParameterName="@Plant_Id",Direction =ParameterDirection.Input,Value = TblDeptMaster.Plant_Id },
+                //new SqlParameter {ParameterName="@Company_ID",Direction =ParameterDirection.Input,Value = TblDeptMaster.Company_Id },
+                new SqlParameter {ParameterName="@status_f",Direction=ParameterDirection.Input,Value=TblDeptMaster.Status_F},
+                new SqlParameter {ParameterName="@By",Direction=ParameterDirection.Input,Value=TblDeptMaster.Modified_By},
             };
             _sql.postData("uspDepartment", @params);
             return Ok(TblDeptMaster.Dept_Name + " Updated");
