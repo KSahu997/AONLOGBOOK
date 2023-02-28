@@ -19,13 +19,13 @@
 			<Fields>
 				<Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
 					<FieldLabel>Company Name</FieldLabel>
-					<Select SelectedValue="taskMaster.CompanyId" SelectedValueChanged="@((string args)=>{HandleTaskM(args);})" SelectedValueExpression="@(()=>taskMaster.CompanyId)">
+					<Select SelectedValue="taskMaster.CompanyID" SelectedValueChanged="@((string args)=>{HandleTaskM(args);})" SelectedValueExpression="@(()=>taskMaster.CompanyID)">
 						<SelectItem>--SELECT--</SelectItem>
 						@if (taskmst != null)
 						{
-							@foreach (TblTaskMaster tsm in taskmst)
+							@foreach (TblCLTaskMaster tsm in taskmst)
 							{
-								<SelectItem Value="@tsm.Id">@tsm.WorkCenterName</SelectItem>
+								<SelectItem Value="@tsm.ID">@tsm.CompanyID</SelectItem>
 							}
 						}
 					</Select>
@@ -51,8 +51,8 @@
 					</Field>
 
 				</Fields>
-
 			</EditForm>
+
 		</Card>
 		<Table Hoverable Bordered>
 			<TableHeader ThemeContrast="ThemeContrast.None" Background="Background.Secondary" TextColor="TextColor.White">
@@ -71,7 +71,7 @@
 				{
 					<TableRow>
 						<TableRowCell>@(taskmst.ToList().IndexOf(item) + 1)</TableRowCell>
-							<TableRowCell>@item.BasedOn</TableRowCell>
+							<TableRowCell>@item.Based_on</TableRowCell>
 							<TableRowCell>@item.Action</TableRowCell>
 						</TableRow>
 
@@ -99,8 +99,8 @@
 	[Parameter]
 	public RenderFragment ChildContent { get; set; }
 
-	TblTaskMaster taskMaster = new();
-	IEnumerable<TblTaskMaster> taskmst;
+	TblCLTaskMaster taskMaster = new();
+	IEnumerable<TblCLTaskMaster> taskmst;
 	IEnumerable<TblWorkCenterMaster> workcentermst;
 	IEnumerable<TblEquipmentMaster> equipmentlist;
 	IEnumerable<TblFunctionalLocationMaster> functionalList;
@@ -109,7 +109,7 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		taskmst = (await httpservices.Get<List<TblTaskMaster>>("TaskMasters")).Where(a => a.DelFlag != 1);
+		taskmst = (await httpservices.Get<List<TblCLTaskMaster>>("TaskMasters")).Where(a => a.Del_Flag != 1);
 
 	}
 
@@ -117,15 +117,15 @@
 
 	async void submit()
 	{
-		taskMaster.InsertedBy = "Admin";
+		taskMaster.Inserted_By = "Admin";
 
 	}
 
 	async void HandleTaskM(string value)
 	{
-		taskMaster.CompanyId= value;
-		taskmst = (await httpservices.Get<List<TblTaskMaster>>("TaskMasters")).Where(a => (a.CompanyId == taskMaster.CompanyId));
-		taskmasterCenter = taskMaster.CompanyId;
+		taskMaster.CompanyID= value;
+		taskmst = (await httpservices.Get<List<TblCLTaskMaster>>("TaskMasters")).Where(a => (a.CompanyID == taskMaster.CompanyID));
+		taskmasterCenter = taskMaster.CompanyID;
 		StateHasChanged();
 	}
 
