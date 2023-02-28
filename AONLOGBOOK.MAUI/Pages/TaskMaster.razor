@@ -1,0 +1,138 @@
+﻿@page "/TaskMaster"
+
+@inject IHttpService httpservices
+@using System.Data;
+
+<Div class="container" Padding="Padding.Is3">
+
+
+	<Fields>
+		<Field ColumnSize="ColumnSize.Is3.OnDesktop.Is12.OnMobile">
+			<Badge Color="Color.Info"><BarIcon IconName="IconName.Tag"></BarIcon></Badge><h4 class="mb-4">Task Master</h4>
+		</Field>
+		<Field ColumnSize="ColumnSize.Is2.OnDesktop.Is12.OnMobile">
+		</Field>
+	</Fields>
+
+	<Card Padding="Padding.Is2" Margin="Margin.Is2">
+		<EditForm Model="@taskMaster" OnValidSubmit="submit">
+			<Fields>
+				<Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+					<FieldLabel>Company Name</FieldLabel>
+					<Select SelectedValue="taskMaster.CompanyId" SelectedValueChanged="@((string args)=>{HandleTaskM(args);})" SelectedValueExpression="@(()=>taskMaster.CompanyId)">
+						<SelectItem>--SELECT--</SelectItem>
+						@if (taskmst != null)
+						{
+							@foreach (TblTaskMaster tsm in taskmst)
+							{
+								<SelectItem Value="@tsm.Id">@tsm.WorkCenterName</SelectItem>
+							}
+						}
+					</Select>
+				</Field>
+
+				<Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+					<FieldLabel>Based ON</FieldLabel>
+					<Select @bind-SelectedValue="@selectedValue">
+						<SelectItem >Compressor</SelectItem>
+						<SelectItem >Hydraulic Assembly</SelectItem>
+						<SelectItem >Tools Trolley</SelectItem>
+						<SelectItem >Extraction Assembly</SelectItem>
+					</Select>
+
+				</Field>
+				<Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+					<FieldLabel>Action</FieldLabel>
+					<TextEdit @bind-Text="taskMaster.Action"></TextEdit>
+				</Field>
+
+				<Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+					<Button Type="ButtonType.Submit" Color="Color.Info" Style="margin-top:10px;" Margin="Margin.Is4">@(isNew ? "Submit" : "Update")</Button>
+					</Field>
+
+				</Fields>
+
+			</EditForm>
+		</Card>
+		<Table Hoverable Bordered>
+			<TableHeader ThemeContrast="ThemeContrast.None" Background="Background.Secondary" TextColor="TextColor.White">
+				<TableRow>
+
+					<TableHeaderCell>Sr.No</TableHeaderCell>
+					<TableHeaderCell>Based On</TableHeaderCell>
+					<TableHeaderCell>Action</TableHeaderCell>
+				</TableRow>
+			</TableHeader>
+			<TableBody>
+
+				@if (taskmst != null)
+			{
+				@foreach (var item in taskmst)
+				{
+					<TableRow>
+						<TableRowCell>@(taskmst.ToList().IndexOf(item) + 1)</TableRowCell>
+							<TableRowCell>@item.BasedOn</TableRowCell>
+							<TableRowCell>@item.Action</TableRowCell>
+						</TableRow>
+
+				}
+			}
+
+
+		</TableBody>
+
+	</Table>
+
+
+</Div>
+
+
+@code {
+
+	string selectedValue;
+	bool isNew = true;
+	bool? DispDatas;
+	bool? isDialogOpen;
+	[Parameter]
+	public EventCallback<bool> mstDataChanged { get; set; }
+	string funcloc;
+	[Parameter]
+	public RenderFragment ChildContent { get; set; }
+
+	TblTaskMaster taskMaster = new();
+	IEnumerable<TblTaskMaster> taskmst;
+	IEnumerable<TblWorkCenterMaster> workcentermst;
+	IEnumerable<TblEquipmentMaster> equipmentlist;
+	IEnumerable<TblFunctionalLocationMaster> functionalList;
+	IEnumerable<TblCompanyMaster> cmpmst;
+	string taskmasterCenter;
+
+	protected override async Task OnInitializedAsync()
+	{
+		taskmst = (await httpservices.Get<List<TblTaskMaster>>("TaskMasters")).Where(a => a.DelFlag != 1);
+
+	}
+
+
+
+	async void submit()
+	{
+		taskMaster.InsertedBy = "Admin";
+
+	}
+
+	async void HandleTaskM(string value)
+	{
+		taskMaster.CompanyId= value;
+		taskmst = (await httpservices.Get<List<TblTaskMaster>>("TaskMasters")).Where(a => (a.CompanyId == taskMaster.CompanyId));
+		taskmasterCenter = taskMaster.CompanyId;
+		StateHasChanged();
+	}
+
+
+
+
+
+
+
+}
