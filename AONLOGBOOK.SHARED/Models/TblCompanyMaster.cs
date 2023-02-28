@@ -5,24 +5,23 @@ namespace AONLOGBOOK.SHARED.Models
 {
     public partial class TblCompanyMaster
     {
-        public string? CompanyId { get; set; }
-        public string? CompanyName { get; set; }
+        public Guid ID { get; set; }                     
+        public string? Company_Name { get; set; }
         public string? Attachment { get; set; }
-        public string? GstNo { get; set; }
+        public string? GST_no { get; set; }
         public string? Address { get; set; }
         public string? Country { get; set; }
         public string? City { get; set; }
         public string? State { get; set; }
         public int? PinCode { get; set; }
-        public string? PhoneNo { get; set; }
+        public string? Phone_no { get; set; }
         public string? Email { get; set; }
-        public string? FYear { get; set; }
-        public DateTime? DocDate { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? ModifiedOn { get; set; }
-        public string? ModifiedBy { get; set; }
-        public int? StatusF { get; set; }
-        public Guid Id { get; set; }
+        public string? F_Year { get; set; }
+        public DateTime? Doc_Date { get; set; }
+        public DateTime? Created_On { get; set; }
+        public string? Created_By { get; set; }
+        public DateTime? Modified_On { get; set; }
+        public string? Modified_By { get; set; }
+        public int? Status_F { get; set; }
     }
 }

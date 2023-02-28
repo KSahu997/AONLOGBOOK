@@ -1,140 +1,97 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AONLOGBOOK.API.Services;
+using AONLOGBOOK.SHARED.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using AONLOGBOOK.API.Models;
-using Microsoft.Data.SqlClient;
 using System.Data;
-using AONLOGBOOK.SHARED.Models;
+using System.Data.SqlClient;
 
-namespace AONLogbookAPI.Controllers
+namespace AONLOGBOOK.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class LogbookMastersController : ControllerBase
     {
-        private readonly DBContext _context;
-
-        public LogbookMastersController(DBContext context)
+        private readonly SqlService _sql;
+        public LogbookMastersController(SqlService _sqlS)
         {
-            _context = context;
+            _sql = _sqlS;
+
         }
 
-        // GET: api/LogbookMasters
+
+        //Get All Records
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TblLogbookMaster>>> GetTblLogbookMasters()
+        public ActionResult<IEnumerable<TblLogbookMaster>?> GetTblLogbookMasters()
         {
-            return await _context.TblLogbookMasters.ToListAsync();
+            SqlParameter[] @params =
+           {
+                new SqlParameter{ParameterName="@Type",Direction=ParameterDirection.Input,Value="ALL"},
+
+           };
+            return _sql.getDatas<TblLogbookMaster>("uspLogBookMasterEntry", @params);
         }
 
-        // GET: api/LogbookMasters/5
-        //[HttpGet("{id}")]
-        //public async Task<ActionResult<TblLogbookMaster>> GetTblLogbookMaster(Guid id)
-        //{
-        //    var tblLogbookMaster = await _context.TblLogbookMasters.FindAsync(id);
+        //Get by Id
+        [HttpGet("{id}")]
 
-        //    if (tblLogbookMaster == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return tblLogbookMaster;
-        //}
-
-
-        [HttpGet("{SubDept}")]
-        public async Task<IEnumerable<TblLogbookMaster>> GetTblLogbookMaster(Guid SubDept)
+        public ActionResult<TblLogbookMaster?> GetTblLogbookMasters(Guid id)
         {
-            return await _context.TblLogbookMasters.FromSqlRaw("sp_LogbookMaster'"+ SubDept + "'").ToListAsync();
+            SqlParameter[] @params =
+            {
+                new SqlParameter { ParameterName = "@logbookId", Direction = ParameterDirection.Input, Value = id },
+                new SqlParameter{ParameterName="@Type",Direction=ParameterDirection.Input,Value="SEL"}
+            };
+            return _sql.getData<TblLogbookMaster>("uspLogBookMasterEntry", @params);
         }
 
-        // PUT: api/LogbookMasters/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutTblLogbookMaster(Guid id, TblLogbookMaster tblLogbookMaster)
+        [HttpGet("ACT")]
+
+        public ActionResult<IEnumerable<TblLogbookMaster>?>ActTblLogbookMasters()
         {
-            if (id != tblLogbookMaster.LogbookId)
+            SqlParameter[] @params =
             {
-                return BadRequest();
-            }
-
-            _context.Entry(tblLogbookMaster).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TblLogbookMasterExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+                new SqlParameter{ParameterName="@Type",Direction=ParameterDirection.Input,Value="ACT"},
+            };
+            return _sql.getDatas<TblLogbookMaster>("uspLogBookMasterEntry", @params);
         }
-
-        // POST: api/LogbookMasters
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        //[HttpPost]
-        //public async Task<ActionResult<TblLogbookMaster>> PostTblLogbookMaster(TblLogbookMaster tblLogbookMaster)
-        //{
-        //    _context.TblLogbookMasters.Add(tblLogbookMaster);
-        //    await _context.SaveChangesAsync();
-
-        //    return CreatedAtAction("GetTblLogbookMaster", new { id = tblLogbookMaster.LogbookId }, tblLogbookMaster);
-        //}
-
 
         [HttpPost]
-        public async Task<ActionResult> PostTblLogbookMaster(TblLogbookMaster tblLogbookMaster)
+
+        public ActionResult PostTblLogbookMasters(TblLogbookMaster tblLogbookMaster)
         {
-            string sqlQuery = "EXEC [dbo].[sp_LogBookMasterEntry] @Type,@Department,@SubDept,@LogbookName,@Company_Id,@Prefix,@PlantCode,@Sequence,@message=@message OUT ";
             SqlParameter[] @params =
-            { 
-            // Create parameters    
-            new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="INS"},
-            new SqlParameter {ParameterName="@Department",Direction =ParameterDirection.Input,Value =(object) tblLogbookMaster.Department??DBNull.Value},
-            new SqlParameter {ParameterName="@SubDept",Direction =ParameterDirection.Input,Value = (object) tblLogbookMaster.SubDepartment??DBNull.Value},
-            new SqlParameter {ParameterName="@LogbookName",Direction =ParameterDirection.Input,Value = (object) tblLogbookMaster.LogbookName ?? DBNull.Value},
-            new SqlParameter {ParameterName="@Company_Id",Direction =ParameterDirection.Input,Value = (object) tblLogbookMaster.CompanyId ?? DBNull.Value},
-           
-            new SqlParameter {ParameterName="@Prefix",Direction =ParameterDirection.Input,Value = (object) tblLogbookMaster.Prefix ?? DBNull.Value},
-            new SqlParameter {ParameterName="@PlantCode",Direction =ParameterDirection.Input,Value = (object) tblLogbookMaster.PlantCode ?? DBNull.Value},
-            new SqlParameter {ParameterName="@Sequence",Direction =ParameterDirection.Input,Value = (object) tblLogbookMaster.Seq ?? DBNull.Value},
-            new SqlParameter {ParameterName="@message",SqlDbType=SqlDbType.NVarChar,Size=50,Direction = ParameterDirection.Output}
-            };
-            await _context.Database.ExecuteSqlRawAsync(sqlQuery, @params);
-            return Ok(@params[8].Value);
-        }
-
-        // DELETE: api/LogbookMasters/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTblLogbookMaster(Guid id)
-        {
-            var tblLogbookMaster = await _context.TblLogbookMasters.FindAsync(id);
-            if (tblLogbookMaster == null)
             {
-                return NotFound();
-            }
-
-            _context.TblLogbookMasters.Remove(tblLogbookMaster);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+                new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="INS"},
+                new SqlParameter {ParameterName="@Department",Direction=ParameterDirection.Input,Value=tblLogbookMaster.Department},
+                new SqlParameter {ParameterName="@SubDept",Direction=ParameterDirection.Input,Value=tblLogbookMaster.SubDepartment},
+                new SqlParameter {ParameterName="@LogbookName",Direction=ParameterDirection.Input,Value=tblLogbookMaster.LogbookName},
+                new SqlParameter {ParameterName="@Company_Id",Direction=ParameterDirection.Input,Value=tblLogbookMaster.Company_Id},
+                new SqlParameter {ParameterName="@Prefix",Direction=ParameterDirection.Input,Value=tblLogbookMaster.Prefix},
+                new SqlParameter {ParameterName="@PlantCode",Direction =ParameterDirection.Input,Value = tblLogbookMaster.PlantCode},
+                new SqlParameter {ParameterName="@Sequence",Direction =ParameterDirection.Input,Value = tblLogbookMaster.Seq},
+               
+            };
+            _sql.postData("uspLogBookMasterEntry", @params);
+            return Ok(tblLogbookMaster.LogbookName + " Created"); ;
         }
 
-        private bool TblLogbookMasterExists(Guid id)
+        [HttpPost("UPD")]
+        public ActionResult UpdTblLogbookMasters(TblLogbookMaster tblLogbookMaster)
         {
-            return _context.TblLogbookMasters.Any(e => e.LogbookId == id);
+            SqlParameter[] @params =
+            {
+                new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="UPD"},
+                new SqlParameter {ParameterName="@logbookId",Direction=ParameterDirection.Input,Value=tblLogbookMaster.LogbookId},
+                new SqlParameter {ParameterName="@LogbookName",Direction=ParameterDirection.Input,Value=tblLogbookMaster.LogbookName},
+                new SqlParameter {ParameterName="@Delflag",Direction=ParameterDirection.Input,Value=tblLogbookMaster.Del_Flag},
+               // new SqlParameter {ParameterName="@Department",Direction=ParameterDirection.Input,Value=tblLogbookMaster.Department},
+               // new SqlParameter {ParameterName="@SubDept",Direction=ParameterDirection.Input,Value=tblLogbookMaster.SubDepartment},
+               // new SqlParameter {ParameterName="@Company_Id",Direction=ParameterDirection.Input,Value=tblLogbookMaster.Company_Id},
+               //new SqlParameter {ParameterName="@PlantCode",Direction =ParameterDirection.Input,Value = tblLogbookMaster.PlantCode},
+
+            };
+            _sql.postData("uspLogBookMasterEntry", @params);
+             return Ok(tblLogbookMaster.LogbookName + " Updated"); ;
         }
     }
 }

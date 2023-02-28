@@ -63,7 +63,7 @@
                                     {
                                         @foreach (TblDeptMaster dept in departments)
                                         {
-                                            <SelectItem Value="@dept.Id">@dept.DeptName</SelectItem>
+                                            <SelectItem Value="@dept.Id">@dept.Dept_Name</SelectItem>
                                         }
                                     }
 
@@ -79,7 +79,7 @@
                                     {
                                         @foreach (TblSubDeptMaster sub in subDepts)
                                         {
-                                            <SelectItem Value="@sub.Id">@sub.SubDptName</SelectItem>
+                                            <SelectItem Value="@sub.Id">@sub.SubDpt_Name</SelectItem>
                                         }
                                     }
                                 </Select>
@@ -104,17 +104,17 @@
                             <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                                 <FieldLabel>Date</FieldLabel>
                                 <Validation Validator="ValidationRule.IsNotEmpty">
-                                <TextEdit  @bind-Text="@CurrentDate"/>
+                                <DateEdit Date="@CurrentDate" TValue="DateTime?" InputMode="DateInputMode.DateTime" DateChanged="@handleshift"/>
                                 </Validation>
                             </Field>
-                            <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                           @* <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                                 <FieldLabel>Time</FieldLabel>
                                 <Validation Validator="ValidationRule.IsNotEmpty">
-                                    @* <DateEdit InputMode="DateInputMode.DateTime" Date="formdatas.Date.ToString()" TValue="string"
+                                    @*<DateEdit InputMode="DateInputMode.DateTime" Date="formdatas.Date.ToString()" TValue="string"
                                     DateExpression="@(()=>formdatas.Date.ToString())" DateChanged="@((string arg)=>{handleshift(arg);})"></DateEdit>*@
-                                    <TimeEdit Time="@formdatas.Date" TValue="DateTime?" TimeChanged="@handleshift" />
+                                    @*<TimeEdit Time="@CurrentTime" TValue="TimeSpan?" TimeChanged="@handleshift"  />
                                 </Validation>
-                            </Field>
+                            </Field>*@
                             <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                                 <FieldLabel>Shift</FieldLabel>
                                 <Validation Validator="ValidationRule.IsNotEmpty">
@@ -124,7 +124,7 @@
                                         {
                                             @foreach (TblShiftMaster shift in shiftdata)
                                             {
-                                                <SelectItem Value="@shift.Id">@shift.ShiftPrefix</SelectItem>
+                                                <SelectItem Value="@shift.Id">@shift.Shift_prefix</SelectItem>
                                             }
                                         }
                                         
@@ -146,9 +146,12 @@
     </Collapse>
 </Accordion>
     <Divider DividerType="DividerType.Dashed" />
-   
+   @if(Displaydynamic==true)
+    {
+        
     @if (dynamicform.Count() > 0)
     {
+       
 @*        <Validations @ref="validations" Mode="ValidationMode.Manual">
 *@            <Card Margin="Margin.Is4.OnY" Background="Background.Transparent" Class="Card">
                 <CardHeader Style="background:linear-gradient(180deg, rgb(170 196 224 / 50%), transparent); color:#11324D;border-radius:15px;">
@@ -299,7 +302,7 @@
 
                         }
                             <Field Flex="Flex.JustifyContent.End.OnDesktop.JustifyContent.Center.OnMobile">
-                                <Button Clicked="@submit" Style="justify-content:center; margin:15px;background:#659abb;color:#000;">Save</Button>
+                                <Button Clicked="@submit" Style="justify-content:center; margin:15px;background:#659abb;color:#000;" Disabled="@(!active)">Save</Button>
                                 <Button Clicked="@savedraft" Style="justify-content:center; margin:15px;background:#659abb;color:#000;">Save Draft</Button>
                             </Field>
 
@@ -309,8 +312,9 @@
 
                 </CardBody>
             </Card>
-
+     
        @* </Validations>*@
+    }
     }
     <Card>
         <CardBody>
@@ -321,7 +325,8 @@
            
               @if(datareport!=null)
                 {
-                   @foreach (var item in dts)
+                    <Div Display="Display.Block.None.OnDesktop" >
+                    @foreach (var item in dts)
                     {
                                 <div id="accordion">
                                     <div class="faq-container m-2 ">
@@ -358,9 +363,17 @@
                                                         }
                                                    
                                                         <Field Flex="Flex.JustifyContent.Start" Margin="Margin.Is2" Padding="Padding.Is2">
-                                                        <Button Color="Color.Warning" Margin="Margin.Is2" Disabled="@(Convert.ToInt32(row["status_F"])==0)" onclick="@(()=>handleitem(item))"><BarIcon IconName="IconName.Edit"></BarIcon></Button>
-                                                            <Button Color="Color.Danger" Margin="Margin.Is2"><BarIcon IconName="IconName.Delete"></BarIcon></Button>
-                                                            <Button Color="Color.Primary" Margin="Margin.Is2"><BarIcon IconName="IconName.Save"></BarIcon></Button>
+                                                            <Dropdown>
+                                                                <Button Color="Color.Primary">Action</Button>
+                                                                <DropdownToggle Color="Color.Primary" Split />
+                                                                <DropdownMenu>
+                                                                    <DropdownItem Clicked="@(()=>handleitem(row))" Disabled="@(Convert.ToInt32(row["status_F"])==0)">Edit</DropdownItem>
+                                                                    <DropdownDivider />
+                                                                    <DropdownItem>Delete</DropdownItem>
+                                                                    <DropdownDivider/>
+                                                                    <DropdownItem>Save</DropdownItem>
+                                                                </DropdownMenu>
+                                                            </Dropdown>
                                                         </Field>
                                                         </ListGroup>
                                                     }
@@ -370,8 +383,74 @@
                                     </div>
                                 </div>
                             </div>
-                    }
+                   
+                        }
+                    </Div>
                 }
+                    
+                 
+                    <Div Display="Display.None.Block.OnDesktop">
+                    @if (dts.Count()>0)
+                    {
+                        <Table>
+                            <TableHeader>
+                               
+                                 <TableRow>  
+                                  @foreach (DataColumn col in dts.First().Columns)
+                                {
+                                    
+                                            @if (col.ColumnName != "shift_prefix" && col.ColumnName != "header_Id" && col.ColumnName != "status_F")
+                                            {
+                                                <TableHeaderCell>@col.ColumnName</TableHeaderCell>
+                                            }
+                                        
+                                       
+                                   
+                               
+                                }
+                                    <TableHeaderCell>Operation</TableHeaderCell>
+                                 </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                @foreach (var item in dts)
+                                {
+                                    <TableRowGroup Title="@("Shift "+ @item.Rows[0]["Shift_prefix"].ToString())">
+@*                                       <Badge Color="Color.Primary">Shift: @item.Rows[0]["Shift_prefix"].ToString()</Badge> 
+*@                                        @foreach (DataRow row in item.Rows)
+                                        {
+                                            <TableRow>
+                                                @foreach (DataColumn col in item.Columns)
+                                                {
+                                                    @if (col.ColumnName != "shift_prefix" && col.ColumnName != "header_Id" && col.ColumnName != "status_F")
+                                                    {
+                                                        <TableRowCell>@row[col.ColumnName]</TableRowCell>
+                                                    }
+                                                }
+                                                <TableRowCell>
+                                                    <Dropdown>
+                                                        <Button Color="Color.Primary">Action</Button>
+                                                        <DropdownToggle Color="Color.Primary" Split />
+                                                        <DropdownMenu>
+                                                            <DropdownItem Clicked="@(()=>handleitem(row))" Disabled="@(Convert.ToInt32(row["status_F"])==0)">Edit</DropdownItem>
+                                                            <DropdownDivider />
+                                                            <DropdownItem>Delete</DropdownItem>
+                                                            <DropdownDivider />
+                                                            <DropdownItem>Save</DropdownItem>
+                                                        </DropdownMenu>
+                                                    </Dropdown>
+                                                </TableRowCell>
+
+                                            </TableRow>
+                                        }
+                                    </TableRowGroup>
+                                }
+                            </TableBody>
+                        </Table>
+                        } 
+                        
+                    </Div>
+
+               
 
             </CardBody>
         </CardBody>
@@ -397,17 +476,20 @@
     List<LogData> logdatatable = new();
     LogDataList logdtList = new ();
     DateTime? selectDate;
-    string? CurrentDate;
+    DateTime? CurrentDate;
+    // TimeSpan? CurrentTime;
     bool collapse1Visible = true;
+    bool Displaydynamic = false;
+    bool active = true;
     List<DataTable> dts = new List<DataTable>();
     LogData logdata = new();
     protected override async Task OnInitializedAsync()
     {
-        //formdatas.Date = DateTime.Now;
-        CurrentDate = DateTime.Now.ToString("MM-dd-yyyy");
+        CurrentDate=DateTime.Now;
         departments = await httpservices.Get<List<TblDeptMaster>>("DeptMasters");
         logdtschema = await httpservices.Get<List<TblLogbookDetailSchema>>("LogbookDetailSchemas");
         StateHasChanged();
+
     }
     async void handleformgroup(string value)
     {
@@ -441,8 +523,9 @@
         try
         {
             dynamicform = new List<ElementList>();
-            logdatatable = new();
+            dts = new();
             logbookdetail = await httpservices.Get<List<TblLogbookDetailSchemaMOD>>("LogbookDetailSchemas/" + formdatas.logbook);
+            //        formdatas.Date = Convert.ToDateTime(time.ToString().Replace("00-00-0000", CurrentDate?.ToString("MM-dd-yyyy")));
             if (logbookdetail.Count() == 0)
             {
                 await App.Current.MainPage.DisplayAlert("Dynamic Form", "Sorry there is no elements in the form", "OK");
@@ -453,6 +536,7 @@
              {
                  dynamicform.Add(new ElementList { Label = a.displayname, Sequence = a.Seq, ElementType = a.DataType ,IsMandatory=a.IsMandatory });
              });
+                Displaydynamic = true;
             }
             collapse1Visible = false;
             datareport = await httpservices.GetDataTable("LogBookDataTables/" + formdatas.logbook + "/" + formdatas.Date?.ToString("yyyy-MM-dd HH:mm:ss"));
@@ -481,13 +565,15 @@
     {
         try
         {
+           
             if (await validations.ValidateAll())
             {
+               
                 var a = dynamicform;
                 a.ForEach(a =>
                 {
-
-                    logdata.Uom = logdtschema.First(a => (a.LogbookId == formdatas.logbook)).Uom;
+                    LogData logdata = new();
+                    logdata.Uom = logdtschema.First(a => (a.LogbookId == formdatas.logbook)).UOM;
                     logdata.SubDeptId = formdatas.SubDepartment;
                     logdata.DeptId = formdatas.Department;
                     if (a.ElementType == "Text")
@@ -522,8 +608,8 @@
                         logdata.Val = a.BoolValue.ToString();
                     }
 
-                    logdata.CompanyId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).CompanyId;
-                    logdata.PlantId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).PlantId;
+                    logdata.CompanyId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Company_Id;
+                    logdata.PlantId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Plant_Id;
                     logdata.Shift = formdatas.Shift;
                     logdata.LogbookId = formdatas.logbook;
                     logdata.MarkforDeletion = "0";  
@@ -533,8 +619,8 @@
                 });
                 logdtList.TblLog = logdatatable;
                 logdtList.TblLogHead = new();
-                logdtList.TblLogHead.CompanyId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).CompanyId;
-                logdtList.TblLogHead.PlantId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).PlantId;
+                logdtList.TblLogHead.CompanyId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Company_Id;
+                logdtList.TblLogHead.PlantId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Plant_Id;
                 logdtList.TblLogHead.Shift = formdatas.Shift;
                 logdtList.TblLogHead.LogbookId = formdatas.logbook; 
                 logdtList.TblLogHead.DeptId = formdatas.Department; 
@@ -547,14 +633,17 @@
                 if (result != null)
                 {
                     await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");
-
+                   
                 }
                 else
                 {
                     await App.Current.MainPage.DisplayAlert("Error", "Error", "ok");
                 }
+               
                 logdtList = new();
                 dynamicform = new();
+                Displaydynamic = false;
+                
                 StateHasChanged();
             }
         }
@@ -565,13 +654,14 @@
 
     }
 
-    async void handleshift(DateTime? time)
+    async void handleshift(DateTime? date)
     {
 
         try
         {
-            formdatas.Date = Convert.ToDateTime(time.ToString().Replace("00-00-0000", CurrentDate));
-            string cmp = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).CompanyId;
+            formdatas.Date = date;
+            //formdatas.Date = Convert.ToDateTime(time.ToString().Replace("00-00-0000", CurrentDate?.ToString("MM-dd-yyyy")));
+            string cmp = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Company_Id;
             shiftdata = await httpservices.Get<List<TblShiftMaster>>("ShiftMasters/" + cmp + "/" + formdatas.Date?.ToString("MM-dd-yyyy HH:mm:ss"));
             StateHasChanged();
         }
@@ -591,7 +681,7 @@
                 a.ForEach(a =>
                 {
                     LogData logdata = new();
-                    logdata.Uom = logdtschema.First(a => (a.LogbookId == formdatas.logbook)).Uom;
+                    logdata.Uom = logdtschema.First(a => (a.LogbookId == formdatas.logbook)).UOM;
                     logdata.SubDeptId = formdatas.SubDepartment;
                     logdata.DeptId = formdatas.Department;
                     if (a.ElementType == "Text")
@@ -607,17 +697,17 @@
                     else if (a.ElementType == "Date")
                     {
                         logdata.ParamName = a.Label;
-                        logdata.Val = a.DateOnlyValue?.ToString("MM-dd-yyyy");
+                        logdata.Val = a.DateOnlyValue?.ToString("dd-MM-yyyy");
                     }
                     else if (a.ElementType == "DateTime")
                     {
                         logdata.ParamName = a.Label;
-                        logdata.Val = a.DateValue?.ToString("MM-dd-yyyy HH:mm:ss");
+                        logdata.Val = a.DateValue?.ToString("dd-MM-yyyy HH:mm:ss");
                     }
                     else if (a.ElementType == "Time")
                     {
                         logdata.ParamName = a.Label;
-                        logdata.Val = a.DateValue?.ToString("HH.mm.ss");
+                        logdata.Val = a.TimeValue?.ToString("HH.mm.ss");
                     }
                     else if (a.ElementType == "Boolean")
                     {
@@ -625,8 +715,8 @@
                         logdata.Val = a.BoolValue.ToString();
                     }
 
-                    logdata.CompanyId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).CompanyId;
-                    logdata.PlantId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).PlantId;
+                    logdata.CompanyId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Company_Id;
+                    logdata.PlantId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Plant_Id;
                     logdata.Shift = formdatas.Shift;
                     logdata.LogbookId = formdatas.logbook;
                     logdata.MarkforDeletion = "3";
@@ -635,8 +725,8 @@
                 });
                 logdtList.TblLog = logdatatable;
                 logdtList.TblLogHead = new();
-                logdtList.TblLogHead.CompanyId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).CompanyId;
-                logdtList.TblLogHead.PlantId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).PlantId;
+                logdtList.TblLogHead.CompanyId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Company_Id;
+                logdtList.TblLogHead.PlantId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Plant_Id;
                 logdtList.TblLogHead.Shift = formdatas.Shift;
                 logdtList.TblLogHead.LogbookId = formdatas.logbook;
                 logdtList.TblLogHead.DeptId = formdatas.Department;
@@ -657,6 +747,7 @@
                 }
                 logdtList = new();
                 dynamicform = new();
+                Displaydynamic = false;
                 StateHasChanged();
             }
         }
@@ -680,8 +771,80 @@
             email.Contains("@") ? ValidationStatus.Success : ValidationStatus.Error;
     }
 
-    void handleitem(DataTable val)
+    void handleitem(DataRow val)
     {
-        
+        Displaydynamic = true;
+        DataTable dt = datareport.AsEnumerable().Where(a => a.Field<string>("header_Id") == val[1]).CopyToDataTable();
+
+        foreach(DataRow dr in dt.Rows)
+        {
+            foreach(DataColumn dc in dt.Columns)
+            {
+
+                dynamicform.ForEach(a =>
+                {
+                    a.HeaderId = dr["header_Id"].ToString();
+                    a.Shift_prefix = dr["Shift_prefix"].ToString();
+                    if(a.Label.ToUpper()==dc.ColumnName.ToString().ToUpper())
+                    {
+                        if (a.ElementType == "Text")
+                        {
+                            if(!string.IsNullOrEmpty(dr[dc.ColumnName].ToString()))
+                            {
+                                a.StringValue = dr[dc.ColumnName].ToString();
+                            }
+
+                        }
+                        else if (a.ElementType == "Number")
+                        {
+                            if(!string.IsNullOrEmpty(dr[dc.ColumnName].ToString()))
+                            {
+                                a.IntegerValue = Convert.ToInt32(dr[dc.ColumnName]);
+                            }
+
+                        }
+                        else if (a.ElementType == "Date")
+                        {
+                            if(!string.IsNullOrEmpty(dr[dc.ColumnName].ToString()))
+                            {
+                                DateTime d1 = Convert.ToDateTime(dr[dc.ColumnName].ToString());
+                                a.DateOnlyValue = d1.Date;
+                            }
+
+                        }
+                        else if (a.ElementType == "DateTime")
+                        {
+                            if (!string.IsNullOrEmpty(dr[dc.ColumnName].ToString()))
+                            {
+
+                                a.DateValue = Convert.ToDateTime(dr[dc.ColumnName]);
+                            }
+                        }
+                        else if (a.ElementType == "Boolean")
+                        {
+                            if (!string.IsNullOrEmpty(dr[dc.ColumnName].ToString()))
+                            {
+                                a.BoolValue = Convert.ToBoolean(dr[dc.ColumnName]);
+                            }
+
+                        }
+                        else if(a.ElementType=="Time")
+                        {
+                            if (!string.IsNullOrEmpty(dr[dc.ColumnName].ToString()))
+                            {
+                                DateTime d = Convert.ToDateTime(dr[dc.ColumnName]);
+                                a.TimeValue = d.TimeOfDay;
+
+                            }
+                        }
+
+
+                    }
+
+                });
+            }
+        }
+        StateHasChanged();
     }
+    
 }

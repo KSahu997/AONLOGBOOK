@@ -54,7 +54,7 @@
 				{
 					@foreach (TblWorkCenterMaster cms in workcentermst)
 					{
-						<SelectItem Value="@cms.Id">@cms.WorkCenterName</SelectItem>
+						<SelectItem Value="@cms.ID">@cms.WorkCenter_Name</SelectItem>
 					}
 				}
 			</Select>
@@ -68,7 +68,7 @@
 				{
 					@foreach (TblFunctionalLocationMaster fl in functionalList)
 					{
-						<SelectItem Value="@fl.Id">@fl.FunctionalLocation</SelectItem>
+						<SelectItem Value="@fl.ID">@fl.Functional_Location</SelectItem>
 					}
 				}
 			</Select>
@@ -130,7 +130,7 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		workcentermst = (await httpservices.Get<List<TblWorkCenterMaster>>("WorkCenterMasters/GetList")).Where(a => a.DelFlag != 1);
+		workcentermst = (await httpservices.Get<List<TblWorkCenterMaster>>("WorkCenterMasters/GetList")).Where(a => a.Del_Flag != 1);
 		
 	}
 	async void submit(){
@@ -151,7 +151,7 @@
 	{
 		tblEquipmentMaster.WorkCenter_ID = value;
 
-		functionalList = (await httpservices.Get<List<TblFunctionalLocationMaster>>("FunctionalLocationMasters/GetList")).Where(a => (a.WorkCenterId == tblEquipmentMaster.WorkCenter_ID));
+		functionalList = (await httpservices.Get<List<TblFunctionalLocationMaster>>("FunctionalLocationMasters/GetList")).Where(a => (a.WorkCenter_ID == tblEquipmentMaster.WorkCenter_ID));
 		funcloc = tblEquipmentMaster.WorkCenter_ID;
 		StateHasChanged();
 	}

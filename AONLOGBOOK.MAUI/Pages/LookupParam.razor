@@ -1,0 +1,120 @@
+﻿@page "/LookupParam"
+@inject IHttpService httpservice;
+
+<Div class="container">
+    <Fields>
+        <Field ColumnSize="ColumnSize.Is3.OnDesktop.Is12.OnMobile">
+            <h4 class="mb-4">Lookup Parameters</h4>
+        </Field>
+        <Field ColumnSize="ColumnSize.Is2.OnDesktop.Is12.OnMobile">
+        </Field>
+    </Fields>
+    <Fields>
+        <Field ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile">
+            <FieldLabel>Lookup</FieldLabel>
+            <Select @bind-SelectedValue="tblLookupParam.Lookup_ID">
+                <SelectItem>--Select--</SelectItem>
+                @if (lookuplist != null)
+                {
+                    @foreach (TblLookup lookup in lookuplist.Where(a => (a.Del_Flag != 1)))
+                    {
+                        <SelectItem Value="@lookup.ID">@lookup.Name</SelectItem>
+                    }
+                }
+            </Select>
+        </Field>
+         <Field ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile">
+            <EditForm Model="@tblLookupParam" OnValidSubmit="submit">
+                <DataAnnotationsValidator></DataAnnotationsValidator>
+                <Fields>
+                    <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                        <FieldLabel>Parameter</FieldLabel>
+                        <TextEdit @bind-Text="tblLookupParam.Param"></TextEdit>
+                    </Field>
+                    <Field ColumnSize="ColumnSize.Is12.OnDesktop.Is12.OnMobile">
+                        <Button Type="ButtonType.Submit" Color="Color.Info" Disabled="tblLookupParam.Param == null">Submit</Button>
+                    </Field>
+                </Fields>
+            </EditForm>
+         </Field>
+     </Fields>
+    <Table Hoverable Bordered>
+        <TableHeader ThemeContrast="ThemeContrast.None" Background="Background.Secondary" TextColor="TextColor.White">
+            <TableRow>
+
+               
+                <TableHeaderCell>Parameter</TableHeaderCell>
+                <TableHeaderCell>Action</TableHeaderCell>
+            </TableRow>
+        </TableHeader>
+        <TableBody>
+
+            @if (paramlist!= null)
+            {
+                @foreach (var item in paramlist.Where(a => (a.Del_Flag == 0)))
+                {
+                    <TableRow>
+                      
+                        <TableRowCell>@item.Param</TableRowCell>
+                        <TableRowCell>
+                            <Button Color="Color.Warning" Margin="Margin.Is2" Clicked="@(()=>{Editlookup(item);})"><BarIcon IconName="IconName.Edit"></BarIcon></Button>
+                            <Button Color="Color.Danger" Margin="Margin.Is2" Clicked="@(()=>{DelLookup(item);})"><BarIcon IconName="IconName.Delete"></BarIcon></Button>
+                            @*                            <Button Color="Color.Primary" Margin="Margin.Is2" Clicked="@(()=>{AddParam(item);})">Add Parameter</Button>
+                    *@
+                        </TableRowCell>
+                    </TableRow>
+
+                }
+            }
+
+
+        </TableBody>
+    </Table>
+</Div>
+
+
+@code {
+    TblLookupParam tblLookupParam = new();
+    IEnumerable<TblDeptMaster> Deptlist;
+    IEnumerable<TblLookupParam> paramlist;
+    IEnumerable<TblLookup> lookuplist;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        Deptlist = await httpservice.Get<List<TblDeptMaster>>("DeptMasters");
+        lookuplist = await httpservice.Get<List<TblLookup>>("Lookups");
+        paramlist = await httpservice.Get<List<TblLookupParam>>("LookupParams");
+        StateHasChanged();
+
+    }
+    async void submit()
+    {
+        tblLookupParam.Created_By = "Admin";
+        tblLookupParam.Company_ID = Deptlist.First().Company_Id.ToString();
+        tblLookupParam.Plant_ID = Deptlist.First().Plant_Id.ToString();
+        //  tblLookupParam.LookupId = lookuplist.First().Id.ToString();
+        var data = await httpservice.Post<string>("LookupParams", tblLookupParam);
+        if(data != null)
+        {
+            await App.Current.MainPage.DisplayAlert("Message", "Data Succesfully Inserted", "Ok");
+        }
+        else
+        {
+            await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
+        }
+        StateHasChanged();
+        tblLookupParam.Param = null;
+        tblLookupParam.Lookup_ID = null;
+        await OnInitializedAsync();
+      
+    }
+    void Editlookup(TblLookupParam item)
+    {
+        
+    }
+    void DelLookup(TblLookupParam item)
+    {
+
+    }
+}
