@@ -137,20 +137,21 @@
 
 @code {
 
-        IEnumerable<TblShiftMaster> shiftlist;
-        TblShiftMaster shift = new TblShiftMaster();
-        List<TblShiftMaster> shiftD = new ();
-        int NoofShift;
-        bool isnew = true;
-        TblShiftMaster? shiftMaster;
-        TimeOnly endshift;
-        bool DispShift = false;
-        int Delflag = 0;
-        IEnumerable<TblCompanyMaster> companies;
+    IEnumerable<TblShiftMaster> shiftlist;
+    TblShiftMaster shift = new TblShiftMaster();
+    List<TblShiftMaster> shiftD = new ();
+    int NoofShift;
+    bool isnew = true;
+    TblShiftMaster? shiftMaster;
+    TimeOnly endshift;
+    bool DispShift = false;
+    int Delflag = 0;
+    IEnumerable<TblCompanyMaster> companies;
     protected override async Task OnInitializedAsync()
     {
         companies = await httpservice.Get<List<TblCompanyMaster>>("CompanyMasters");
         shiftlist = await httpservice.Get<List<TblShiftMaster>>("ShiftMasters");
+        StateHasChanged();
 
     }
     async void Submit()
@@ -161,6 +162,7 @@
         {
             try
             {
+                shift.Created_by = "Admin";
                 shift.CompanyId = companies.First().ID.ToString();
                 var savedata = await httpservice.Post<string>("ShiftMasters", shift);
                 if (savedata != null)
@@ -180,9 +182,7 @@
             }
 
             await OnInitializedAsync();
-            shift.Shift_prefix = null;
-            shift.Shifthour = null;
-            shift.Shift_start = null;
+            shift = new();
             StateHasChanged();
         }
         else 
@@ -190,8 +190,9 @@
 
             try
             {
+                 shift.Modified_by = "Admin";
                 shift.CompanyId = companies.First().ID.ToString();
-                var editdata = await httpservice.Post<string>("ShiftMasters/upd", shift);
+                var editdata = await httpservice.Post<string>("ShiftMasters/UPD", shift);
                 if (editdata != null)
                 {
                     await App.Current.MainPage.DisplayAlert("Message", editdata, "ok");
@@ -237,10 +238,10 @@
         {
 
             item.Delflag = 1;
-            var deldata = await httpservice.Post<string>("ShiftMasters/del", item);
+            var deldata = await httpservice.Post<string>("ShiftMasters/UPD", item);
             if (deldata != null)
             {
-                await App.Current.MainPage.DisplayAlert("Message", deldata, "ok");
+                await App.Current.MainPage.DisplayAlert("Message", "Data Successfully Deleted", "ok");
                 isnew = true;
                 StateHasChanged();
             }
@@ -260,10 +261,10 @@
         {
 
             item.Delflag = 0;
-            var deldata = await httpservice.Post<string>("ShiftMasters/del", item);
+            var deldata = await httpservice.Post<string>("ShiftMasters/UPD", item);
             if (deldata != null)
             {
-                await App.Current.MainPage.DisplayAlert("Message", deldata, "ok");
+                await App.Current.MainPage.DisplayAlert("Message", "Data Successfully Activated", "ok");
                 isnew = true;
                 StateHasChanged();
             }

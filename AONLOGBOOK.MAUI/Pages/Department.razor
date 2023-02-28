@@ -1,9 +1,8 @@
 ﻿@page "/Department"
 @inject IHttpService httpservice
 @using System.ComponentModel.DataAnnotations;
-<style>
-    
 
+<style>
     ::marker {
         content: close-quote;
         unicode-bidi: isolate;
@@ -95,7 +94,8 @@ else
               
                     @if (DeptList != null)
                     {
-                        @foreach (var item in DeptList)
+                       <Div Display="Display.Block.None.OnDesktop" >
+                        @foreach (var item in DeptList.Where(a => (a.Status_F != 1)))
                         {
                         <div id="accordion">
                             <div class="faq-container">
@@ -103,10 +103,19 @@ else
                                    <details class="d-flex m-2">
                                     <summary style="margin-left:10px;"><i class="fa fa-city p-2" style="color:#243763;"></i>@item.Dept_Name</summary>
                                         <p style="margin-left:15px;">
-                                             
-                                        <Button class="btn btnEdit p-1" @onclick=@(()=>handleEditDept(item))><i class="fa fa-pen p-2" /></Button>
-                                        <Button class="btn btn-danger p-1"><i class="fa fa-trash p-2" /></Button>
-                                       @* <button class="btn btnAdd p-2" @onclick="@(()=>handleAddnewSubDept(item))">Sub Departments</button>*@
+                                                <Field>
+                                                    <Dropdown>
+                                                        <Button Color="Color.Primary">Action</Button>
+                                                        <DropdownToggle Color="Color.Primary" Split />
+                                                        <DropdownMenu>
+                                                            <DropdownItem Clicked="@(()=>handleEditDept(item))">Edit</DropdownItem>
+                                                            <DropdownDivider />
+                                                            <DropdownItem Clicked="@(()=>handleDelDept(item))">Delete</DropdownItem>
+
+                                                        </DropdownMenu>
+                                                    </Dropdown>
+
+                                                </Field>
                                             </p>
                                         </details>
                                     </div>
@@ -114,7 +123,47 @@ else
                             </div>
                            
                         }
+                      </Div>
                     }
+                     <Div Display="Display.None.Block.OnDesktop">
+                    @if (DeptList != null)
+                    {
+                        <Table>
+                            <TableHeader>
+
+                                <TableRow>
+
+                                    <TableHeaderCell>Department Name</TableHeaderCell>
+
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                @foreach (var item in DeptList)
+                                {
+                                    <TableRowGroup Title="@item.Dept_Name">
+                                        <TableRow>
+                                            <TableRowCell>@item.Dept_Name</TableRowCell>
+                                            <TableRowCell>
+                                                <Dropdown>
+                                                    <Button Color="Color.Primary">Action</Button>
+                                                    <DropdownToggle Color="Color.Primary" Split />
+                                                    <DropdownMenu>
+                                                        <DropdownItem Clicked="@(()=>handleEditDept(item))">Edit</DropdownItem>
+                                                        <DropdownDivider />
+                                                        <DropdownItem Clicked="@(()=>handleDelDept(item))">Delete</DropdownItem>
+                                                    </DropdownMenu>
+                                                </Dropdown>
+                                            </TableRowCell>
+
+                                        </TableRow>
+
+                                    </TableRowGroup>
+                                }
+                            </TableBody>
+                        </Table>
+                    }
+
+                </Div>
                 </div>
                  </div>
             </div>
@@ -125,7 +174,7 @@ else
 
 @code {
     TblDeptMaster Dept = new();
-
+    bool? isnew = true;
     [Parameter]
     public RenderFragment ChildContent { get; set; }
     [Parameter]
@@ -143,17 +192,49 @@ else
 
     async void submit()
     {
-        if(await validation.ValidateAll())
+        if(isnew == true)
+        {
+            if (await validation.ValidateAll())
+            {
+                try
+                {
+                    Dept.Company_Id = PlantList.First(a => (a.ID.ToString() == plantId)).Company_Id;
+                    Dept.Created_By = "Admin";
+                    var data = await httpservice.Post<string>("DeptMasters", Dept);
+                    if (data != null)
+                    {
+                        await App.Current.MainPage.DisplayAlert("Message", "Data Successfully Inserted", "ok");
+                        Dept.Dept_Name = string.Empty;
+                    }
+                    else
+                    {
+                        await App.Current.MainPage.DisplayAlert("Message", "Error", "ok");
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+                HandleCancel();
+                StateHasChanged();
+                DeptList = (await httpservice.Get<List<TblDeptMaster>>("DeptMasters/ACT")).Where(a => (a.Plant_Id == Dept.Plant_Id));
+                await OnInitializedAsync();
+              
+
+            }
+
+        }
+        else
         {
             try
             {
                 Dept.Company_Id = PlantList.First(a => (a.ID.ToString() == plantId)).Company_Id;
-                Dept.Created_By = "Admin";
-                var data = await httpservice.Post<string>("DeptMasters", Dept);
-                if (data != null)
+                Dept.Modified_By = Dept.Created_By;
+                var editdata = await httpservice.Post<string>("DeptMasters/UPD", Dept);
+                if (editdata != null)
                 {
-                    await App.Current.MainPage.DisplayAlert("Message", data, "ok");
-                    Dept.Dept_Name = string.Empty;
+                    await App.Current.MainPage.DisplayAlert("Message", "Data Successfully Updated", "ok");
+                    Dept = new();
                 }
                 else
                 {
@@ -168,15 +249,32 @@ else
             StateHasChanged();
             await OnInitializedAsync();
         }
-        
+
 
     }
+    async void handleDelDept(TblDeptMaster item)
+    {
+        item.Status_F = 1;
+        var result = await httpservice.Post<string>("DeptMasters/UPD", item);
 
+        if (result != null)
+        {
+            await App.Current.MainPage.DisplayAlert("Message", "Department Successfully Deleted ", "Ok");
+        }
+        else
+        {
+
+            await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
+
+        }
+
+        StateHasChanged();
+    }
     protected override async Task OnInitializedAsync()
     {
         companies = await httpservice.Get<List<TblCompanyMaster>>("CompanyMasters");
         Dept.Plant_Id = plantId;
-        DeptList = (await httpservice.Get<List<TblDeptMaster>>("DeptMasters")).Where(a => (a.Plant_Id == plantId));
+        //  DeptList = (await httpservice.Get<List<TblDeptMaster>>("DeptMasters/ACT")).Where(a => (a.Plant_Id ==Dept.Plant_Id)); 
         StateHasChanged();
 
     }
@@ -208,19 +306,24 @@ else
     void handleEditDept(TblDeptMaster item)
     {
         selectdept = item;
+        Dept = selectdept;
         isDialogOpen = true;
+        isnew = false;
     }
     async void handlePlant(string val)
     {
         plant.Company_Id = val;
-        PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters")).Where(a => (a.Company_Id == plant.Company_Id));
+        PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters/ACT")).Where(a => (a.Company_Id == plant.Company_Id));
         StateHasChanged();
     }
     async void HandlePlantList(string val)
     {
-        Dept.Plant_Id = val;
-        DeptList = (await httpservice.Get<List<TblDeptMaster>>("DeptMasters")).Where(a => (a.Plant_Id == Dept.Plant_Id));
-        plantId = Dept.Plant_Id;
-        StateHasChanged();
+        
+            Dept.Plant_Id = val;
+            DeptList = (await httpservice.Get<List<TblDeptMaster>>("DeptMasters/ACT")).Where(a => (a.Plant_Id == Dept.Plant_Id));
+            plantId = Dept.Plant_Id;
+            StateHasChanged();
+            
+        
     }
 }

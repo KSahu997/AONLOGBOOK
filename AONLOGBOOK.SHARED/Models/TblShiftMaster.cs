@@ -16,6 +16,11 @@ namespace AONLOGBOOK.SHARED.Models
         public int? Shifthour { get; set; }
 
         public byte? Delflag { get; set; }
+        public string? Created_by { get; set; }
+        public string? Created_on { get; set; }
+        public string? Modified_by { get; set; }
+        public string? Modified_on { get; set; }
+
 
     }
 }
