@@ -1,22 +1,7 @@
 ﻿@page "/UOMMaster"
 @inject IHttpService httpservices
 <style>
-    .table-scroll tbody {
-        position: absolute;
-        overflow-y: scroll;
-        overflow-x: scroll;
-        height: 200px;
-    }
-
-    .table-scroll tr {
-        width: 100%;
-        table-layout: fixed;
-        display: inline-table;
-    }
-
-    .table-scroll thead > tr > th {
-        border: none;
-    }
+   
 </style>
 
 <Div class="container" Padding="Padding.Is3">
@@ -56,18 +41,19 @@
         
              @if (uommst != null)
             {
-                int sl = 1;
+                
                
                 @foreach (TblUommaster item in uommst)
                 {
-                   
                     <TableRow>
-                        <TableRowCell>@sl</TableRowCell>
+                       
+                        <TableRowCell>@uommst.ToList().IndexOf(item)+1</TableRowCell>
                         <TableRowCell>@item.Unit</TableRowCell>
                        
                     </TableRow>
-                   sl++;
+                    
                 }
+                  
                
             }
        

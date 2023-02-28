@@ -1,5 +1,4 @@
 using AONLOGBOOK.API.Models;
-using AONLOGBOOK.API.Service;
 using AONLOGBOOK.API.Services;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 
@@ -11,9 +10,6 @@ builder.Services.AddControllers().AddNewtonsoftJson();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<DBContext>();
-builder.Services.AddDbContext<CustomContext>();
-builder.Services.AddScoped<SqlADO>();
 builder.Services.AddSingleton<SqlService>();
 var app = builder.Build();
 

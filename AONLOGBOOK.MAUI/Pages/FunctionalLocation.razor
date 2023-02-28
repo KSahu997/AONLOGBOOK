@@ -13,11 +13,11 @@
 						<Fields>
 							<Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
 								<FieldLabel>Functional location</FieldLabel>
-								<TextEdit @bind-Text="tblFunctionalLocation.FunctionalLocation"></TextEdit>
+								<TextEdit @bind-Text="tblFunctionalLocation.Functional_Location"></TextEdit>
 							</Field>
 							<Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
 								<FieldLabel>Location Code</FieldLabel>
-								<TextEdit @bind-Text="tblFunctionalLocation.LocationCode"></TextEdit>
+								<TextEdit @bind-Text="tblFunctionalLocation.Location_Code"></TextEdit>
 							</Field>
 							<Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
 							</Field>
@@ -45,20 +45,20 @@
 
 		<Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
 			<FieldLabel>Work Center Name</FieldLabel>
-			<Select SelectedValue="tblFunctionalLocation.WorkCenterId" SelectedValueChanged="@((string args)=>{HandleFnc (args);})" SelectedValueExpression="@(()=>tblFunctionalLocation.WorkCenterId)">
+			<Select SelectedValue="tblFunctionalLocation.WorkCenter_ID" SelectedValueChanged="@((string args)=>{HandleFnc (args);})" SelectedValueExpression="@(()=>tblFunctionalLocation.WorkCenter_ID)">
 
 				<SelectItem>--SELECT--</SelectItem>
 				@if (workcentermst != null)
 				{
 					@foreach (TblWorkCenterMaster cms in workcentermst)
 					{
-						<SelectItem Value="@cms.Id">@cms.WorkCenterName</SelectItem>
+						<SelectItem Value="@cms.ID">@cms.WorkCenter_Name</SelectItem>
 					}
 				}
 			</Select>
 		</Field>
 		<Field ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile">
-			<Button Background="Background.Primary" Margin="Margin.Is4" @onclick="@AddFncLoc" Disabled=@(tblFunctionalLocation.WorkCenterId==null|| string.IsNullOrEmpty(tblFunctionalLocation.WorkCenterId))>ADD</Button>
+			<Button Background="Background.Primary" Margin="Margin.Is4" @onclick="@AddFncLoc" Disabled=@(tblFunctionalLocation.WorkCenter_ID==null|| string.IsNullOrEmpty(tblFunctionalLocation.WorkCenter_ID))>ADD</Button>
 		</Field>
 	</Card>
 </Div>
@@ -73,16 +73,16 @@
 						<div class="card w-100" style="border-top: 1px solid #FF6E31;">
 							<div class="row">
 								<details class="d-flex m-2">
-									<summary style="margin-left:10px"><b class="pt-2 fa fa-location" style="color:darkblue">@item.FunctionalLocation</b> </summary>
+									<summary style="margin-left:10px"><b class="pt-2 fa fa-location" style="color:darkblue">@item.Functional_Location</b> </summary>
 									<p style="margin-left:10px">
 										<ListGroup>
 											<ListGroupItem><b>SR_No</b>  @(functionalList.ToList().IndexOf(item) + 1)</ListGroupItem>
-												<ListGroupItem><b>Functional Location</b>  @item.FunctionalLocation</ListGroupItem>
-												<ListGroupItem><b>Location Code</b>  @item.LocationCode</ListGroupItem>
+												<ListGroupItem><b>Functional Location</b>  @item.Functional_Location</ListGroupItem>
+												<ListGroupItem><b>Location Code</b>  @item.Location_Code</ListGroupItem>
 											</ListGroup>
 											<Field>
 												<Button class="mt-2" Background="Background.Info" Clicked="@(()=>{Edit(item);})">EDIT</Button>
-												<Button class="mt-2" Background="Background.Danger" Clicked="@(()=>{Delete(item);})">@(item.DelFlag != 1 ? "Delete" : "UnDelete")</Button>
+												<Button class="mt-2" Background="Background.Danger" Clicked="@(()=>{Delete(item);})">@(item.Del_Flag != 1 ? "Delete" : "UnDelete")</Button>
 											</Field>
 										</p>
 									</details>
@@ -145,7 +145,7 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		workcentermst = (await httpservices.Get<List<TblWorkCenterMaster>>("WorkCenterMasters/GetList")).Where(a => a.DelFlag != 1);
+		workcentermst = (await httpservices.Get<List<TblWorkCenterMaster>>("WorkCenterMasters/GetList")).Where(a => a.Del_Flag != 1);
 
 	}
 
@@ -163,10 +163,10 @@
 
 	async void HandleFnc(string value)
 	{
-		tblFunctionalLocation.WorkCenterId = value;
+		tblFunctionalLocation.WorkCenter_ID = value;
 
-		functionalList = (await httpservices.Get<List<TblFunctionalLocationMaster>>("FunctionalLocationMasters/GetList")).Where(a => (a.WorkCenterId == tblFunctionalLocation.WorkCenterId));
-		WCIDcenter = tblFunctionalLocation.WorkCenterId;
+		functionalList = (await httpservices.Get<List<TblFunctionalLocationMaster>>("FunctionalLocationMasters/GetList")).Where(a => (a.WorkCenter_ID == tblFunctionalLocation.WorkCenter_ID));
+		WCIDcenter = tblFunctionalLocation.WorkCenter_ID;
 		StateHasChanged();
 	}
 
@@ -174,7 +174,7 @@
 	{
 		selectedFncLoc = new TblFunctionalLocationMaster();
 		isDialogOpen = true;
-		selectedFncLoc.WorkCenterId = WCIDcenter;
+		selectedFncLoc.WorkCenter_ID = WCIDcenter;
 	}
 	async void submit()
 	{
@@ -184,9 +184,9 @@
 			{
 
 
-				tblFunctionalLocation.InsertedBy = "Admin";
-				tblFunctionalLocation.CompanyId = workcentermst.First(a => (a.Id.ToString() == WCIDcenter)).CompanyId;
-				tblFunctionalLocation.PlantId = workcentermst.First(a => (a.Id.ToString() == WCIDcenter)).PlantId;
+				tblFunctionalLocation.Inserted_By = "Admin";
+				tblFunctionalLocation.Company_ID = workcentermst.First(a => (a.ID.ToString() == WCIDcenter)).Company_ID;
+				tblFunctionalLocation.Plant_ID = workcentermst.First(a => (a.ID.ToString() == WCIDcenter)).Plant_ID;
 				var result = await httpservices.Post<string>("FunctionalLocationMasters", tblFunctionalLocation);
 
 				if (result != null)
@@ -213,7 +213,7 @@
 			{
 
 
-				tblFunctionalLocation.InsertedBy = "Admin";
+				tblFunctionalLocation.Inserted_By = "Admin";
 				var result = await httpservices.Post<string>("FunctionalLocationMasters/update", tblFunctionalLocation);
 
 				if (result != null)
@@ -251,7 +251,7 @@
 		try
 		{
 
-			item.DelFlag = item.DelFlag == 0 ? 1 : 0;
+			item.Del_Flag = item.Del_Flag == 0 ? 1 : 0;
 			var delete = await httpservices.Post<string>("FunctionalLocationMasters/delete", item);
 			if (delete != null)
 			{
@@ -266,7 +266,7 @@
 		}
 		catch (Exception ex)
 		{
-			item.DelFlag = 0;
+			item.Del_Flag = 0;
 
 		}
 	}

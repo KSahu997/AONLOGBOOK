@@ -21,7 +21,7 @@
                                     {
                                         @foreach (TblTagMaster tag in tagmst)
                                         {
-                                            <SelectItem Value="@tag.Id">@tag.TagName</SelectItem>
+                                            <SelectItem Value="@tag.ID">@tag.Tag_Name</SelectItem>
                                         }
                                     }
                                 </Select>
@@ -62,7 +62,7 @@
                                   
                     <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                         <FieldLabel>UOM</FieldLabel>
-                        <Select @bind-SelectedValue="logdt.Uom">
+                        <Select @bind-SelectedValue="logdt.UOM">
                             <SelectItem>--Select--</SelectItem>
                             @if (uommst != null)
                             {
@@ -76,11 +76,11 @@
                     @if(dislmin == false || txt == true){
                         <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                             <FieldLabel>L_Min</FieldLabel>
-                            <NumericEdit @bind-Value="logdt.LMin"></NumericEdit>
+                            <NumericEdit @bind-Value="logdt.L_Min"></NumericEdit>
                         </Field>
                         <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                             <FieldLabel>L_Max</FieldLabel>
-                            <NumericEdit @bind-Value="logdt.LMax"></NumericEdit>
+                            <NumericEdit @bind-Value="logdt.L_Max"></NumericEdit>
                         </Field>
 
                     }
@@ -91,7 +91,7 @@
                     {
                         <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                             <FieldLabel>Prscn</FieldLabel>
-                            <NumericEdit @bind-Value="logdt.Prscn" ></NumericEdit>
+                            <NumericEdit @bind-Value="logdt.prscn" ></NumericEdit>
                         </Field>
                                 }
                                 
@@ -214,7 +214,7 @@
         {
             logdt.CreatedBy = "Admin";
             logdt.LogbookId = datas.logbook;
-            logdt.IsMandatory = Convert.ToInt16(ismandatory);
+            logdt.isMandatory = Convert.ToInt16(ismandatory);
             var savedata = await httpservice.Post<string>("LogbookDetailSchemas", logdt);
             if (savedata != null)
             {

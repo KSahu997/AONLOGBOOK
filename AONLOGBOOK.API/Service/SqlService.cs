@@ -1,5 +1,5 @@
 ﻿using System.Data;
-using Microsoft.Data.SqlClient;
+using System.Data.SqlClient;
 using System.Reflection;
 using System.Text;
 using Newtonsoft.Json;
@@ -142,5 +142,10 @@ namespace AONLOGBOOK.API.Services
             //put a breakpoint here and check datatable
             return dataTable;
         }
+
+        //internal ActionResult<IEnumerable<T>?> getDatas<T>(string v, Microsoft.Data.SqlClient.SqlParameter[] @params)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }
