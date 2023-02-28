@@ -98,7 +98,7 @@ else
         @if (logbookMasters != null)
         {
            <Div Display="Display.Block.None.OnDesktop" >
-            @foreach (var item in logbookMasters)
+            @foreach (var item in logbookMasters.Where(a=>(a.Del_Flag==0)))
             {
                 <div id="accordion">
                     <div class="faq-container">
@@ -145,7 +145,7 @@ else
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        @foreach (var item in logbookMasters)
+                        @foreach (var item in logbookMasters.Where(a=>(a.Del_Flag==0)))
                         {
                             <TableRowGroup Title="@item.LogbookName">
                                 <TableRow>
@@ -276,7 +276,7 @@ else
                 }
                 HandleCancel();
                 await OnInitializedAsync();
-                //logbookMasters = (await httpservice.Get<List<TblLogbookMaster>>("LogbookMasters/ACT")).Where(a => (a.SubDepartment == logbookmst.SubDepartment));
+                logbookMasters = (await httpservice.Get<List<TblLogbookMaster>>("LogbookMasters/ACT")).Where(a => (a.SubDepartment == logbookmst.SubDepartment));
                 logbookmst = new();
                 logmst = new();
                 StateHasChanged();
@@ -308,7 +308,7 @@ else
                 }
                 HandleCancel();
                 await OnInitializedAsync();
-                //logbookMasters = (await httpservice.Get<List<TblLogbookMaster>>("LogbookMasters/ACT")).Where(a => (a.SubDepartment == logbookmst.SubDepartment));
+                logbookMasters = (await httpservice.Get<List<TblLogbookMaster>>("LogbookMasters/ACT")).Where(a => (a.SubDepartment == logbookmst.SubDepartment));
                 logmst = new();
                 logbookmst = new();
                 StateHasChanged();
@@ -331,6 +331,7 @@ else
         if (result != null)
         {
             await App.Current.MainPage.DisplayAlert("Message", "Logbook Deleted Successfully", "Ok");
+            StateHasChanged();
         }
         else
         {
@@ -339,9 +340,8 @@ else
 
         }
         isnew = true;
-        StateHasChanged();
-       
-       await OnInitializedAsync();
+        logmst = new();
+        await OnInitializedAsync();
         logbookMasters = (await httpservice.Get<List<TblLogbookMaster>>("LogbookMasters/ACT")).Where(a => (a.SubDepartment == logbookmst.SubDepartment));
     }
 

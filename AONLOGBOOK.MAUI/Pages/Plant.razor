@@ -115,7 +115,7 @@ else
    @if (PlantList != null)
   {         
        <Div Display="Display.Block.None.OnDesktop" >
-                            @foreach (var item in PlantList)
+                            @foreach (var item in PlantList.Where(a=>(a.Status_F==0)))
                             {
                                 <div id="accordion">
                                     <div class="faq-container m-2 ">
@@ -171,7 +171,7 @@ else
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                @foreach (var item in PlantList)
+                                @foreach (var item in (PlantList).Where(a=>a.Status_F==0))
                                 {
                                     <TableRowGroup Title="@item.Plant_Name">
                                         <TableRow>

@@ -191,7 +191,7 @@ else
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                @foreach (var item in companies)
+                                @foreach (var item in companies.Where(a=>(a.Status_F==0)))
                                 {
                                     <TableRowGroup Title="@item.Company_Name">
                                            <TableRow>

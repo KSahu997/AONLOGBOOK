@@ -96,7 +96,7 @@ else
         @if (SubDeptList != null)
         {
             <Div Display="Display.Block.None.OnDesktop" >
-            @foreach (var item in SubDeptList)
+            @foreach (var item in SubDeptList.Where(a=>(a.Status_F==0)))
             {
                 <div id="accordion">
                     <div class="faq-container">
@@ -139,7 +139,7 @@ else
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        @foreach (var item in SubDeptList)
+                        @foreach (var item in SubDeptList.Where(a=>a.Status_F==0))
                         {
                             <TableRowGroup Title="@item.SubDpt_Name">
                                 <TableRow>
