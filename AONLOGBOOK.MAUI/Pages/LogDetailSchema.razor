@@ -197,7 +197,7 @@
         datas.logbook = log;
         tagmst = await httpservice.Get<List<TblTagMaster>>("TagMasters");
         uommst = await httpservice.Get<List<TblUommaster>>("Uommasters");
-        logdetail = await httpservice.Get<List<TblLogbookDetailSchemaMOD>>("LogbookDetailSchemas/" + datas.logbook);
+        logdetail = (await httpservice.Get<List<TblLogbookDetailSchemaMOD>>("LogbookDetailSchemas/ACT")).Where(a=>(a.LogbookId==datas.logbook));
     }
     //async void handleUOM(object value)
     //{
@@ -232,7 +232,7 @@
 
         }
 
-        logdetail = await httpservice.Get<List<TblLogbookDetailSchemaMOD>>("LogbookDetailSchemas/" + datas.logbook);
+        logdetail = (await httpservice.Get<List<TblLogbookDetailSchemaMOD>>("LogbookDetailSchemas/ACT")).Where(a => (a.LogbookId == datas.logbook));
         logdt = new();
         StateHasChanged();
 

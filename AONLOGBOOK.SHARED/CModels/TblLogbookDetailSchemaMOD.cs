@@ -10,7 +10,7 @@ namespace AONLOGBOOK.SHARED.CModels
     {
         public Guid Id { get; set; }
 
-        //public string? LogbookId { get; set; }
+        public string? LogbookId { get; set; }
         //public string? TagName { get; set; }
         public string? Element { get; set; }
 

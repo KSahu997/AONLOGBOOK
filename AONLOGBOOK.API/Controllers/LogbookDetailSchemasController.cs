@@ -1,4 +1,5 @@
 ﻿using AONLOGBOOK.API.Services;
+using AONLOGBOOK.SHARED.CModels;
 using AONLOGBOOK.SHARED.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -46,16 +47,16 @@ namespace AONLOGBOOK.API.Controllers
         }
         // Get Specific Record
         [HttpGet("ACT")]
-        public ActionResult<IEnumerable<TblLogbookDetailSchema>?> ActTblLogbookDetailSchemaMaster()
+        public ActionResult<IEnumerable<TblLogbookDetailSchemaMOD>?> ActTblLogbookDetailSchemaMaster()
         {
             SqlParameter[] @params =
            {
             new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="ACT"},
            };
-            return _sql.getDatas<TblLogbookDetailSchema>("uspLogbookDetailSchema", @params);
+            return _sql.getDatas<TblLogbookDetailSchemaMOD>("uspLogbookDetailSchema", @params);
         }
 
-
+     
 
         // POST: api/LogbookDetailSchemaMasters
         // Create Operation
