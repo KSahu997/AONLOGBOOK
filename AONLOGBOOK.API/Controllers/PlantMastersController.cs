@@ -72,6 +72,7 @@ namespace AONLOGBOOK.API.Controllers
                 new SqlParameter {ParameterName="@Email",Direction =ParameterDirection.Input,Value = TblPlantMaster.Email},
                 new SqlParameter {ParameterName="@Phone",Direction =ParameterDirection.Input,Value = TblPlantMaster.Phone_no},
                 new SqlParameter {ParameterName="@By",Direction=ParameterDirection.Input,Value=TblPlantMaster.Created_By},
+                new SqlParameter {ParameterName="@Company_Id",Direction=ParameterDirection.Input,Value=TblPlantMaster.Company_Id},
             };
             _sql.postData("uspPlant", @params);
             return Ok(TblPlantMaster.Plant_Name + " Created"); ;
@@ -91,6 +92,7 @@ namespace AONLOGBOOK.API.Controllers
                 new SqlParameter {ParameterName="@Pin",Direction =ParameterDirection.Input,Value = TblPlantMaster.PinCode},
                 new SqlParameter {ParameterName="@Email",Direction =ParameterDirection.Input,Value = TblPlantMaster.Email},
                 new SqlParameter {ParameterName="@Phone",Direction =ParameterDirection.Input,Value = TblPlantMaster.Phone_no},
+                new SqlParameter {ParameterName="@status_f",Direction =ParameterDirection.Input,Value = TblPlantMaster.Status_F},
                 new SqlParameter {ParameterName="@By",Direction=ParameterDirection.Input,Value=TblPlantMaster.Created_By},
             };
             _sql.postData("uspPlant", @params);

@@ -2,16 +2,7 @@
 @inject IHttpService httpservice
 @using AONLOGBOOK.SHARED.Models;
 <style>
-    .button {
-        width: 100px;
-    }
-
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button
-    {
-        -webkit-appearance: none;
-        margin: 0;
-    }
+  
 
     input[type=number] {
         -moz-appearance: textfield;
@@ -106,6 +97,7 @@ else
 
         @if (logbookMasters != null)
         {
+           <Div Display="Display.Block.None.OnDesktop" >
             @foreach (var item in logbookMasters)
             {
                 <div id="accordion">
@@ -115,9 +107,18 @@ else
                                 <summary style="margin-left:10px;"><i class="fa fa-city p-2" style="color:#243763;"></i>@item.LogbookName</summary>
                                 <p style="margin-left:15px;">
                                     <Field>
-                                        <Button class="p-1 m-1" style="font-size:13px;" Clicked="@(()=>HandleEditlogbook(item))" Color="Color.Primary"><BarIcon IconName="IconName.Edit"></BarIcon></Button>
-                                        <Button class="p-1 m-1" style="font-size:13px;" Color="Color.Danger"><BarIcon IconName="IconName.Delete"></BarIcon></Button>
-                                        <Button class="p-1 m-1" style="font-size:13px;" Clicked="@(()=>handlelogbookdetail(item))" Color="Color.Warning"><BarIcon IconName="IconName.Book"></BarIcon>Logbook Detail</Button>
+                                        <Dropdown>
+                                            <Button Color="Color.Info">Action</Button>
+                                            <DropdownToggle Color="Color.Primary" Split />
+                                            <DropdownMenu>
+                                                <DropdownItem Clicked="@(()=>HandleEditlogbook(item))">Edit</DropdownItem>
+                                                <DropdownDivider />
+                                                <DropdownItem Clicked="@(()=>handalDelLogbook(item))">Delete</DropdownItem>
+                                                <DropdownDivider/>
+                                                <DropdownItem Clicked="@(()=>handlelogbookdetail(item))">Add LogbookDetail</DropdownItem>
+                                            </DropdownMenu>
+                                        </Dropdown>
+                                        
                                     
 
                                     </Field>
@@ -127,12 +128,58 @@ else
                     </div>
                 </div>
             }
+           </Div>
         }
+
+        <Div Display="Display.None.Block.OnDesktop">
+            @if (logbookMasters != null)
+            {
+                <Table>
+                    <TableHeader Style="background-image: linear-gradient(181deg, #3e52af, transparent);">
+
+                        <TableRow>
+
+                            <TableHeaderCell>Logbook Name</TableHeaderCell>
+
+                            <TableHeaderCell>Operation</TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        @foreach (var item in logbookMasters)
+                        {
+                            <TableRowGroup Title="@item.LogbookName">
+                                <TableRow>
+                                    <TableRowCell>@item.LogbookName</TableRowCell>
+
+                                    <TableRowCell>
+                                        <Dropdown>
+                                            <Button Color="Color.Info">Action</Button>
+                                            <DropdownToggle Color="Color.Primary" Split />
+                                            <DropdownMenu>
+                                                <DropdownItem Clicked="@(()=>HandleEditlogbook(item))">Edit</DropdownItem>
+                                                <DropdownDivider />
+                                                <DropdownItem Clicked="@(()=>handalDelLogbook(item))">Delete</DropdownItem>
+                                                <DropdownDivider />
+                                                <DropdownItem Clicked="@(()=>handlelogbookdetail(item))">Add LogbookDetail</DropdownItem>
+                                            </DropdownMenu>
+                                        </Dropdown>
+                                    </TableRowCell>
+
+                                </TableRow>
+
+                            </TableRowGroup>
+                        }
+                    </TableBody>
+                </Table>
+            }
+
+        </Div>
+
    </div>
   
 }
 @code {
-    IEnumerable<LogbookMaster> logbookMasters;
+    IEnumerable<TblLogbookMaster> logbookMasters;
     TblLogbookMaster logbookmst = new();
     TblLogBookDataTable selectedLogbook;
     string sdept;
@@ -140,7 +187,7 @@ else
     string plantid;
     string Deptid;
     string log;
-   
+
     [Parameter]
     public RenderFragment ChildContent { get; set; }
     TblLogBookDataTable logbook = new();
@@ -154,12 +201,13 @@ else
     TblPlantMaster tblPlant = new();
     bool? isDialogOpen;
     bool? DispData;
+    bool isnew = true;
     bool? Displayform { get; set; } = false;
-    LogbookMaster? logmst;
+    TblLogbookMaster? logmst;
     public EventCallback<bool> mstDataschanged { get; set; }
     protected override async Task OnInitializedAsync()
     {
-        deptList = await httpservice.Get<List<TblDeptMaster>>("DeptMasters");
+        deptList = await httpservice.Get<List<TblDeptMaster>>("DeptMasters/ACT");
         //  logbookMasters = await httpservice.Get<List<LogbookMaster>>("logbookMasters");
         StateHasChanged();
 
@@ -168,20 +216,20 @@ else
     {
 
         tblSdept.Dept_Id = value;
-        SdeptList = await httpservice.Get<List<TblSubDeptMaster>>("SubDeptMasters/" + tblSdept.Dept_Id);
+        SdeptList = (await httpservice.Get<List<TblSubDeptMaster>>("SubDeptMasters/ACT")).Where(a=>(a.Dept_Id==tblSdept.Dept_Id));
         Deptid =  tblSdept.Dept_Id ;
         StateHasChanged();
     }
     async void handlelogbook(string value)
     {
         logbookmst.SubDepartment = value;
-        logbookMasters = await httpservice.Get<List<LogbookMaster>>("LogbookMasters/" + logbookmst.SubDepartment);
+        logbookMasters = (await httpservice.Get<List<TblLogbookMaster>>("LogbookMasters/ACT")).Where(a=>(a.SubDepartment==logbookmst.SubDepartment));
         log = logbookmst.SubDepartment;
         StateHasChanged();
     }
     async void Addlogbook()
     {
-        logmst = new LogbookMaster();
+        logmst = new TblLogbookMaster();
         isDialogOpen = true;
         logmst.SubDepartment = log;
         StateHasChanged();
@@ -191,11 +239,15 @@ else
         logmst = null;
         isDialogOpen = null;
     }
-    void HandleEditlogbook(LogbookMaster item)
+    void HandleEditlogbook(TblLogbookMaster item)
     {
+        isDialogOpen = true;
+        logmst=item;
+        logbookmst = logmst;
+        isnew = false;
 
     }
-    void handlelogbookdetail(LogbookMaster item)
+    void handlelogbookdetail(TblLogbookMaster item)
     {
         logmst = item;
         DispData = true;
@@ -203,38 +255,101 @@ else
 
     async void save()
     {
-        try
+        if(isnew==true)
         {
-            // logbookmst.PlantCode =
-            logbookmst.Department = tblSdept.Dept_Id;
-            logbookmst.PlantCode = tblSdept.Plant_Id;
-            logbookmst.Company_Id = tblSdept.Company_Id;
-
-            var data = await httpservice.Post<string>("LogbookMasters", logbookmst);
-            if (data != null)
+            try
             {
-                await App.Current.MainPage.DisplayAlert("Message", data, "Ok");
+                // logbookmst.PlantCode =
+                logbookmst.Department = tblSdept.Dept_Id;
+                logbookmst.PlantCode = SdeptList.First(a=>(a.Dept_Id==logbookmst.Department)).Plant_Id;
+                logbookmst.Company_Id =SdeptList.First(a=>(a.Plant_Id==logbookmst.PlantCode)).Company_Id;
+
+                var data = await httpservice.Post<string>("LogbookMasters", logbookmst);
+                if (data != null)
+                {
+                    await App.Current.MainPage.DisplayAlert("Message", data, "Ok");
+
+                }
+                else
+                {
+                    await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
+                }
+                HandleCancel();
+                await OnInitializedAsync();
+                //logbookMasters = (await httpservice.Get<List<TblLogbookMaster>>("LogbookMasters/ACT")).Where(a => (a.SubDepartment == logbookmst.SubDepartment));
+                logbookmst = new();
+                logmst = new();
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
 
             }
-            else
-            {
-                await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
-            }
-            HandleCancel();
-            await OnInitializedAsync();
-            logbookMasters = await httpservice.Get<List<LogbookMaster>>("LogbookMasters/" + logbookmst.SubDepartment);
-            logbookmst.LogbookName = null;
-            StateHasChanged();
-        }catch(Exception ex)
+        }
+        else
         {
+            try
+            {
+                // logbookmst.PlantCode =
+                logbookmst.Department = tblSdept.Dept_Id;
+                logbookmst.PlantCode = SdeptList.First(a => (a.Dept_Id == logbookmst.Department)).Plant_Id;
+                logbookmst.Company_Id = SdeptList.First(a => (a.Plant_Id == logbookmst.PlantCode)).Company_Id;
+                logbookmst.Del_Flag = 0;
 
+                var data = await httpservice.Post<string>("LogbookMasters/UPD", logbookmst);
+                if (data != null)
+                {
+                    await App.Current.MainPage.DisplayAlert("Message", data, "Ok");
+
+                }
+                else
+                {
+                    await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
+                }
+                HandleCancel();
+                await OnInitializedAsync();
+                //logbookMasters = (await httpservice.Get<List<TblLogbookMaster>>("LogbookMasters/ACT")).Where(a => (a.SubDepartment == logbookmst.SubDepartment));
+                logmst = new();
+                logbookmst = new();
+                StateHasChanged();
+                isnew = true;
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
+
     }
+
+    async void handalDelLogbook(TblLogbookMaster item)
+    {
+        item.Del_Flag = 1;
+        var result = await httpservice.Post<string>("LogbookMasters/UPD", item);
+
+        if (result != null)
+        {
+            await App.Current.MainPage.DisplayAlert("Message", "Logbook Deleted Successfully", "Ok");
+        }
+        else
+        {
+
+            await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
+
+        }
+        isnew = true;
+        StateHasChanged();
+       
+       await OnInitializedAsync();
+        logbookMasters = (await httpservice.Get<List<TblLogbookMaster>>("LogbookMasters/ACT")).Where(a => (a.SubDepartment == logbookmst.SubDepartment));
+    }
+
     void HandleCancel()
     {
         logmst = null;
         isDialogOpen = false;
+        logbookmst = new();
     }
     void HandleDataSaved()
     {

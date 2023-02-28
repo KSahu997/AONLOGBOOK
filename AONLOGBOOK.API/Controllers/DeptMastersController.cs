@@ -26,7 +26,7 @@ namespace AONLOGBOOK.API.Controllers
             new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="ALL"}
 
            };
-            return _sql.getDatas<TblDeptMaster>("uspDept", @params);
+            return _sql.getDatas<TblDeptMaster>("uspDepartment", @params);
 
         }
         // GET: api/DeptMasters/5
@@ -40,7 +40,7 @@ namespace AONLOGBOOK.API.Controllers
             new SqlParameter {ParameterName="@id",Direction=ParameterDirection.Input,Value=id}
 
            };
-            return _sql.getData<TblDeptMaster>("uspDept", @params);
+            return _sql.getData<TblDeptMaster>("uspDepartment", @params);
         }
         // Get Specific Record
         [HttpGet("ACT")]
@@ -50,7 +50,7 @@ namespace AONLOGBOOK.API.Controllers
            {
             new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="ACT"},
            };
-            return _sql.getDatas<TblDeptMaster>("uspDept", @params);
+            return _sql.getDatas<TblDeptMaster>("uspDepartment", @params);
         }
 
 
@@ -69,7 +69,7 @@ namespace AONLOGBOOK.API.Controllers
                 new SqlParameter {ParameterName="@By",Direction=ParameterDirection.Input,Value=TblDeptMaster.Created_By},
                 new SqlParameter {ParameterName="@By",Direction=ParameterDirection.Input,Value=TblDeptMaster.Created_By},
             };
-            _sql.postData("uspDept", @params);
+            _sql.postData("uspDepartment", @params);
             return Ok(TblDeptMaster.Dept_Name + " Created"); ;
         }
         [HttpPost("UPD")]
@@ -85,7 +85,7 @@ namespace AONLOGBOOK.API.Controllers
                 new SqlParameter {ParameterName="@By",Direction=ParameterDirection.Input,Value=TblDeptMaster.Created_By},
                 new SqlParameter {ParameterName="@By",Direction=ParameterDirection.Input,Value=TblDeptMaster.Created_By},
             };
-            _sql.postData("uspDept", @params);
+            _sql.postData("uspDepartment", @params);
             return Ok(TblDeptMaster.Dept_Name + " Updated");
         }
     }

@@ -1,6 +1,4 @@
 ﻿@page "/Plant"
-
-
 @inject IHttpService httpservice
 <style>
     
@@ -17,11 +15,9 @@
 
 @if (isDialogOpen == true)
 {
-    @if(selectedplant != null ){
-        @if(selectedplant.ID != null)
-        {
-            
-        }
+    @if(selectedplant != null )
+    {
+      
         <CModal plant="@selectedplant" title="Create New Plant" mstDatasChanged="@HandleAddplant">
             <ChildContent1>
                 <EditForm Model="@tblPlant" OnValidSubmit="submit">
@@ -97,9 +93,7 @@ else
          <Field ColumnSize="ColumnSize.Is12.OnDesktop.Is12.OnMobile">
                 <Heading Size="HeadingSize.Is4" TextAlignment="TextAlignment.Center">Plant List</Heading>
         </Field>
-              @*<p>Company Id:@tblPlant.CompanyId</p>*@
-           
-                
+            
                 <Field ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile">
                     <FieldLabel>Company</FieldLabel>
                     <Select SelectedValue="tblPlant.Company_Id" SelectedValueChanged="@((string arg)=>{handlePlant(arg);})" SelectedValueExpression="@(()=>tblPlant.Company_Id)">
@@ -118,17 +112,9 @@ else
                 </Field>
          
         </div>
-        <div class="row" style=" margin: 20px;
-        padding: 20px;
-        border: 1px solid white;
-        border-radius: 10px;
-        box-shadow: 2px 2px 5px 5px #dcdfe7;">
-                <div class="col-md-12">
-
-                    @if (PlantList != null)
-                    {
-                        
-                       <Div Display="Display.Block.None.OnDesktop" >
+   @if (PlantList != null)
+  {         
+       <Div Display="Display.Block.None.OnDesktop" >
                             @foreach (var item in PlantList)
                             {
                                 <div id="accordion">
@@ -147,7 +133,7 @@ else
                                                     </ListGroup>
                                                     <Field>
                                                     <Dropdown>
-                                                        <Button Color="Color.Primary">Action</Button>
+                                                        <Button Color="Color.Info">Action</Button>
                                                         <DropdownToggle Color="Color.Primary" Split />
                                                         <DropdownMenu>
                                                             <DropdownItem Clicked="@(()=>handleEditPlant(item))">Edit</DropdownItem>
@@ -166,12 +152,12 @@ else
                                 </div>
                             }
                         </Div>
-                    }
-                <Div Display="Display.None.Block.OnDesktop">
-                    @if (companies != null)
+   }
+      <Div Display="Display.None.Block.OnDesktop">
+                    @if (PlantList != null)
                     {
                         <Table>
-                            <TableHeader>
+                    <TableHeader Style="background-image: linear-gradient(181deg, #3e52af, transparent);">
 
                                 <TableRow>
 
@@ -199,7 +185,7 @@ else
 
                                             <TableRowCell>
                                                 <Dropdown>
-                                                    <Button Color="Color.Primary">Action</Button>
+                                                    <Button Color="Color.Info">Action</Button>
                                                     <DropdownToggle Color="Color.Primary" Split />
                                                     <DropdownMenu>
                                                         <DropdownItem Clicked="@(()=>handleEditPlant(item))">Edit</DropdownItem>
@@ -220,11 +206,7 @@ else
 
                 </Div>
 
-                </div>
-            </div>
-   
-      
-     </div>
+    </div>
 }
 
 
@@ -247,9 +229,10 @@ else
     TblPlantMaster? selectedplant;
     protected override async Task OnInitializedAsync()
     {
-        companies = await httpservice.Get<List<TblCompanyMaster>>("CompanyMasters");
+        companies = await httpservice.Get<List<TblCompanyMaster>>("CompanyMasters/ACT");
         tblPlant.Company_Id = cmpId;
         PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters/ACT")).Where(a => (a.Company_Id == tblPlant.Company_Id));
+        StateHasChanged();
     }
     async void submit()
     {
@@ -282,9 +265,10 @@ else
             }
 
             HandleCancel();
-            PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters")).Where(a => (a.Company_Id == tblPlant.Company_Id));
+
             await OnInitializedAsync();
             tblPlant = new();
+            selectedplant = new();
             StateHasChanged();
         }
         else
@@ -294,7 +278,7 @@ else
                 if (tblPlant.Company_Id != null && tblPlant.Plant_Name != "")
                 {
                     tblPlant.Company_Id = companies.First(a => (a.ID.ToString() == cmpId)).ID.ToString();
-                    tblPlant.Created_By = "Admin";
+                    tblPlant.Modified_By = "Admin";
                     tblPlant.Status_F = 0;
                     var result = await httpservice.Post<string>("PlantMasters/UPD", tblPlant);
 
@@ -318,28 +302,26 @@ else
             }
 
             HandleCancel();
-            PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters")).Where(a => (a.Company_Id == tblPlant.Company_Id));
+
             await OnInitializedAsync();
             tblPlant = new();
+            selectedplant = null;
+            isnew = true;
             StateHasChanged();
         }
     }
-    //async void handleAddnewDept(TblPlantMaster item)
-    //{
-    //    selectedplant = item;
 
-    //    DispDatas = true;
-    //}
     void handleDataSaved()
     {
         selectedplant = null;
-        DispDatas = null;
+       // DispDatas = null;
 
     }
     void HandleCancel()
     {
         selectedplant = null;
-        DispDatas = false;
+        tblPlant = new();
+       // DispDatas = false;
         isDialogOpen = false;
 
     }
@@ -348,6 +330,7 @@ else
         selectedplant = new TblPlantMaster();
         isDialogOpen = true;
         selectedplant.Company_Id = cmpId;
+        tblPlant.Company_Id = selectedplant.Company_Id;
 
     }
     void HandleAddplant()
@@ -356,11 +339,11 @@ else
         isDialogOpen = null;
 
     }
-    void back()
-    {
-        selectedplant = null;
-        DispDatas = false;
-    }
+    //void back()
+    //{
+    //    selectedplant = null;
+    //    DispDatas = false;
+    //}
     void handleEditPlant(TblPlantMaster item)
     {
         selectedplant = item;
@@ -369,7 +352,7 @@ else
         isnew = false;
 
     }
-   async  void handalDelPlant(TblPlantMaster item)
+    async  void handalDelPlant(TblPlantMaster item)
     {
         item.Status_F = 1;
         var result = await httpservice.Post<string>("PlantMasters/UPD", item);
@@ -384,14 +367,17 @@ else
             await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
 
         }
-
+       
         StateHasChanged();
+        
+       // PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters/ACT")).Where(a => (a.Company_Id == tblPlant.Company_Id));
     }
 
     async void handlePlant(string val)
     {
         tblPlant.Company_Id = val;
-        PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters")).Where(a => (a.Company_Id == tblPlant.Company_Id));
+        PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters/ACT")).Where(a => (a.Company_Id == tblPlant.Company_Id));
         cmpId = tblPlant.Company_Id;
+        StateHasChanged();
     }
 }
