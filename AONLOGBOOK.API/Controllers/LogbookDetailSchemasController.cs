@@ -46,14 +46,15 @@ namespace AONLOGBOOK.API.Controllers
             return _sql.getData<TblLogbookDetailSchema>("uspLogbookDetailSchema", @params);
         }
         // Get Specific Record
-        [HttpGet("ACT")]
-        public ActionResult<IEnumerable<TblLogbookDetailSchemaMOD>?> ActTblLogbookDetailSchemaMaster()
+        [HttpGet("ACT/{Logbookid}")]
+        public ActionResult<IEnumerable<TblLogbookDetailSchemasMD>?> ActTblLogbookDetailSchemaMaster(string Logbookid)
         {
             SqlParameter[] @params =
            {
             new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="ACT"},
+            new SqlParameter {ParameterName="@LogbookId",Direction=ParameterDirection.Input,Value=Logbookid},
            };
-            return _sql.getDatas<TblLogbookDetailSchemaMOD>("uspLogbookDetailSchema", @params);
+            return _sql.getDatas<TblLogbookDetailSchemasMD>("uspLogbookDetailSchema", @params);
         }
 
      
@@ -61,7 +62,7 @@ namespace AONLOGBOOK.API.Controllers
         // POST: api/LogbookDetailSchemaMasters
         // Create Operation
         [HttpPost]
-        public ActionResult PostTblLogbookDetailSchemaMaster(TblLogbookDetailSchema tblLogbookDetailSchema)
+        public ActionResult PostTblLogbookDetailSchemaMaster([FromBody]TblLogbookDetailSchemasMD tblLogbookDetailSchema)
         {
             SqlParameter[] @params =
             {
@@ -73,34 +74,36 @@ namespace AONLOGBOOK.API.Controllers
             new SqlParameter {ParameterName="@source",Direction =ParameterDirection.Input,Value = tblLogbookDetailSchema.Source },
             new SqlParameter {ParameterName="@L_min",Direction =ParameterDirection.Input,Value = tblLogbookDetailSchema.L_Min },
             new SqlParameter {ParameterName="@L_max",Direction =ParameterDirection.Input,Value = tblLogbookDetailSchema.L_Max },
-            new SqlParameter {ParameterName="@Prscn",Direction =ParameterDirection.Input,Value = tblLogbookDetailSchema.prscn },
+            new SqlParameter {ParameterName="@Prscn",Direction =ParameterDirection.Input,Value = tblLogbookDetailSchema.Prscn },
             new SqlParameter {ParameterName="@By",Direction=ParameterDirection.Input,Value=tblLogbookDetailSchema.CreatedBy},
             new SqlParameter {ParameterName="@refcol",Direction=ParameterDirection.Input,Value=tblLogbookDetailSchema.RefCol},
-            new SqlParameter {ParameterName="@cal_param",Direction=ParameterDirection.Input,Value=tblLogbookDetailSchema.Calulation_Params},
+            new SqlParameter {ParameterName="@cal_param",Direction=ParameterDirection.Input,Value=tblLogbookDetailSchema.CalulationParams},
             new SqlParameter {ParameterName="@operator",Direction=ParameterDirection.Input,Value=tblLogbookDetailSchema.Operator},
+            new SqlParameter {ParameterName="@ismandatory",Direction=ParameterDirection.Input,Value=tblLogbookDetailSchema.isMandatory},
             };
             _sql.postData("uspLogbookDetailSchema", @params);
             return Ok("Schema Created");
         }
         [HttpPost("UPD")]
-        public ActionResult UpdTblLogbookDetailSchemaMaster(TblLogbookDetailSchema tblLogbookDetailSchema)
+        public ActionResult UpdTblLogbookDetailSchemaMaster(TblLogbookDetailSchemasMD tblLogbookDetailSchema)
         {
             SqlParameter[] @params =
             {
                 new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="UPD"},
                 new SqlParameter {ParameterName="@id",Direction =ParameterDirection.Input,Value = tblLogbookDetailSchema.Id },
-                new SqlParameter {ParameterName="@LogbookId",Direction =ParameterDirection.Input,Value = tblLogbookDetailSchema.LogbookId},
+                new SqlParameter {ParameterName="@Delflag",Direction =ParameterDirection.Input,Value = tblLogbookDetailSchema.Del_Flag},
                 new SqlParameter {ParameterName="@Element",Direction =ParameterDirection.Input,Value = tblLogbookDetailSchema.Element },
                 new SqlParameter {ParameterName="@DataType",Direction =ParameterDirection.Input,Value = tblLogbookDetailSchema.DataType },
                 new SqlParameter {ParameterName="@UOM",Direction =ParameterDirection.Input,Value = tblLogbookDetailSchema.UOM },
                 new SqlParameter {ParameterName="@source",Direction =ParameterDirection.Input,Value = tblLogbookDetailSchema.Source },
                 new SqlParameter {ParameterName="@L_min",Direction =ParameterDirection.Input,Value = tblLogbookDetailSchema.L_Min },
                 new SqlParameter {ParameterName="@L_max",Direction =ParameterDirection.Input,Value = tblLogbookDetailSchema.L_Max },
-                new SqlParameter {ParameterName="@Prscn",Direction =ParameterDirection.Input,Value = tblLogbookDetailSchema.prscn },
-                new SqlParameter {ParameterName="@By",Direction=ParameterDirection.Input,Value=tblLogbookDetailSchema.CreatedBy},
+                new SqlParameter {ParameterName="@Prscn",Direction =ParameterDirection.Input,Value = tblLogbookDetailSchema.Prscn},
+                new SqlParameter {ParameterName="@By",Direction=ParameterDirection.Input,Value=tblLogbookDetailSchema.UpdatedBy},
                 new SqlParameter {ParameterName="@refcol",Direction=ParameterDirection.Input,Value=tblLogbookDetailSchema.RefCol},
-                new SqlParameter {ParameterName="@cal_param",Direction=ParameterDirection.Input,Value=tblLogbookDetailSchema.Calulation_Params},
+                new SqlParameter {ParameterName="@cal_param",Direction=ParameterDirection.Input,Value=tblLogbookDetailSchema.CalulationParams},
                 new SqlParameter {ParameterName="@operator",Direction=ParameterDirection.Input,Value=tblLogbookDetailSchema.Operator},
+                 new SqlParameter {ParameterName="@ismandatory",Direction=ParameterDirection.Input,Value=tblLogbookDetailSchema.isMandatory},
             };
             _sql.postData("uspLogbookDetailSchema", @params);
             return Ok("Schema Updated");

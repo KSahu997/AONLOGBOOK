@@ -13,7 +13,7 @@
                              <Fields>
                                  <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                                      <FieldLabel>Element</FieldLabel>
-                                     <Select @bind-SelectedValue="logdt.Element">
+                        <Select @bind-SelectedValue="logmddt.Element">
                                 @*<Select SelectedValue="@logdt.Element" TValue="int?" SelectedValueExpression="@(()=>logdt.Element)" 
                                 SelectedValueChanged="@((args)=>{handleUOM(args);})">*@
                                 <SelectItem>--Select--</SelectItem>
@@ -28,7 +28,7 @@
                                  </Field>
                                   <Field ColumnSize="ColumnSize.Is4">
                                        <FieldLabel>Source</FieldLabel>
-                        <Select SelectedValue="logdt.Source" SelectedValueChanged="@((string a)=>{handlesrc(a);})" TValue="string" SelectedValueExpression="@(()=>logdt.Source)">
+                        <Select SelectedValue="logmddt.Source" SelectedValueChanged="@((string a)=>{handlesrc(a);})" TValue="string" SelectedValueExpression="@(()=>logmddt.Source)">
                                             <SelectItem >--Select--</SelectItem>
                                             <SelectItem Value=@("Manual")>Manual</SelectItem>
                                             <SelectItem Value=@("Calculated")>Calculated</SelectItem>
@@ -38,7 +38,7 @@
                                    @if(cal == false){
                         <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                             <FieldLabel>Type</FieldLabel>
-                            <Select TValue="string" SelectedValue="logdt.DataType" SelectedValueChanged="@((string a)=>{handleType(a);})" SelectedValueExpression="@(()=>logdt.DataType)">
+                            <Select TValue="string" SelectedValue="logmddt.DataType" SelectedValueChanged="@((string a)=>{handleType(a);})" SelectedValueExpression="@(()=>logmddt.DataType)">
                                 <SelectItem>--Select--</SelectItem>
                                 <SelectItem Value=@("Text")>Text</SelectItem>
                                 <SelectItem Value=@("Number")>Number</SelectItem>
@@ -62,7 +62,7 @@
                                   
                     <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                         <FieldLabel>UOM</FieldLabel>
-                        <Select @bind-SelectedValue="logdt.UOM">
+                            <Select @bind-SelectedValue="logmddt.UOM">
                             <SelectItem>--Select--</SelectItem>
                             @if (uommst != null)
                             {
@@ -76,11 +76,11 @@
                     @if(dislmin == false || txt == true){
                         <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                             <FieldLabel>L_Min</FieldLabel>
-                            <NumericEdit @bind-Value="logdt.L_Min"></NumericEdit>
+                            <NumericEdit @bind-Value="logmddt.L_Min"></NumericEdit>
                         </Field>
                         <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                             <FieldLabel>L_Max</FieldLabel>
-                            <NumericEdit @bind-Value="logdt.L_Max"></NumericEdit>
+                            <NumericEdit @bind-Value="logmddt.L_Max"></NumericEdit>
                         </Field>
 
                     }
@@ -91,7 +91,7 @@
                     {
                         <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                             <FieldLabel>Prscn</FieldLabel>
-                            <NumericEdit @bind-Value="logdt.prscn" ></NumericEdit>
+                            <NumericEdit @bind-Value="logmddt.Prscn"></NumericEdit>
                         </Field>
                                 }
                                 
@@ -142,6 +142,7 @@
                             <th>Source</th>
                             <th>L_Min</th>
                             <th>L_Max</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -150,13 +151,22 @@
                     @foreach (var item in logdetail)
                     {
                               <tr>
-                                  <td>@item.displayname</td>
+                                  <td>@item.Display_Name</td>
                                  @* <td>@item.Unit</td>*@
                                   <td>@item.DataType</td>
                                   <td>@item.Source</td>
-                                  <td>@item.LMin</td>
-                                  <td>@item.LMax</td>
+                                  <td>@item.L_Min</td>
+                                  <td>@item.L_Max</td>
+                                  <td> <Dropdown>
+                                            <Button Color="Color.Info">Action</Button>
+                                            <DropdownToggle Color="Color.Primary" Split />
+                                            <DropdownMenu>
+                                                <DropdownItem Clicked="@(()=>HandleEditLogDetail(item))">Edit</DropdownItem>
+                                                <DropdownDivider />
+                                                <DropdownItem Clicked="@(()=>handalDelLogDetail(item))">Delete</DropdownItem>
 
+                                            </DropdownMenu>
+                                        </Dropdown></td>
                               </tr>
 
                     }
@@ -179,11 +189,13 @@
     bool? txt { get; set; } = false;
     Formdata datas = new();
     TblLogbookDetailSchema logdt = new();
-    IEnumerable<TblLogbookDetailSchemaMOD> logdetail;
+    TblLogbookDetailSchemasMD logmddt = new();
+    IEnumerable<TblLogbookDetailSchemasMD> logdetail;
     IEnumerable<TblTagMaster> tagmst;
     IEnumerable<TblUommaster> uommst;
     TblTagMaster tag;
     TblUommaster uom;
+    bool isnew = true;
     bool? cal { get; set; } = true;
     [Parameter]
     public RenderFragment ChildContent { get; set; }
@@ -192,12 +204,20 @@
     public EventCallback<bool> mstlogChanged { get; set; }
     protected override async Task OnInitializedAsync()
     {
-        datas.Department = Dept;
-        datas.SubDepartment = SDept;
-        datas.logbook = log;
-        tagmst = await httpservice.Get<List<TblTagMaster>>("TagMasters");
-        uommst = await httpservice.Get<List<TblUommaster>>("Uommasters");
-        logdetail = (await httpservice.Get<List<TblLogbookDetailSchemaMOD>>("LogbookDetailSchemas/ACT")).Where(a=>(a.LogbookId==datas.logbook));
+        try
+        {
+            datas.Department = Dept;
+            datas.SubDepartment = SDept;
+            datas.logbook = log;
+            tagmst = await httpservice.Get<List<TblTagMaster>>("TagMasters/ACT");
+            uommst = await httpservice.Get<List<TblUommaster>>("Uommasters/ACT");
+            logdetail = await httpservice.Get<List<TblLogbookDetailSchemasMD>>("LogbookDetailSchemas/ACT/" + datas.logbook);
+        }
+        catch(Exception ex)
+        {
+
+        }
+
     }
     //async void handleUOM(object value)
     //{
@@ -210,38 +230,69 @@
 
     async void Savedetails()
     {
-        try
+        if(isnew==true)
         {
-            logdt.CreatedBy = "Admin";
-            logdt.LogbookId = datas.logbook;
-            logdt.isMandatory = Convert.ToInt16(ismandatory);
-            var savedata = await httpservice.Post<string>("LogbookDetailSchemas", logdt);
-            if (savedata != null)
+            try
             {
-                await App.Current.MainPage.DisplayAlert("Message", savedata, "ok");
+                logmddt.CreatedBy = "Admin";
+                logmddt.LogbookId = datas.logbook;
+                logmddt.isMandatory = Convert.ToInt16(ismandatory);
+                var savedata = await httpservice.Post<string>("LogbookDetailSchemas", logmddt);
+                if (savedata != null)
+                {
+                    await App.Current.MainPage.DisplayAlert("Message", savedata, "ok");
+
+                }
+                else
+                {
+                    await App.Current.MainPage.DisplayAlert("Message", "Error", "ok");
+                }
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
 
             }
-            else
-            {
-                await App.Current.MainPage.DisplayAlert("Message", "Error", "ok");
-            }
+            logdetail = await httpservice.Get<List<TblLogbookDetailSchemasMD>>("LogbookDetailSchemas/ACT/" + datas.logbook);
+            logmddt = new();
             StateHasChanged();
         }
-        catch (Exception ex)
+        else
         {
+            try
+            {
+
+                logmddt.UpdatedBy = "Admin";
+                logmddt.LogbookId = datas.logbook;
+                logmddt.isMandatory = Convert.ToInt16(ismandatory);
+                var savedata = await httpservice.Post<string>("LogbookDetailSchemas/UPD", logmddt);
+                if (savedata != null)
+                {
+                    await App.Current.MainPage.DisplayAlert("Message", savedata, "ok");
+
+                }
+                else
+                {
+                    await App.Current.MainPage.DisplayAlert("Message", "Error", "ok");
+                }
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+
+            }
+            logdetail = await httpservice.Get<List<TblLogbookDetailSchemasMD>>("LogbookDetailSchemas/ACT/" + datas.logbook);
+            logmddt = new();
+            isnew = true;
+            StateHasChanged();
 
         }
-
-        logdetail = (await httpservice.Get<List<TblLogbookDetailSchemaMOD>>("LogbookDetailSchemas/ACT")).Where(a => (a.LogbookId == datas.logbook));
-        logdt = new();
-        StateHasChanged();
-
 
     }
     async void submit()
     {
 
-        logdetail = await httpservice.Get<List<TblLogbookDetailSchemaMOD>>("LogbookDetailSchemas/" + datas.logbook);
+        logdetail = await httpservice.Get<List<TblLogbookDetailSchemasMD>>("LogbookDetailSchemas/ACT/" + datas.logbook);
         Displayform = true;
         StateHasChanged();
     }
@@ -253,8 +304,25 @@
 
     //    }
     //}    
-    void handleData()
+    async void  handalDelLogDetail(TblLogbookDetailSchemasMD item)
     {
+        item.Del_Flag= 1;
+        var result = await httpservice.Post<string>("LogbookDetailSchemas/UPD", item);
+
+        if (result != null)
+        {
+            await App.Current.MainPage.DisplayAlert("Message", "Schema Deleted Successfully", "Ok");
+        }
+        else
+        {
+
+            await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
+
+        }
+
+        StateHasChanged();
+        await OnInitializedAsync();
+        isnew = true;
 
     }
     void handleDatas()
@@ -264,17 +332,17 @@
 
     void handleType(string val)
     {
-        logdt.DataType = val;
-        if (logdt.DataType == "Number")
+        logmddt.DataType = val;
+        if (logmddt.DataType == "Number")
         {
             dislmin = false;
-             StateHasChanged();
+            StateHasChanged();
         }
         else
         {
             dislmin = true;
         }
-        if (logdt.DataType == "Text")
+        if (logmddt.DataType == "Text")
         {
             txt = true;
             StateHasChanged();
@@ -285,8 +353,8 @@
     }
     void handlesrc(string val)
     {
-        logdt.Source = val;
-        if(logdt.Source == "Calculated")
+        logmddt.Source = val;
+        if (logmddt.Source == "Calculated")
         {
             cal = true;
             StateHasChanged();
@@ -295,10 +363,15 @@
         {
             cal = false;
         }
-   
+
     }
     void Oncheckedchange(bool value)
     {
         ismandatory = value;
+    }
+    void HandleEditLogDetail(TblLogbookDetailSchemasMD item)
+    {
+        logmddt = item;
+        isnew = false;
     }
 }
