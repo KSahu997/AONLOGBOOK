@@ -22,35 +22,37 @@ namespace AONLOGBOOK.API.Controllers
         }
 
         // Get All Records
-        [HttpGet]
-        public ActionResult<DataTable?> GetTblCompanyMasters()
+        [HttpGet("{logbookid}/{dt}")]
+        public ActionResult<DataTable?> GetTblLogDataTableMasters(string logbookid, DateTime dt)
         {
             SqlParameter[] @params =
             {
                 new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="ALL"},
+                new SqlParameter {ParameterName="@LogbookId",Direction=ParameterDirection.Input,Value=logbookid},
+                new SqlParameter {ParameterName="@DateTime",Direction=ParameterDirection.Input,Value=dt},
             };
             return _sql.getDataAsDataTable("uspLogDataTable", @params);
 
         }
         // GET: api/CompanyMasters/5
         // Get Specific Record
-        [HttpGet("{id}")]
-        public ActionResult<TblCompanyMaster?> GetTblCompanyMaster(Guid id)
-        {
-            SqlParameter[] @params =
-            {
-            new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="ALL"},
-            new SqlParameter {ParameterName="@LogBookID",Direction=ParameterDirection.Input,Value=id},
+        //[HttpGet("{id}")]
+        //public ActionResult<TblLogBookDataTable?> GetTblLogDataTableMasters(Guid id)
+        //{
+        //    SqlParameter[] @params =
+        //    {
+        //    new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="ALL"},
+        //    new SqlParameter {ParameterName="@LogBookID",Direction=ParameterDirection.Input,Value=id},
 
 
-            };
-            return _sql.getData<TblCompanyMaster>("uspLogDataTable", @params);
-        }
+        //    };
+        //    return _sql.getData<TblCompanyMaster>("uspLogDataTable", @params);
+        //}
 
         // POST: api/CompanyMasters
         // Create Operation
         [HttpPost]
-        public ActionResult PostTblCompanyMaster(LogDataList logdt)
+        public ActionResult PostTblLogDataTableMasters(LogDataList logdt)
         {
             SqlParameter[] @params =
             {
@@ -69,27 +71,27 @@ namespace AONLOGBOOK.API.Controllers
             _sql.postData("uspLogDataTable", @params);
             return Ok("Record Inserted");
         }
-        [HttpPost("UPD")]
-        public ActionResult UpdTblCompanyMaster(TblCompanyMaster tblCompanyMaster)
-        {
-            SqlParameter[] @params =
-            {
-            new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="UPD"},
-            new SqlParameter {ParameterName="@Company_Name",Direction =ParameterDirection.Input,Value = tblCompanyMaster.Company_Name },
-            new SqlParameter {ParameterName="@id",Direction =ParameterDirection.Input,Value = tblCompanyMaster.ID },
-            new SqlParameter {ParameterName="@Attachment",Direction =ParameterDirection.Input,Value = tblCompanyMaster.Attachment },
-            new SqlParameter {ParameterName="@GST",Direction =ParameterDirection.Input,Value = tblCompanyMaster.GST_no },
-            new SqlParameter {ParameterName="@Address",Direction =ParameterDirection.Input,Value = tblCompanyMaster.Address },
-            new SqlParameter {ParameterName="@Country",Direction =ParameterDirection.Input,Value =tblCompanyMaster.Country },
-            new SqlParameter {ParameterName="@City",Direction =ParameterDirection.Input,Value = tblCompanyMaster.City },
-            new SqlParameter {ParameterName="@State",Direction =ParameterDirection.Input,Value = tblCompanyMaster.State },
-            new SqlParameter {ParameterName="@Pin",Direction =ParameterDirection.Input,Value = tblCompanyMaster.PinCode },
-            new SqlParameter {ParameterName="@Phone",Direction =ParameterDirection.Input,Value = tblCompanyMaster.Phone_no},
-            new SqlParameter {ParameterName="@Email",Direction =ParameterDirection.Input,Value = tblCompanyMaster.Email },
-            new SqlParameter {ParameterName="@By",Direction=ParameterDirection.Input,Value=tblCompanyMaster.Created_By},
-            };
-            _sql.postData("uspCompany", @params);
-            return Ok(tblCompanyMaster.Company_Name + " Updated");
-        }
+        //[HttpPost("UPD")]
+        //public ActionResult UpdTblCompanyMaster(TblCompanyMaster tblCompanyMaster)
+        //{
+        //    SqlParameter[] @params =
+        //    {
+        //    new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="UPD"},
+        //    new SqlParameter {ParameterName="@Company_Name",Direction =ParameterDirection.Input,Value = tblCompanyMaster.Company_Name },
+        //    new SqlParameter {ParameterName="@id",Direction =ParameterDirection.Input,Value = tblCompanyMaster.ID },
+        //    new SqlParameter {ParameterName="@Attachment",Direction =ParameterDirection.Input,Value = tblCompanyMaster.Attachment },
+        //    new SqlParameter {ParameterName="@GST",Direction =ParameterDirection.Input,Value = tblCompanyMaster.GST_no },
+        //    new SqlParameter {ParameterName="@Address",Direction =ParameterDirection.Input,Value = tblCompanyMaster.Address },
+        //    new SqlParameter {ParameterName="@Country",Direction =ParameterDirection.Input,Value =tblCompanyMaster.Country },
+        //    new SqlParameter {ParameterName="@City",Direction =ParameterDirection.Input,Value = tblCompanyMaster.City },
+        //    new SqlParameter {ParameterName="@State",Direction =ParameterDirection.Input,Value = tblCompanyMaster.State },
+        //    new SqlParameter {ParameterName="@Pin",Direction =ParameterDirection.Input,Value = tblCompanyMaster.PinCode },
+        //    new SqlParameter {ParameterName="@Phone",Direction =ParameterDirection.Input,Value = tblCompanyMaster.Phone_no},
+        //    new SqlParameter {ParameterName="@Email",Direction =ParameterDirection.Input,Value = tblCompanyMaster.Email },
+        //    new SqlParameter {ParameterName="@By",Direction=ParameterDirection.Input,Value=tblCompanyMaster.Created_By},
+        //    };
+        //    _sql.postData("uspCompany", @params);
+        //    return Ok(tblCompanyMaster.Company_Name + " Updated");
+        //}
     }
 }

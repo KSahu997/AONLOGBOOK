@@ -16,7 +16,7 @@ namespace AONLOGBOOK.SHARED.Models
         public string? UOM { get; set; }
 
         public int? Show { get; set; }
-
+        public string? LookupId { get; set; }
         public string ?Source { get; set; }
 
         public float? L_Max { get; set; }

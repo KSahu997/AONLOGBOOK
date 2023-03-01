@@ -354,7 +354,7 @@
 
                                                                             @col.ColumnName.ToString().ToUpper()
 
-                                                                        </b><span> @row[col.ColumnName]</span>
+                                                                        </b><span> @row[col.ColumnName.ToString().ToUpper()]</span>
 
                                                                     </Div>
                                                                 </ListGroupItem>
@@ -401,11 +401,9 @@
                                     
                                             @if (col.ColumnName != "shift_prefix" && col.ColumnName != "header_Id" && col.ColumnName != "status_F")
                                             {
-                                                <TableHeaderCell>@col.ColumnName</TableHeaderCell>
+                                                <TableHeaderCell>@col.ColumnName.ToString().ToUpper()</TableHeaderCell>
                                             }
-                                        
-                                       
-                                   
+                                     
                                
                                 }
                                     <TableHeaderCell>Operation</TableHeaderCell>
@@ -415,15 +413,15 @@
                                 @foreach (var item in dts)
                                 {
                                     <TableRowGroup Title="@("Shift "+ @item.Rows[0]["Shift_prefix"].ToString())">
-@*                                       <Badge Color="Color.Primary">Shift: @item.Rows[0]["Shift_prefix"].ToString()</Badge> 
-*@                                        @foreach (DataRow row in item.Rows)
+                                    
+                                        @foreach (DataRow row in item.Rows)
                                         {
                                             <TableRow>
                                                 @foreach (DataColumn col in item.Columns)
                                                 {
                                                     @if (col.ColumnName != "shift_prefix" && col.ColumnName != "header_Id" && col.ColumnName != "status_F")
                                                     {
-                                                        <TableRowCell>@row[col.ColumnName]</TableRowCell>
+                                                        <TableRowCell>@row[col.ColumnName.ToString().ToUpper()]</TableRowCell>
                                                     }
                                                 }
                                                 <TableRowCell>
@@ -463,7 +461,7 @@
     IEnumerable<TblDeptMaster> departments;
     IEnumerable<TblSubDeptMaster> subDepts;
     IEnumerable<LogbookMaster> logbooks;
-    IEnumerable<TblLogbookDetailSchemaMOD> logbookdetail;
+    IEnumerable<TblLogbookDetailSchemasMD> logbookdetail;
     IEnumerable<TblLogbookDetailSchema> logdtschema;
     IEnumerable<TblLogBookDataTable> logData;
     IEnumerable<TblShiftMaster> shiftdata;
@@ -486,7 +484,7 @@
     protected override async Task OnInitializedAsync()
     {
         CurrentDate=DateTime.Now;
-        departments = await httpservices.Get<List<TblDeptMaster>>("DeptMasters");
+        departments = await httpservices.Get<List<TblDeptMaster>>("DeptMasters/ACT");
         logdtschema = await httpservices.Get<List<TblLogbookDetailSchema>>("LogbookDetailSchemas");
         StateHasChanged();
 
@@ -496,7 +494,7 @@
         collapse1Visible = true;
         formdatas.Department = value;
         Console.WriteLine(value);
-        subDepts = await httpservices.Get<List<TblSubDeptMaster>>("SubDeptMasters/" + formdatas.Department);
+        subDepts = (await httpservices.Get<List<TblSubDeptMaster>>("SubDeptMasters/ACT")).Where(a=>(a.Dept_Id==formdatas.Department));
 
         StateHasChanged();
     }
@@ -506,7 +504,7 @@
         formdatas.SubDepartment = value;
         Console.WriteLine(value);
 
-        logbooks = await httpservices.Get<List<LogbookMaster>>("LogbookMasters/" + formdatas.SubDepartment);
+        logbooks = (await httpservices.Get<List<LogbookMaster>>("LogbookMasters/ACT")).Where(a => (a.SubDepartment == formdatas.SubDepartment));
         //string cmp = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).CompanyId;
         //shiftdata = await httpservices.Get<List<TblShiftMaster>>("ShiftMasters/" + cmp + "/" + formdatas.Date?.ToString("MM-dd-yyyy HH:mm:ss"));
         StateHasChanged();
@@ -524,7 +522,7 @@
         {
             dynamicform = new List<ElementList>();
             dts = new();
-            logbookdetail = await httpservices.Get<List<TblLogbookDetailSchemaMOD>>("LogbookDetailSchemas/" + formdatas.logbook);
+            logbookdetail = await httpservices.Get<List<TblLogbookDetailSchemasMD>>("LogbookDetailSchemas/ACT/" + formdatas.logbook);
             //        formdatas.Date = Convert.ToDateTime(time.ToString().Replace("00-00-0000", CurrentDate?.ToString("MM-dd-yyyy")));
             if (logbookdetail.Count() == 0)
             {
@@ -534,12 +532,12 @@
             {
                 logbookdetail.ToList().ForEach(a =>
              {
-                 dynamicform.Add(new ElementList { Label = a.displayname, Sequence = a.Seq, ElementType = a.DataType ,IsMandatory=a.IsMandatory });
+                 dynamicform.Add(new ElementList { Label = a.Display_Name, Sequence = a.Seq, ElementType = a.DataType ,IsMandatory=a.isMandatory });
              });
                 Displaydynamic = true;
             }
             collapse1Visible = false;
-            datareport = await httpservices.GetDataTable("LogBookDataTables/" + formdatas.logbook + "/" + formdatas.Date?.ToString("yyyy-MM-dd HH:mm:ss"));
+            datareport = await httpservices.GetDataTable("LogDataTable/" + formdatas.logbook + "/" + formdatas.Date?.ToString("yyyy-MM-dd HH:mm:ss"));
             if(datareport!=null)
             {
                 var datare = from rows in datareport.AsEnumerable()
@@ -629,7 +627,7 @@
                 logdtList.TblLogHead.CreatedBy = "Admin";
                 logdtList.TblLogHead.StatusF = 0;
 
-                var result = await httpservices.Post<string>("LogBookDataTableHeaders", logdtList);
+                var result = await httpservices.Post<string>("LogDataTable", logdtList);
                 if (result != null)
                 {
                     await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");
@@ -662,7 +660,7 @@
             formdatas.Date = date;
             //formdatas.Date = Convert.ToDateTime(time.ToString().Replace("00-00-0000", CurrentDate?.ToString("MM-dd-yyyy")));
             string cmp = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Company_Id;
-            shiftdata = await httpservices.Get<List<TblShiftMaster>>("ShiftMasters/" + cmp + "/" + formdatas.Date?.ToString("MM-dd-yyyy HH:mm:ss"));
+            shiftdata = await httpservices.Get<List<TblShiftMaster>>("ShiftMasters/" + cmp + "/" + formdatas.Date?.ToString("yyyy-MM-dd HH:mm:ss"));
             StateHasChanged();
         }
         catch(Exception ex)
@@ -735,7 +733,7 @@
                 logdtList.TblLogHead.CreatedBy = "Admin";
                 logdtList.TblLogHead.StatusF = 3;
 
-                var result = await httpservices.Post<string>("LogBookDataTableHeaders", logdtList);
+                var result = await httpservices.Post<string>("LogDataTable", logdtList);
                 if (result != null)
                 {
                     await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");

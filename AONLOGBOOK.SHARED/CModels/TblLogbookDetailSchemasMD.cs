@@ -16,6 +16,7 @@ namespace AONLOGBOOK.SHARED.CModels
         public double L_Max { get; set; }
         public string? DataType { get; set; }
        // public string? Id { get; set; }
+       public string? LookupId {get;set;}
         public int Seq { get; set; }
         public string? Element { get; set; }
         public int isMandatory { get; set; }
