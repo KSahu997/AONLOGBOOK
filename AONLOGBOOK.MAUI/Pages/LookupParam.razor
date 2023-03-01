@@ -85,7 +85,7 @@
 
         Deptlist = await httpservice.Get<List<TblDeptMaster>>("DeptMasters/ACT");
         lookuplist = await httpservice.Get<List<TblLookup>>("LookupCreation/ACT");
-        paramlist = await httpservice.Get<List<TblLookupParam>>("LookupParams/ACT");
+
 
 
     }
@@ -106,7 +106,7 @@
         }
         StateHasChanged();
         tblLookupParam.Param = null;
-        tblLookupParam.Lookup_ID = null;
+        paramlist = (await httpservice.Get<List<TblLookupParam>>("LookupParams/ACT")).Where(a=>(a.Lookup_ID == tblLookupParam.Lookup_ID));
         await OnInitializedAsync();
 
     }
@@ -125,7 +125,7 @@
             {
                 await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
             }
-           
+
         }
         catch (Exception ex)
         {
@@ -133,10 +133,12 @@
 
         }
 
-        
+
     }
     async void handlelookup(string value)
     {
         tblLookupParam.Lookup_ID = value;
+        paramlist = (await httpservice.Get<List<TblLookupParam>>("LookupParams/ACT")).Where(a=>(a.Lookup_ID == tblLookupParam.Lookup_ID));
+        StateHasChanged();
     }
 }

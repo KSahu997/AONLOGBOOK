@@ -32,6 +32,8 @@
      <CardBody>
                     <CardText>
                         <Field>
+                            <FieldLabel>Name</FieldLabel>
+                            <TextEdit @bind-Text="@tblLookupValue.Name_Value" InputMode="TextInputMode.Text"></TextEdit>
                             @foreach (Lookuplist le in dynamicform)
                             {
                                
@@ -50,6 +52,37 @@
                 </CardBody>
             </Card>
             }
+             <Table Hoverable Bordered>
+        <TableHeader ThemeContrast="ThemeContrast.None" Background="Background.Secondary" TextColor="TextColor.White">
+            <TableRow>
+
+               
+                <TableHeaderCell>Name</TableHeaderCell>
+                <TableHeaderCell>Parameter</TableHeaderCell>
+                <TableHeaderCell>Action</TableHeaderCell>
+            </TableRow>
+        </TableHeader>
+        <TableBody>
+
+            @if (tblLookupValues!= null)
+            {
+                @foreach (var item in tblLookupValues.Where(a => (a.Del_Flag == 0)))
+                {
+                    <TableRow>
+                      
+                        <TableRowCell>@item.Name_Value</TableRowCell>
+                        <TableRowCell>@item.Param_Values</TableRowCell>
+                        <TableRowCell>
+                            <Button Color="Color.Danger" Margin="Margin.Is2" Clicked="@(()=>{DelLookupVal(item);})"><BarIcon IconName="IconName.Delete"></BarIcon></Button>
+                        </TableRowCell>
+                    </TableRow>
+
+                }
+            }
+
+
+        </TableBody>
+    </Table>
 </Div>
 
 
@@ -63,7 +96,7 @@
     TblLookupValue tblLookupValue = new();
     List<Lookuplist> dynamicform = new();
     lookupEleList lookupEle = new();
-   
+
     protected override async Task OnInitializedAsync()
     {
         lookuplist = await httpservice.Get<List<TblLookup>>("LookupCreation/ACT");
@@ -75,7 +108,7 @@
         try
         {
             dynamicform = new List<Lookuplist>();
-            paramlist = (await httpservice.Get<List<TblLookupParam>>("LookupParams")).Where(a => (a.Lookup_ID == tblLookupValue.Lookup_ID));
+            paramlist = (await httpservice.Get<List<TblLookupParam>>("LookupParams/ACT")).Where(a => (a.Lookup_ID == tblLookupValue.Lookup_ID));
 
             if (paramlist.Count() == 0)
             {
@@ -108,28 +141,28 @@
                 lookupElement.paramName = a.label;
                 lookupElement.paramValue = a.Value;
                 lookupEle.Tbllookup.Add(lookupElement);
-                });
-               
-                lookupEle.CreatedBy = "Admin";
-                lookupEle.CompanyId = paramlist.First(a => (a.Lookup_ID == tblLookupValue.Lookup_ID)).Company_ID;
+            });
+
+            lookupEle.CreatedBy = "Admin";
+            lookupEle.CompanyId = paramlist.First(a => (a.Lookup_ID == tblLookupValue.Lookup_ID)).Company_ID;
             lookupEle.PlantId = paramlist.First(a => (a.Lookup_ID == tblLookupValue.Lookup_ID)).Plant_ID;
             lookupEle.LookupId = tblLookupValue.Lookup_ID;
-            lookupEle.NameValue = lookuplist.First(a => (a.ID.ToString() == tblLookupValue.Lookup_ID)).Name;
+            lookupEle.NameValue = tblLookupValue.Name_Value;
 
-                var result = await httpservice.Post<string>("LookupValues", lookupEle);
-                if (result != null)
-                {
-                    await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");
+            var result = await httpservice.Post<string>("LookupValues", lookupEle);
+            if (result != null)
+            {
+                await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");
 
-                }
-                else
-                {
-                    await App.Current.MainPage.DisplayAlert("Error", "Error", "ok");
-                }
-                lookupEle = new();
-                dynamicform = new();
-                StateHasChanged();
-          
+            }
+            else
+            {
+                await App.Current.MainPage.DisplayAlert("Error", "Error", "ok");
+            }
+            lookupEle = new();
+            dynamicform = new();
+            StateHasChanged();
+
         }
         catch (Exception ex)
         {
@@ -140,10 +173,35 @@
     {
         tblLookupValue.Lookup_ID = value;
         paramlist = (await httpservice.Get<List<TblLookupParam>>("LookupParams")).Where(a => (a.Lookup_ID == tblLookupValue.Lookup_ID));
+        tblLookupValues = (await httpservice.Get<List<TblLookupValue>>("LookupValues/ACT")).Where(a=> (a.Lookup_ID == tblLookupValue.Lookup_ID));
         StateHasChanged();
     }
     void handleparam(string value)
     {
+
+    }
+    async void DelLookupVal(TblLookupValue item)
+    {
+        try
+        {
+            item.Del_Flag = 1;
+            var deldata = await httpservice.Post<string>("LookupValues", item);
+            if (deldata != null)
+            {
+                await App.Current.MainPage.DisplayAlert("Message", "Data Succesfully Deleted", "Ok");
+                StateHasChanged();
+            }
+            else
+            {
+                await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
+            }
+
+        }
+        catch (Exception ex)
+        {
+            item.Del_Flag = 0;
+
+        }
         
     }
 }

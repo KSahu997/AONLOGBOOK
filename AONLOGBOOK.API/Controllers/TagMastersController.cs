@@ -63,7 +63,7 @@ namespace AONLOGBOOK.API.Controllers
             new SqlParameter {ParameterName="@display",Direction =ParameterDirection.Input,Value = tblTagMasters.Display_Name },
             new SqlParameter {ParameterName="@uom",Direction =ParameterDirection.Input,Value = tblTagMasters.UOM },
             new SqlParameter {ParameterName="@By",Direction =ParameterDirection.Input,Value = tblTagMasters.Created_By },
-           
+            new SqlParameter {ParameterName="@desc",Direction =ParameterDirection.Input,Value = tblTagMasters.Description }
             };
             _sql.postData("usptagMaster", @params);
             return Ok("Tag Created");
@@ -74,10 +74,11 @@ namespace AONLOGBOOK.API.Controllers
         {
             SqlParameter[] @params =
             {
-            new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="INS"},
+            new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="UPD"},
             new SqlParameter {ParameterName="@tagname",Direction =ParameterDirection.Input,Value = tblTagMasters.Tag_Name },
             new SqlParameter {ParameterName="@Id",Direction =ParameterDirection.Input,Value = tblTagMasters.ID },
             new SqlParameter {ParameterName="@display",Direction =ParameterDirection.Input,Value = tblTagMasters.Display_Name },
+            new SqlParameter {ParameterName="@desc",Direction =ParameterDirection.Input,Value = tblTagMasters.Description },
             new SqlParameter {ParameterName="@uom",Direction =ParameterDirection.Input,Value = tblTagMasters.UOM },
             new SqlParameter {ParameterName="@By",Direction =ParameterDirection.Input,Value = tblTagMasters.Updated_By },
             new SqlParameter {ParameterName="@delflag",Direction =ParameterDirection.Input,Value = tblTagMasters.Is_Deleted },

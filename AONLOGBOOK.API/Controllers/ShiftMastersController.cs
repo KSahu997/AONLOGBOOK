@@ -42,6 +42,18 @@ namespace AONLOGBOOK.API.Controllers
            };
             return _sql.getData<TblShiftMaster>("uspShift", @params);
         }
+        [HttpGet("{Company_Id}/{Shift_time}")]
+        public ActionResult<TblShiftMaster?> GetTblShiftMasterbycompanyId(string Company_Id, DateTime Shift_time)
+        {
+            SqlParameter[] @params =
+           {
+            new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="GS"},
+            new SqlParameter {ParameterName="@Company_Id",Direction=ParameterDirection.Input,Value=Company_Id},
+            new SqlParameter {ParameterName="@ShiftTime",Direction=ParameterDirection.Input,Value=Shift_time}
+
+           };
+            return _sql.getData<TblShiftMaster>("uspShift", @params);
+        }
         // Get Specific Record
         [HttpGet("ACT")]
         public ActionResult<IEnumerable<TblShiftMaster>?> ActTblShiftMaster()

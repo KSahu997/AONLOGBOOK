@@ -11,10 +11,9 @@
        <Field ColumnSize="ColumnSize.Is3.OnDesktop.Is12.OnMobile">
             <Badge Color="Color.Info"><BarIcon IconName="IconName.Tag"></BarIcon></Badge><h4 class="mb-4">Tag Master</h4>
         </Field>
-           <Field ColumnSize="ColumnSize.Is2.OnDesktop.Is12.OnMobile">
-               </Field>
+        
    </Fields>
-    <Card Padding="Padding.Is2" Margin="Margin.Is2">
+    <Card Padding="Padding.Is2" Class="mb-2">
         <EditForm Model="@tagdata" OnValidSubmit="submit">
             <DataAnnotationsValidator></DataAnnotationsValidator>
                 <Fields>
@@ -62,21 +61,36 @@
             <TableHeaderCell>Tagname</TableHeaderCell>
             <TableHeaderCell>Display Name</TableHeaderCell>
             <TableHeaderCell>Description</TableHeaderCell>
+            <TableHeaderCell>Action</TableHeaderCell>
         </TableRow>
     </TableHeader>
     <TableBody>
         
              @if (tagmst != null)
                 {
+                      <Div Display="Display.Block.None.OnDesktop" >
                     @foreach (var item in tagmst)
                     {
                     <TableRow>
                         <TableRowCell><Badge Background="Background.Info" Padding="Padding.Is2">@item.Tag_Name</Badge></TableRowCell>
                         <TableRowCell>@item.Display_Name</TableRowCell>
                          <TableRowCell>@item.Description</TableRowCell>
+                         <TableRowCell>
+                            <Dropdown>
+                                <Button Color="Color.Info">Action</Button>
+                                <DropdownToggle Color="Color.Primary" Split />
+                                <DropdownMenu>
+                                    <DropdownItem Clicked="@(()=>HandleEdittag(item))">Edit</DropdownItem>
+                                    <DropdownDivider />
+                                    <DropdownItem Clicked="@(()=>handalDeltag(item))">Delete</DropdownItem>
+                                </DropdownMenu>
+                            </Dropdown>
+                         </TableRowCell>
                     </TableRow>
                    
                     }
+                    </Div>
+
                 }
        
         
@@ -88,19 +102,69 @@
     IEnumerable<TblUommaster>uommst;
     IEnumerable<TblTagMaster> tagmst;
     TblTagMaster tagdata = new();
+    TblTagMaster? selectTag;
+    bool? isedit = true;
     protected override async Task  OnInitializedAsync()
     {
-        uommst = await httpservices.Get<List<TblUommaster>>("Uommasters");
-        tagmst = await httpservices.Get<List<TblTagMaster>>("TagMasters");
+        uommst = await httpservices.Get<List<TblUommaster>>("UOMMasters/ACT");
+        tagmst = await httpservices.Get<List<TblTagMaster>>("TagMasters/ACT");
         StateHasChanged();
     }
 
     async void submit()
     {
-        var savedata = await httpservices.Post<string>("TagMasters", tagdata);
-        if (savedata != null)
+        if (isedit == true)
         {
-            await App.Current.MainPage.DisplayAlert("Message", savedata, "ok");
+            tagdata.Created_By = "Admin";
+            var savedata = await httpservices.Post<string>("TagMasters", tagdata);
+            if (savedata != null)
+            {
+                await App.Current.MainPage.DisplayAlert("Message", savedata, "ok");
+
+            }
+            else
+            {
+                await App.Current.MainPage.DisplayAlert("Message", "Error", "ok");
+            }
+            tagdata = new();
+            await OnInitializedAsync();
+            StateHasChanged();
+        }
+        else
+        {
+
+            tagdata.Created_By = "Admin";
+            var editdata = await httpservices.Post<string>("TagMasters/UPD", tagdata);
+            if (editdata != null)
+            {
+                await App.Current.MainPage.DisplayAlert("Message", editdata, "ok");
+
+            }
+            else
+            {
+                await App.Current.MainPage.DisplayAlert("Message", "Error", "ok");
+            }
+            tagdata = new();
+            await OnInitializedAsync();
+            StateHasChanged();
+
+        }
+
+    }
+    async void HandleEdittag(TblTagMaster item)
+    {
+        selectTag =item;
+        tagdata = selectTag;
+        isedit = false;
+    }
+
+    async void handalDeltag(TblTagMaster item)
+    {
+        item.Is_Deleted=1;
+        var deldata = await httpservices.Post<string>("TagMasters/UPD", item);
+        if (deldata != null)
+        {
+            await App.Current.MainPage.DisplayAlert("Message", "Tag Deleted", "ok");
 
         }
         else
@@ -109,7 +173,6 @@
         }
         tagdata = new();
         await OnInitializedAsync();
-         StateHasChanged();
+        StateHasChanged();
     }
-    
 }
