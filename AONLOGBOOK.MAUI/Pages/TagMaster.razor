@@ -69,7 +69,7 @@
              @if (tagmst != null)
                 {
                       <Div Display="Display.Block.None.OnDesktop" >
-                    @foreach (var item in tagmst)
+                    @foreach (TblTagMaster item in tagmst)
                     {
                     <TableRow>
                         <TableRowCell><Badge Background="Background.Info" Padding="Padding.Is2">@item.Tag_Name</Badge></TableRowCell>

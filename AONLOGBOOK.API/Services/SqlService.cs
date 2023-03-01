@@ -79,22 +79,25 @@ namespace AONLOGBOOK.API.Services
         }
         public void postData(string sp, SqlParameter[] param)
         {
-            using(SqlConnection conn = new SqlConnection(_configuration?.GetConnectionString("db")?.ToString()))
-            {
-                conn.Open();
-                using(SqlCommand cmd = conn.CreateCommand())
+            
+                using (SqlConnection conn = new SqlConnection(_configuration?.GetConnectionString("db")?.ToString()))
                 {
-                    cmd.CommandText = sp;
-                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                    param.ToList().ForEach(a =>
+                    conn.Open();
+                    using (SqlCommand cmd = conn.CreateCommand())
                     {
-                        cmd.Parameters.Add(a);
-                    });
-                    var jsonResult = new StringBuilder();
-                    var reader = cmd.ExecuteReader();
+                        cmd.CommandText = sp;
+                        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                        param.ToList().ForEach(a =>
+                        {
+                            cmd.Parameters.Add(a);
+                        });
+                        var jsonResult = new StringBuilder();
+                        var reader = cmd.ExecuteReader();
 
+                    }
                 }
-            }
+            
+           
         }
         public DataTable getDataAsDataTable(string sp, SqlParameter[] param)
         {
