@@ -52,9 +52,22 @@
                             </Select>
                         </Field>
                                    }
-                   
-                                    
-                           
+                  @if(lookup == true){
+                    <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                         <FieldLabel>Lookup List</FieldLabel>
+                         <Select @bind-SelectedValue="@logmddt.LookupId">
+                       <SelectItem>--Select--</SelectItem>
+                                @if(lookuplist != null)
+                                {
+                                  @foreach(TblLookup lu in lookuplist){
+                                    <SelectItem Value="@lu.ID">@lu.Name</SelectItem>
+                       }
+                                }
+                              
+                         </Select>
+                    </Field>
+                           }
+                         
                        </Fields>
                                <Fields>
                                    @if(dislmin == false){
@@ -153,11 +166,11 @@
                               <tr>
                                   <td>@item.Display_Name</td>
                                  @* <td>@item.Unit</td>*@
-                                  <td>@item.DataType</td>
+                                   <td>@item.DataType</td>
                                   <td>@item.Source</td>
                                   <td>@item.L_Min</td>
                                   <td>@item.L_Max</td>
-                                  <td> <Dropdown>
+                                  <td> <Dropdown Disabled="@(item.DataType == "Lookup")">
                                             <Button Color="Color.Info">Action</Button>
                                             <DropdownToggle Color="Color.Primary" Split />
                                             <DropdownMenu>
@@ -187,12 +200,14 @@
     bool? Displayform { get; set; } = false;
     bool? dislmin { get; set; } = true;
     bool? txt { get; set; } = false;
+    bool? lookup { get; set; } = false;
     Formdata datas = new();
     TblLogbookDetailSchema logdt = new();
     TblLogbookDetailSchemasMD logmddt = new();
     IEnumerable<TblLogbookDetailSchemasMD> logdetail;
     IEnumerable<TblTagMaster> tagmst;
     IEnumerable<TblUommaster> uommst;
+    IEnumerable<TblLookup> lookuplist;
     TblTagMaster tag;
     TblUommaster uom;
     bool isnew = true;
@@ -330,7 +345,7 @@
         Displayform = true;
     }
 
-    void handleType(string val)
+    async void handleType(string val)
     {
         logmddt.DataType = val;
         if (logmddt.DataType == "Number")
@@ -349,6 +364,14 @@
         }else{
             txt = false;
         }
+        if(logmddt.DataType == "Lookup")
+        {
+            lookup = true;
+            lookuplist = await httpservice.Get<List<TblLookup>>("LookupCreation/ACT");
+        }else{
+             lookup = false;
+        }
+        
 
     }
     void handlesrc(string val)
@@ -373,5 +396,9 @@
     {
         logmddt = item;
         isnew = false;
+    }
+    async void handlelookuplist(string value){
+        logmddt.LookupId =value;
+        
     }
 }

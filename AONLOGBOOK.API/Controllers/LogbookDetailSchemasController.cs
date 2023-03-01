@@ -64,6 +64,7 @@ namespace AONLOGBOOK.API.Controllers
         [HttpPost]
         public ActionResult PostTblLogbookDetailSchemaMaster([FromBody]TblLogbookDetailSchemasMD tblLogbookDetailSchema)
         {
+           
             SqlParameter[] @params =
             {
             new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="INS"},
@@ -82,6 +83,7 @@ namespace AONLOGBOOK.API.Controllers
             new SqlParameter {ParameterName="@operator",Direction=ParameterDirection.Input,Value=tblLogbookDetailSchema.Operator},
             new SqlParameter {ParameterName="@ismandatory",Direction=ParameterDirection.Input,Value=tblLogbookDetailSchema.isMandatory},
             };
+
             _sql.postData("uspLogbookDetailSchema", @params);
             return Ok("Schema Created");
         }
@@ -95,7 +97,6 @@ namespace AONLOGBOOK.API.Controllers
                 new SqlParameter {ParameterName="@Delflag",Direction =ParameterDirection.Input,Value = tblLogbookDetailSchema.Del_Flag},
                 new SqlParameter {ParameterName="@Element",Direction =ParameterDirection.Input,Value = tblLogbookDetailSchema.Element },
                 new SqlParameter {ParameterName="@DataType",Direction =ParameterDirection.Input,Value = tblLogbookDetailSchema.DataType },
-                new SqlParameter {ParameterName="@lookupid",Direction =ParameterDirection.Input,Value = tblLogbookDetailSchema.LookupId},
                 new SqlParameter {ParameterName="@UOM",Direction =ParameterDirection.Input,Value = tblLogbookDetailSchema.UOM },
                 new SqlParameter {ParameterName="@source",Direction =ParameterDirection.Input,Value = tblLogbookDetailSchema.Source },
                 new SqlParameter {ParameterName="@L_min",Direction =ParameterDirection.Input,Value = tblLogbookDetailSchema.L_Min },
