@@ -193,9 +193,10 @@ namespace AONLOGBOOK.MAUI.Services
             // throw exception on error response
             if (!response.IsSuccessStatusCode)
             {
-                //var error = await response.Content.ReadFromJsonAsync<string>();
-                //error.Add("message", error);
-                throw new Exception(response.ReasonPhrase);
+                var error = await response.Content.ReadFromJsonAsync<string>();
+                await App.Current.MainPage.DisplayAlert("Error", error, "OK");
+
+
             }
         }
 

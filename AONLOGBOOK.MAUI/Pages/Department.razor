@@ -39,7 +39,7 @@
                     </Validations>
                     <div class="row m-2">
                         <div class="col-md-12 d-flex mb-3 justify-content-center">
-                            <Button Type=ButtonType.Submit class="m-2" Color="Color.Primary">Submit</Button>
+                            <Button Type=ButtonType.Submit class="m-2" Color="Color.Primary">@(isnew==true?"Submit":"Update")</Button>
                             <Button Type="ButtonType.Reset" class="m-2" Color="Color.Info">Reset</Button>
                             <Button Type="ButtonType.Button" class="m-2" Color="Color.Warning" onclick="@HandleCancel">Cancel</Button>
                         </div>
@@ -138,7 +138,7 @@ else
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                @foreach (var item in DeptList)
+                                @foreach (var item in DeptList.Where(a=>(a.Status_F==0)))
                                 {
                                     <TableRowGroup Title="@item.Dept_Name">
                                         <TableRow>
@@ -219,7 +219,7 @@ else
                 StateHasChanged();
                 DeptList = (await httpservice.Get<List<TblDeptMaster>>("DeptMasters/ACT")).Where(a => (a.Plant_Id == Dept.Plant_Id));
                 await OnInitializedAsync();
-              
+
 
             }
 
@@ -248,6 +248,8 @@ else
             HandleCancel();
             StateHasChanged();
             await OnInitializedAsync();
+            DeptList = (await httpservice.Get<List<TblDeptMaster>>("DeptMasters/ACT")).Where(a => (a.Plant_Id == Dept.Plant_Id));
+            isnew = true;
         }
 
 
@@ -267,7 +269,7 @@ else
             await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
 
         }
-
+        isnew = true;
         StateHasChanged();
     }
     protected override async Task OnInitializedAsync()
@@ -287,6 +289,7 @@ else
         selectdept = null;
         DispsData = false;
         isDialogOpen = false;
+        isnew= true;
     }
     void HandleAdddept()
     {

@@ -43,7 +43,7 @@ else if (isDialogOpen == true)
                     </Fields>
                     <Fields>
                         <Field Flex="Flex.JustifyContent.Center">
-                            <Button Type="ButtonType.Submit" Color="Color.Primary" class="m-2">Submit</Button>
+                            <Button Type="ButtonType.Submit" Color="Color.Primary" class="m-2">@(isnew==true?"Submit":"Update")</Button>
                             <Button Type="ButtonType.Reset" Color="Color.Info" class="m-2">Reset</Button>
                             <Button Type="ButtonType.Button" Color="Color.Warning" class="m-2" Clicked="@HandleCancel">Cancel</Button>
                         </Field>
@@ -135,7 +135,7 @@ else
             @if (logbookMasters != null)
             {
                 <Table>
-                    <TableHeader Style="background-image: linear-gradient(181deg, #3e52af, transparent);">
+                    <TableHeader>
 
                         <TableRow>
 
@@ -145,7 +145,7 @@ else
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        @foreach (var item in logbookMasters.Where(a=>(a.Del_Flag==0)))
+                        @foreach (var item in logbookMasters)
                         {
                             <TableRowGroup Title="@item.LogbookName">
                                 <TableRow>
@@ -181,7 +181,7 @@ else
 @code {
     IEnumerable<TblLogbookMaster> logbookMasters;
     TblLogbookMaster logbookmst = new();
-   // TblLogBookDataTable selectedLogbook;
+    // TblLogBookDataTable selectedLogbook;
     string sdept;
     string cmpId;
     string plantid;
@@ -339,10 +339,11 @@ else
             await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
 
         }
-        isnew = true;
+
         logmst = new();
         await OnInitializedAsync();
         logbookMasters = (await httpservice.Get<List<TblLogbookMaster>>("LogbookMasters/ACT")).Where(a => (a.SubDepartment == logbookmst.SubDepartment));
+        isnew = true;
     }
 
     void HandleCancel()
@@ -350,6 +351,7 @@ else
         logmst = null;
         isDialogOpen = false;
         logbookmst = new();
+        isnew = true;
     }
     void HandleDataSaved()
     {

@@ -68,7 +68,7 @@
                     </div>
                     <div class="row m-2">
                         <div class="col-md-12 d-flex mb-3 justify-content-center">
-                            <Button Type=ButtonType.Submit Color="Color.Primary" class="m-2">Submit</Button>
+                            <Button Type=ButtonType.Submit Color="Color.Primary" class="m-2">@(isnew==true?"Submit":"Update")</Button>
                             <Button Type=ButtonType.Reset Color="Color.Info" class="m-2">Reset</Button>
                             <Button Type=ButtonType.Button Color="Color.Warning" class="m-2" onclick="@HandleCancel">Cancel</Button>
 
@@ -157,7 +157,7 @@ else
                     @if (PlantList != null)
                     {
                         <Table>
-                    <TableHeader Style="background-image: linear-gradient(181deg, #3e52af, transparent);">
+                    <TableHeader>
 
                                 <TableRow>
 
@@ -314,16 +314,16 @@ else
     void handleDataSaved()
     {
         selectedplant = null;
-       // DispDatas = null;
+        // DispDatas = null;
 
     }
     void HandleCancel()
     {
         selectedplant = null;
         tblPlant = new();
-       // DispDatas = false;
+        // DispDatas = false;
         isDialogOpen = false;
-
+        isnew = true;
     }
     void AddPlant()
     {
@@ -367,7 +367,7 @@ else
             await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
 
         }
-       
+        isnew = true;
         StateHasChanged();
         
        // PlantList = (await httpservice.Get<List<TblPlantMaster>>("PlantMasters/ACT")).Where(a => (a.Company_Id == tblPlant.Company_Id));
