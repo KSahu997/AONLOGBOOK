@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace AONLOGBOOK.SHARED.CModels
 {
-    public class lookup
+    public class LookupData
     {
-      //  public Guid LogbookId { get; set; }
+        public string? text { get; set; }
+        public string? value { get; set; }
+       
 
-        public string? Display_Name { get; set; }
-        public string? Element { get; set; }
     }
 }

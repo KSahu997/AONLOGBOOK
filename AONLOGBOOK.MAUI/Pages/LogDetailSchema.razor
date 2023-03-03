@@ -79,7 +79,7 @@
                                 {
                                     @foreach (TblLogbookDetailSchemasMD item in logdetail)
                                     {
-                                        <SelectItem Value="@item.Element">@item.Tag_Name</SelectItem>
+                                        <SelectItem Value="@item.Id">@item.Display_Name</SelectItem>
                                     }
                                 }
 
@@ -93,7 +93,7 @@
                                 {
                                     @foreach (TblLogbookDetailSchemasMD item in logdetail)
                                     {
-                                        <SelectItem Value="@item.Element">@item.Tag_Name</SelectItem>
+                                        <SelectItem Value="@item.Id">@item.Display_Name</SelectItem>
                                     }
                                 }
 
@@ -197,7 +197,25 @@
                     @foreach (var item in logdetail)
                     {
                               <tr>
-                                  <td>@item.Display_Name</td>
+                           @* @if (item.DataType == "Lookup")
+                            {
+                                <td>@item.LogbookName</td>
+                                 <td>@item.DataType</td>
+                                  <td>@item.Source</td>
+                                  <td>@item.L_Min</td>
+                                  <td>@item.L_Max</td>
+                                  <td> <Dropdown Disabled="@(item.DataType == "Lookup")">
+                                            <Button Color="Color.Info">Action</Button>
+                                            <DropdownToggle Color="Color.Primary" Split />
+                                            <DropdownMenu>
+                                                <DropdownItem Clicked="@(()=>HandleEditLogDetail(item))">Edit</DropdownItem>
+                                                <DropdownDivider />
+                                                <DropdownItem Clicked="@(()=>handalDelLogDetail(item))">Delete</DropdownItem>
+
+                                            </DropdownMenu>
+                                        </Dropdown></td>
+                            }else{*@
+                                 <td>@item.Display_Name</td>
                                  @* <td>@item.Unit</td>*@
                                    <td>@item.DataType</td>
                                   <td>@item.Source</td>
@@ -213,6 +231,8 @@
 
                                             </DropdownMenu>
                                         </Dropdown></td>
+                            @*}*@
+                                 
                               </tr>
 
                     }
@@ -410,7 +430,7 @@
             lookup = false;
         }
 
-
+        StateHasChanged();
     }
     void handlesrc(string val)
     {
@@ -475,6 +495,7 @@
 
         logmddt.LookupId =value;
         lookitem = true;
+        logdetail = await httpservice.Get<List<TblLogbookDetailSchemasMD>>("LogbookDetailSchemas/ACT/" + logmddt.LookupId);
         StateHasChanged();
     }
 }

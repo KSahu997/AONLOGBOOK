@@ -37,8 +37,8 @@ namespace AONLOGBOOK.SHARED.CModels
 
         public int? isDashboardComponent { get; set; }
         public string? CalulationParams { get; set; }
+        public string? LogbookName { get; set; }
 
-      
         public DateTime? CretedOn { get; set; }
 
         public string? CreatedBy { get; set; }

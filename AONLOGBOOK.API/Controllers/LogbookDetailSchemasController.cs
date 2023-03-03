@@ -56,8 +56,17 @@ namespace AONLOGBOOK.API.Controllers
            };
             return _sql.getDatas<TblLogbookDetailSchemasMD>("uspLogbookDetailSchema", @params);
         }
+        [HttpGet("GL/{logbookId}")]
+        public ActionResult<IEnumerable<lookup>?> ActTblLogbookDetailSchemaMasterbyLogbookId(string logbookId)
+        {
+            SqlParameter[] @params =
+           {
+            new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="ACT"},
+            new SqlParameter {ParameterName="@LogbookId",Direction=ParameterDirection.Input,Value=logbookId}
+           };
+            return _sql.getDatas<lookup>("uspLogbookDetailSchema", @params);
+        }
 
-     
 
         // POST: api/LogbookDetailSchemaMasters
         // Create Operation
