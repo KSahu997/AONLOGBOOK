@@ -102,7 +102,7 @@
                         </Fields>
                         <Fields>
                             <Field Flex="Flex.JustifyContent.Center">
-                                <Button Type="ButtonType.Submit" Color="Color.Primary" class="m-2">Submit</Button>
+                                <Button Type="ButtonType.Submit" Color="Color.Primary" class="m-2">@(isnew==true?"Submit":"Update")</Button>
                                 <Button Type="ButtonType.Reset" Color="Color.Info" class="m-2">Reset</Button>
                                 <Button Type="ButtonType.Button" Color="Color.Warning" class="m-2" Clicked="@HandleCanceled">Cancel</Button>
                             </Field>
@@ -176,7 +176,7 @@ else
                                 @if (companies != null)
                                 {
                                 <Table>
-                            <TableHeader Style="background-image: linear-gradient(181deg, #3e52af, transparent);">
+                            <TableHeader>
 
                                 <TableRow>
                                    
@@ -295,6 +295,7 @@ else
             HandleCanceled();
             StateHasChanged();
             tblCompanyMaster = new();
+            isnew = true;
             await OnInitializedAsync();
         }
 
@@ -336,7 +337,7 @@ else
         selectedcompany = null;
         tblCompanyMaster = new();
         isDialogOpen = false;
-
+        isnew = true;
     }
     void back()
     {
@@ -361,7 +362,7 @@ else
 
         if (result != null)
         {
-            await App.Current.MainPage.DisplayAlert("Message", result, "Ok");
+            await App.Current.MainPage.DisplayAlert("Message", "Company Deleted", "Ok");
         }
         else
         {
@@ -369,7 +370,7 @@ else
             await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
 
         }
-
+        isnew = true;
         StateHasChanged();
     }
     //async void handleAddnewPlant(TblCompanyMaster item)

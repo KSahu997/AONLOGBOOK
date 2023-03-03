@@ -167,7 +167,7 @@
                        
                         <Field Flex="Flex.JustifyContent.End.OnDesktop.JustifyContent.Center.OnMobile">
                             @ChildContent
-                            <Button Clicked="Savedetails"  style="margin-top:10px;background:#659abb;color:#000;">SUBMIT</Button>
+                            <Button Clicked="Savedetails" Color="Color.Info">@(isnew==true?"Submit":"Update")</Button>
                        </Field>
 
 
@@ -316,6 +316,7 @@
                 logmddt.UpdatedBy = "Admin";
                 logmddt.LogbookId = datas.logbook;
                 logmddt.isMandatory = Convert.ToInt16(ismandatory);
+                logmddt.Del_Flag = 0;
                 var savedata = await httpservice.Post<string>("LogbookDetailSchemas/UPD", logmddt);
                 if (savedata != null)
                 {
@@ -334,8 +335,8 @@
             }
             logdetail = await httpservice.Get<List<TblLogbookDetailSchemasMD>>("LogbookDetailSchemas/ACT/" + datas.logbook);
             logmddt = new();
-            isnew = true;
             StateHasChanged();
+            isnew = true;
 
         }
 
@@ -429,10 +430,46 @@
     {
         ismandatory = value;
     }
-    void HandleEditLogDetail(TblLogbookDetailSchemasMD item)
+   async void HandleEditLogDetail(TblLogbookDetailSchemasMD item)
     {
         logmddt = item;
         isnew = false;
+        if (logmddt.DataType == "Number")
+        {
+            dislmin = false;
+            StateHasChanged();
+        }
+        else
+        {
+            dislmin = true;
+        }
+        if (logmddt.DataType == "Text")
+        {
+            txt = true;
+            StateHasChanged();
+        }
+        else
+        {
+            txt = false;
+        }
+        if (logmddt.DataType == "Lookup")
+        {
+            lookup = true;
+            lookuplist = await httpservice.Get<List<TblLookup>>("LookupCreation/ACT");
+        }
+        else
+        {
+            lookup = false;
+        }
+        if (logmddt.Source == "Calculated")
+        {
+            cal = true;
+            StateHasChanged();
+        }
+        else
+        {
+            cal = false;
+        }
     }
     async void handlelookuplist(string value){
 
