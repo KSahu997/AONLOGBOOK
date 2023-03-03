@@ -1,4 +1,6 @@
-﻿using System;
+﻿using AONLOGBOOK.SHARED.CModels;
+using AONLOGBOOK.SHARED.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -25,6 +27,8 @@ namespace AONLOGBOOK.MAUI.Models
         [Range(typeof(bool), "true", "true", ErrorMessage = "You gotta tick the box!")]
         public bool? BoolValue { get; set; }
         public Dictionary<string, string> options { get; set; }
+        public List<lookup> lookuplist { get; set; } = new List<lookup>();
+        public string? LookupId { get; set; }
         public int? Sequence { get; set; }
         public int? IsMandatory { get; set; }
         public string? Shift_prefix { get; set; }

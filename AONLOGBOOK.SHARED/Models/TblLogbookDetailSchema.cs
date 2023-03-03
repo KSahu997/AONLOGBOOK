@@ -9,15 +9,17 @@ namespace AONLOGBOOK.SHARED.Models
 
         public string? LogbookId { get; set; }
 
-        public string ?Element { get; set; }
+        public string? Element { get; set; }
 
-        public string ?DataType { get; set; }
+        public string? DataType { get; set; }
+
+        public string? LookupId { get; set; }
 
         public string? UOM { get; set; }
 
         public int? Show { get; set; }
-        public string? LookupId { get; set; }
-        public string ?Source { get; set; }
+
+        public string? Source { get; set; }
 
         public float? L_Max { get; set; }
 
@@ -27,7 +29,7 @@ namespace AONLOGBOOK.SHARED.Models
 
         public DateTime? CretedOn { get; set; }
 
-        public string ?CreatedBy { get; set; }
+        public string? CreatedBy { get; set; }
 
         public DateTime? UpdatedOn { get; set; }
 
@@ -37,9 +39,9 @@ namespace AONLOGBOOK.SHARED.Models
 
         public string? RefCol { get; set; }
 
-        public int? Seq { get; set; }
+        public int Seq { get; set; }
 
-        public string ?Calulation_Params { get; set; }
+        public string? Calulation_Params { get; set; }
 
         public string? Operator { get; set; }
 
@@ -50,5 +52,9 @@ namespace AONLOGBOOK.SHARED.Models
         public int? isDashboardComponent { get; set; }
 
         public int? isMandatory { get; set; }
+
+        public string? Text_Schema { get; set; }
+
+        public string? Value_Schema { get; set; }
     }
 }

@@ -48,7 +48,9 @@ namespace AONLOGBOOK.SHARED.CModels
         public string? UpdatedBy { get; set; }
 
         public int? Del_Flag { get; set; }
+        public string? Text_Schema { get; set; }
 
+        public string? Value_Schema { get; set; }
 
     }
 }
