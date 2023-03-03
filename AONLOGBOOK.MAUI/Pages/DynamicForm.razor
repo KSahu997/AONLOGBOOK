@@ -103,9 +103,9 @@
                         </Field>
                             <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                                 <FieldLabel>Date</FieldLabel>
-                                <Validation Validator="ValidationRule.IsNotEmpty">
+                               @* <Validation Validator="ValidationRule.">*@
                                 <DateEdit Date="@CurrentDate" TValue="DateTime?" InputMode="DateInputMode.DateTime" DateChanged="@handleshift"/>
-                                </Validation>
+                                @*</Validation>*@
                             </Field>
                            @* <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                                 <FieldLabel>Time</FieldLabel>
@@ -233,9 +233,9 @@
                                          
                                               <Select @bind-SelectedValue="ele.LookupId">
                                                  <SelectItem>--select--</SelectItem>
-                                                    @foreach(lookup item in ele.lookuplist)
+                                                    @foreach(LookupData item in ele.lookuplist)
                                                     {
-                                                    <SelectItem Value="@item.ID">@item.Name_Value</SelectItem>
+                                                    <SelectItem Value="@item.value">@item.text</SelectItem>
                                                     }
                                                 </Select>
                                      
@@ -528,7 +528,6 @@
         collapse1Visible = true;
         formdatas.SubDepartment = value;
         Console.WriteLine(value);
-
         logbooks = (await httpservices.Get<List<LogbookMaster>>("LogbookMasters/ACT")).Where(a => (a.SubDepartment == formdatas.SubDepartment));
         //string cmp = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).CompanyId;
         //shiftdata = await httpservices.Get<List<TblShiftMaster>>("ShiftMasters/" + cmp + "/" + formdatas.Date?.ToString("MM-dd-yyyy HH:mm:ss"));
@@ -548,7 +547,7 @@
             dynamicform = new List<ElementList>();
             dts = new();
             logbookdetail = await httpservices.Get<List<TblLogbookDetailSchemasMD>>("LogbookDetailSchemas/ACT/" + formdatas.logbook);
-            looklist = await httpservices.Get<List<lookup>>("LookupCreation/ACT");
+
             //        formdatas.Date = Convert.ToDateTime(time.ToString().Replace("00-00-0000", CurrentDate?.ToString("MM-dd-yyyy")));
 
             if (logbookdetail.Count() == 0)
@@ -561,9 +560,14 @@
                 {
                     ElementList ele = new ElementList { Label = a.Display_Name, Sequence = a.Seq, ElementType = a.DataType, IsMandatory = a.isMandatory, LookupId= a.LookupId};
                     if (a.LookupId != null)
-                        ele.lookuplist = await httpservices.Get<List<lookup>>("LookupValues/GL/" + a.LookupId);
+                    {
+                        ele.lookuplist = await httpservices.Get<List<LookupData>>("LookupData/" + a.Text_Schema + "/" + a.Value_Schema);
+                        //if(ele.Label=="Lookup")
+                        //{
+                        //    ele.Label = logbookdetail.First(a => (a.LookupId == ele.LookupId)).LogbookName;
+                        //}
+                    }
                     dynamicform.Add(ele);
-
 
 
                 });
@@ -641,8 +645,10 @@
                     else if (a.ElementType == "Lookup")
                     {
                         logdata.ParamName = a.Label;
-                        
-                       
+                        a.lookuplist.ForEach(b =>
+                            logdata.Val = b.text
+                        );
+
                     }
                     logdata.CompanyId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Company_Id;
                     logdata.PlantId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Plant_Id;
@@ -669,17 +675,17 @@
                 if (result != null)
                 {
                     await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");
-                   
+
                 }
                 else
                 {
                     await App.Current.MainPage.DisplayAlert("Error", "Error", "ok");
                 }
-               
+
                 logdtList = new();
                 dynamicform = new();
                 Displaydynamic = false;
-                
+
                 StateHasChanged();
             }
         }
@@ -694,8 +700,9 @@
     {
 
         try
-        {   
-            formdatas.Date = date;
+        {
+            CurrentDate = date;
+            formdatas.Date = CurrentDate;
             //formdatas.Date = Convert.ToDateTime(time.ToString().Replace("00-00-0000", CurrentDate?.ToString("MM-dd-yyyy")));
             string cmp = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Company_Id;
             shiftdata = await httpservices.Get<List<TblShiftMaster>>("ShiftMasters/" + cmp + "/" + formdatas.Date?.ToString("yyyy-MM-dd HH:mm:ss"));
@@ -750,7 +757,14 @@
                         logdata.ParamName = a.Label;
                         logdata.Val = a.BoolValue.ToString();
                     }
-
+                     else if (a.ElementType == "Lookup")
+                    {
+                        logdata.ParamName = a.Label;
+                        a.lookuplist.ForEach(b =>
+                            logdata.Val = b.text
+                        );
+                       
+                    }
                     logdata.CompanyId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Company_Id;
                     logdata.PlantId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Plant_Id;
                     logdata.Shift = formdatas.Shift;

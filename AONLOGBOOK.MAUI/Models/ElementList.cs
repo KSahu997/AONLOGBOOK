@@ -27,7 +27,7 @@ namespace AONLOGBOOK.MAUI.Models
         [Range(typeof(bool), "true", "true", ErrorMessage = "You gotta tick the box!")]
         public bool? BoolValue { get; set; }
         public Dictionary<string, string> options { get; set; }
-        public List<lookup> lookuplist { get; set; } = new List<lookup>();
+        public List<LookupData> lookuplist { get; set; } = new List<LookupData>();
         public string? LookupId { get; set; }
         public int? Sequence { get; set; }
         public int? IsMandatory { get; set; }
