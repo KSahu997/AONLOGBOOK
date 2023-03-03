@@ -193,7 +193,7 @@
 @code {
     Modal logref { get; set; }
     [Parameter]
-    public string log{ get; set; }
+    public TblLogbookMaster log{ get; set; }
     public string Dept{ get; set; }
     public string SDept{ get; set; }
     bool ismandatory;
@@ -221,9 +221,9 @@
     {
         try
         {
-            datas.Department = Dept;
-            datas.SubDepartment = SDept;
-            datas.logbook = log;
+            datas.Department = log.Department;
+            datas.SubDepartment = log.SubDepartment;
+            datas.logbook = log.LogbookId.ToString();
             tagmst = await httpservice.Get<List<TblTagMaster>>("TagMasters/ACT");
             uommst = await httpservice.Get<List<TblUommaster>>("Uommasters/ACT");
             logdetail = await httpservice.Get<List<TblLogbookDetailSchemasMD>>("LogbookDetailSchemas/ACT/" + datas.logbook);
