@@ -55,19 +55,52 @@
                   @if(lookup == true){
                     <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                          <FieldLabel>Lookup List</FieldLabel>
-                         <Select @bind-SelectedValue="@logmddt.LookupId">
+                         <Select SelectedValue="@logmddt.LookupId" SelectedValueChanged="@((string arg)=>{handlelookuplist(arg);})"
+                             SelectedValueExpression="@(()=>logmddt.LogbookId)">
                        <SelectItem>--Select--</SelectItem>
-                                @if(lookuplist != null)
+                                @if(logbooklist != null)
                                 {
-                                  @foreach(TblLookup lu in lookuplist){
-                                    <SelectItem Value="@lu.ID">@lu.Name</SelectItem>
+                                    @foreach (TblLogbookMaster item in logbooklist)
+                                    {
+                                    <SelectItem Value="@item.LogbookId">@item.LogbookName</SelectItem>
                        }
                                 }
                               
                          </Select>
                     </Field>
-                           }
-                         
+                      }
+                    @if(lookitem == true)
+                    {
+                        <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                            <FieldLabel>Text Field</FieldLabel>
+                            <Select @bind-SelectedValue="@logmddt.Text_Schema">
+                                <SelectItem>--Select--</SelectItem>
+                                @if (logdetail != null)
+                                {
+                                    @foreach (TblLogbookDetailSchemasMD item in logdetail)
+                                    {
+                                        <SelectItem Value="@item.Element">@item.Tag_Name</SelectItem>
+                                    }
+                                }
+
+                            </Select>
+                        </Field>
+                        <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                            <FieldLabel>Value Field</FieldLabel>
+                            <Select @bind-SelectedValue="@logmddt.Value_Schema">
+                                <SelectItem>--Select--</SelectItem>
+                                @if (logdetail != null)
+                                {
+                                    @foreach (TblLogbookDetailSchemasMD item in logdetail)
+                                    {
+                                        <SelectItem Value="@item.Element">@item.Tag_Name</SelectItem>
+                                    }
+                                }
+
+                            </Select>
+                        </Field>
+                    }
+                   
                        </Fields>
                                <Fields>
                                    @if(dislmin == false){
@@ -193,7 +226,7 @@
 @code {
     Modal logref { get; set; }
     [Parameter]
-    public string log{ get; set; }
+    public TblLogbookMaster log{ get; set; }
     public string Dept{ get; set; }
     public string SDept{ get; set; }
     bool ismandatory;
@@ -201,6 +234,7 @@
     bool? dislmin { get; set; } = true;
     bool? txt { get; set; } = false;
     bool? lookup { get; set; } = false;
+    bool? lookitem { get; set; } = false;
     Formdata datas = new();
     TblLogbookDetailSchema logdt = new();
     TblLogbookDetailSchemasMD logmddt = new();
@@ -208,6 +242,7 @@
     IEnumerable<TblTagMaster> tagmst;
     IEnumerable<TblUommaster> uommst;
     IEnumerable<TblLookup> lookuplist;
+    IEnumerable<TblLogbookMaster> logbooklist;
     TblTagMaster tag;
     TblUommaster uom;
     bool isnew = true;
@@ -221,12 +256,13 @@
     {
         try
         {
-            datas.Department = Dept;
-            datas.SubDepartment = SDept;
-            datas.logbook = log;
+            datas.Department = log.Department;
+            datas.SubDepartment = log.SubDepartment;
+            datas.logbook = log.LogbookId.ToString();
             tagmst = await httpservice.Get<List<TblTagMaster>>("TagMasters/ACT");
             uommst = await httpservice.Get<List<TblUommaster>>("Uommasters/ACT");
             logdetail = await httpservice.Get<List<TblLogbookDetailSchemasMD>>("LogbookDetailSchemas/ACT/" + datas.logbook);
+
         }
         catch(Exception ex)
         {
@@ -367,11 +403,12 @@
         if(logmddt.DataType == "Lookup")
         {
             lookup = true;
-            lookuplist = await httpservice.Get<List<TblLookup>>("LookupCreation/ACT");
+            logbooklist= (await httpservice.Get<List<TblLogbookMaster>>("LogbookMasters/ACT")).Where(a=>(a.Company_Id == log.Company_Id && a.PlantCode == log.PlantCode));
+            StateHasChanged();
         }else{
-             lookup = false;
+            lookup = false;
         }
-        
+
 
     }
     void handlesrc(string val)
@@ -398,7 +435,9 @@
         isnew = false;
     }
     async void handlelookuplist(string value){
+
         logmddt.LookupId =value;
-        
+        lookitem = true;
+        StateHasChanged();
     }
 }

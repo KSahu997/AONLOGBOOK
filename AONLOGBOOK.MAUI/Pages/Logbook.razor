@@ -14,7 +14,7 @@
 {
     @if (logmst != null)
     {
-        <LogDetailSchema log="@logmst.LogbookId.ToString()" mstlogChanged="@HandleDataSaved">
+        <LogDetailSchema log="@logmst" mstlogChanged="@HandleDataSaved">
             <ChildContent>
                     <Button Color="Color.Secondary" Type="ButtonType.Button" @onclick="@back" Style="margin:2px;"><BarIcon IconName="IconName.Backward"></BarIcon></Button> 
             </ChildContent>

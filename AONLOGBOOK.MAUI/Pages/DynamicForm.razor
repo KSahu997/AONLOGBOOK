@@ -221,7 +221,31 @@
                                     {
                                         <NumericEdit @bind-Value="ele.IntegerValue" Style="margin:auto;"></NumericEdit>
                                     }
-                                }
+                                }else if (ele.ElementType == "Lookup")
+                                {
+                                    if(ele.LookupId!=null)
+                                    {
+                                    <FieldLabel>@ele.Label</FieldLabel>
+                                    @*@if (ele.IsMandatory == 1)
+                                    {*@
+                                        <Validations @ref="validations" Mode="ValidationMode.Manual">
+                                        <Validation Validator="ValidationRule.None">
+                                         
+                                              <Select @bind-SelectedValue="ele.LookupId">
+                                                 <SelectItem>--select--</SelectItem>
+                                                    @foreach(lookup item in ele.lookuplist)
+                                                    {
+                                                    <SelectItem Value="@item.ID">@item.Name_Value</SelectItem>
+                                                    }
+                                                </Select>
+                                     
+
+                                        </Validation>
+                                        </Validations>
+                                   @* }*@
+                                    }
+                                   
+                                  }
                                 else if (ele.ElementType == "Date")
                                 {
                                     <FieldLabel>@ele.Label</FieldLabel>
@@ -465,6 +489,7 @@
     IEnumerable<TblLogbookDetailSchema> logdtschema;
     IEnumerable<TblLogBookDataTable> logData;
     IEnumerable<TblShiftMaster> shiftdata;
+    IEnumerable<lookup> looklist;
     DataTable datareport;
     List<ElementList> dynamicform = new();
     string cmpId;
@@ -523,17 +548,25 @@
             dynamicform = new List<ElementList>();
             dts = new();
             logbookdetail = await httpservices.Get<List<TblLogbookDetailSchemasMD>>("LogbookDetailSchemas/ACT/" + formdatas.logbook);
+            looklist = await httpservices.Get<List<lookup>>("LookupCreation/ACT");
             //        formdatas.Date = Convert.ToDateTime(time.ToString().Replace("00-00-0000", CurrentDate?.ToString("MM-dd-yyyy")));
+
             if (logbookdetail.Count() == 0)
             {
                 await App.Current.MainPage.DisplayAlert("Dynamic Form", "Sorry there is no elements in the form", "OK");
             }
             else
             {
-                logbookdetail.ToList().ForEach(a =>
-             {
-                 dynamicform.Add(new ElementList { Label = a.Display_Name, Sequence = a.Seq, ElementType = a.DataType ,IsMandatory=a.isMandatory });
-             });
+                logbookdetail.ToList().ForEach(async a =>
+                {
+                    ElementList ele = new ElementList { Label = a.Display_Name, Sequence = a.Seq, ElementType = a.DataType, IsMandatory = a.isMandatory, LookupId= a.LookupId};
+                    if (a.LookupId != null)
+                        ele.lookuplist = await httpservices.Get<List<lookup>>("LookupValues/GL/" + a.LookupId);
+                    dynamicform.Add(ele);
+
+
+
+                });
                 Displaydynamic = true;
             }
             collapse1Visible = false;
@@ -563,10 +596,10 @@
     {
         try
         {
-           
+
             if (await validations.ValidateAll())
             {
-               
+
                 var a = dynamicform;
                 a.ForEach(a =>
                 {
@@ -605,7 +638,12 @@
                         a.BoolValue = Convert.ToBoolean(checkdynamicbool);
                         logdata.Val = a.BoolValue.ToString();
                     }
-
+                    else if (a.ElementType == "Lookup")
+                    {
+                        logdata.ParamName = a.Label;
+                        
+                       
+                    }
                     logdata.CompanyId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Company_Id;
                     logdata.PlantId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Plant_Id;
                     logdata.Shift = formdatas.Shift;
@@ -844,5 +882,6 @@
         }
         StateHasChanged();
     }
+   
     
 }

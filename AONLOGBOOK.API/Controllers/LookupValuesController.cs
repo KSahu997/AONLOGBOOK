@@ -33,7 +33,7 @@ namespace AONLOGBOOK.API.Controllers
         }
         // Get Specific Record
         [HttpGet("{id}")]
-        public ActionResult<TblLookupValue?> GetTblLookupValues(Guid id)
+        public ActionResult<TblLookupValue?> GetTblLookupValuesbyId(Guid id)
         {
             SqlParameter[] @params =
            {
@@ -52,6 +52,16 @@ namespace AONLOGBOOK.API.Controllers
             new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="ACT"},
            };
             return _sql.getDatas<TblLookupValue>("uspLookupValues", @params);
+        }
+        [HttpGet("GL/{lookupid}")]
+        public ActionResult<IEnumerable<lookup>?> ActTblLookupValuesbylookupId(string lookupid)
+        {
+            SqlParameter[] @params =
+           {
+            new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="GL"},
+            new SqlParameter {ParameterName="@lookupID",Direction=ParameterDirection.Input,Value=lookupid}
+           };
+            return _sql.getDatas<lookup>("uspLookupValues", @params);
         }
         // POST: api/ShiftMasters
         // Create Operation
