@@ -41,20 +41,17 @@
         
              @if (uommst != null)
             {
-                
-               
                 @foreach (TblUommaster item in uommst)
                 {
                     <TableRow>
                        
-                        <TableRowCell>@uommst.ToList().IndexOf(item)</TableRowCell>
+                        <TableRowCell>@uommst.ToList().IndexOf(item)+1</TableRowCell>
                         <TableRowCell>@item.Unit</TableRowCell>
                        
                     </TableRow>
                     
                 }
-                  
-               
+              
             }
        
         
