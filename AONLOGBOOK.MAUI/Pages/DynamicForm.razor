@@ -149,7 +149,7 @@
    @if(Displaydynamic==true)
     {
         
-    @if (dynamicform.Count() > 0)
+    @if (dynamicform.Count()>=0)
     {
        
 @*        <Validations @ref="validations" Mode="ValidationMode.Manual">
@@ -163,6 +163,7 @@
                         <Field>
                             @foreach (ElementList ele in dynamicform)
                             {
+                               
                                 @if (ele.ElementType == "Text")
                                 {
                                     <FieldLabel Style="font-weight:600;">@ele.Label</FieldLabel>
@@ -270,7 +271,7 @@
                                     {
                                         <Validations @ref="validations" Mode="ValidationMode.Manual">
                                             <Validation Validator="ValidationRule.IsNotEmpty">
-                                                <TimeEdit @bind-Time="ele.TimeValue" TValue="TimeSpan?"></TimeEdit>
+                                                <TimeEdit @bind-Time="ele.TimeValue" TValue="DateTime?"></TimeEdit>
                                                  <Feedback>
                                                     <ValidationError>Required @ele.Label</ValidationError>
                                                 </Feedback>
@@ -279,7 +280,7 @@
                                     }
                                     else
                                     {
-                                       <TimeEdit @bind-Time="ele.TimeValue" TValue="TimeSpan?"></TimeEdit>
+                                       <TimeEdit @bind-Time="ele.TimeValue" TValue="DateTime?"></TimeEdit>
                                     }
                                 }
                                 else if (ele.ElementType == "DateTime")
@@ -306,8 +307,8 @@
                                    <FieldLabel Style="font-weight:600;">@ele.Label</FieldLabel>
                                     @if (ele.IsMandatory == 1)
                                     {
-                                        <Validations @ref="validations" Mode="ValidationMode.Manual">
-                                        <Validation Validator="ValidationRule.IsChecked">
+                                        @*<Validations @ref="validations" Mode="ValidationMode.Manual">
+                                        <Validation Validator="ValidationRule.IsChecked">*@
                                            @* <RadioGroup TValue="string" Name="Rgrp" CheckedValue="@checkdynamicbool" CheckedValueChanged="@Onchecked">
                                             <Radio Group="Rgrp">Yes</Radio>
                                             <Radio Group="Rgrp">No</Radio>
@@ -318,11 +319,11 @@
                                                             <InputRadio Value="@("No")" />No<br />
                                                         </InputRadioGroup>
                                                     </Field>
-                                             <Feedback>
+                                           @*  <Feedback>
                                                     <ValidationError>Required @ele.Label</ValidationError>
                                                 </Feedback>
                                         </Validation>
-                                        </Validations>
+                                        </Validations>*@
                                     }
                                     else
                                     {
@@ -445,7 +446,7 @@
                                      
                                
                                 }
-                                    <TableHeaderCell>Operation</TableHeaderCell>
+                                   
                                  </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -526,7 +527,7 @@
         CurrentDate=DateTime.Now;
         departments = await httpservices.Get<List<TblDeptMaster>>("DeptMasters/ACT");
         logdtschema = await httpservices.Get<List<TblLogbookDetailSchema>>("LogbookDetailSchemas");
-       
+
         StateHasChanged();
 
     }
@@ -534,7 +535,7 @@
     {
         collapse1Visible = true;
         formdatas.Department = value;
-        Console.WriteLine(value);
+       // Console.WriteLine(value);
         subDepts = (await httpservices.Get<List<TblSubDeptMaster>>("SubDeptMasters/ACT")).Where(a=>(a.Dept_Id==formdatas.Department));
 
         StateHasChanged();
@@ -543,7 +544,7 @@
     {
         collapse1Visible = true;
         formdatas.SubDepartment = value;
-        Console.WriteLine(value);
+        //Console.WriteLine(value);
         logbooks = (await httpservices.Get<List<LogbookMaster>>("LogbookMasters/ACT")).Where(a => (a.SubDepartment == formdatas.SubDepartment));
         string cmp = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Company_Id;
         shiftdata = await httpservices.Get<List<TblShiftMaster>>("ShiftMasters/" + cmp + "/" + CurrentDate?.ToString("MM-dd-yyyy HH:mm:ss"));
@@ -553,7 +554,7 @@
     {
         collapse1Visible=true;
         formdatas.logbook = value;
-
+        StateHasChanged();
     }
     async void Submit()
     {
@@ -655,7 +656,7 @@
                     else if (a.ElementType == "Boolean")
                     {
                         logdata.ParamName = a.Label;
-                       // a.StringValue = Convert.ToBoolean(checkdynamicbool);
+                        // a.StringValue = Convert.ToBoolean(checkdynamicbool);
                         logdata.Val = a.StringValue.ToString();
                     }
                     else if (a.ElementType == "Lookup")
@@ -698,10 +699,23 @@
                     await App.Current.MainPage.DisplayAlert("Error", "Error", "ok");
                 }
 
-                logdtList = new();
-                dynamicform = new();
-                Displaydynamic = false;
+                //logdtList = new();
+                //dynamicform = null;
+                //Displaydynamic = false;
+                dts = new();
+                datareport = await httpservices.GetDataTable("LogDataTable/" + formdatas.logbook + "/" + formdatas.Date?.ToString("yyyy-MM-dd HH:mm:ss"));
+                if (datareport != null)
+                {
+                    var datare = from rows in datareport.AsEnumerable()
+                                 group rows by new { Shift = rows["Shift_prefix"] }
+                     into grp
+                                 select grp;
 
+                    foreach (var item in datare)
+                    {
+                        dts.Add(item.CopyToDataTable());
+                    }
+                }
                 StateHasChanged();
             }
         }
@@ -766,20 +780,20 @@
                     else if (a.ElementType == "Time")
                     {
                         logdata.ParamName = a.Label;
-                        logdata.Val = a.TimeValue?.ToString("HH.mm.ss");
+                        logdata.Val = a.TimeValue?.ToString("HH:mm:ss");
                     }
                     else if (a.ElementType == "Boolean")
                     {
                         logdata.ParamName = a.Label;
                         logdata.Val = a.StringValue.ToString();
                     }
-                     else if (a.ElementType == "Lookup")
+                    else if (a.ElementType == "Lookup")
                     {
                         logdata.ParamName = a.Label;
                         a.lookuplist.ForEach(b =>
                             logdata.Val = b.text
                         );
-                       
+
                     }
                     logdata.CompanyId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Company_Id;
                     logdata.PlantId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Plant_Id;
@@ -811,9 +825,24 @@
                 {
                     await App.Current.MainPage.DisplayAlert("Error", "Error", "ok");
                 }
-                logdtList = new();
-                dynamicform = new();
-                Displaydynamic = false;
+                //logdtList = new();
+               // dynamicform = null;
+               // Displaydynamic = false;
+               
+                dts = new();
+                datareport = await httpservices.GetDataTable("LogDataTable/" + formdatas.logbook + "/" + formdatas.Date?.ToString("yyyy-MM-dd HH:mm:ss"));
+                if (datareport != null)
+                {
+                    var datare = from rows in datareport.AsEnumerable()
+                                 group rows by new { Shift = rows["Shift_prefix"] }
+                     into grp
+                                 select grp;
+
+                    foreach (var item in datare)
+                    {
+                        dts.Add(item.CopyToDataTable());
+                    }
+                }
                 StateHasChanged();
             }
         }
@@ -899,7 +928,7 @@
                             if (!string.IsNullOrEmpty(dr[dc.ColumnName].ToString()))
                             {
                                 DateTime d = Convert.ToDateTime(dr[dc.ColumnName]);
-                                a.TimeValue = d.TimeOfDay;
+                                a.TimeValue = d;
 
                             }
                         }
