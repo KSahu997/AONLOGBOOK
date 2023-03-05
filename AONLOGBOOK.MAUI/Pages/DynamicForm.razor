@@ -155,16 +155,17 @@
 @*        <Validations @ref="validations" Mode="ValidationMode.Manual">
 *@            <Card Margin="Margin.Is4.OnY" Background="Background.Transparent" Class="Card">
                 <CardHeader Style="background:linear-gradient(180deg, rgb(170 196 224 / 50%), transparent); color:#11324D;border-radius:15px;">
-                <h4><Badge Color="Color.Info">@logbooks.First().LogbookName</Badge></h4>
+                <Heading Size="HeadingSize.Is4"><Badge Color="Color.Info">@logbooks.First().LogbookName</Badge></Heading>
                 </CardHeader>
                 <CardBody>
                     <CardText>
+                        <EditForm Model="@dynamicform">
                         <Field>
                             @foreach (ElementList ele in dynamicform)
                             {
                                 @if (ele.ElementType == "Text")
                                 {
-                                    <FieldLabel>@ele.Label</FieldLabel>
+                                    <FieldLabel Style="font-weight:600;">@ele.Label</FieldLabel>
                                     @if(ele.Label=="Email")
                                     {
                                         @if(ele.IsMandatory==1)
@@ -205,7 +206,7 @@
                                 }
                                 else if (ele.ElementType == "Number")
                                 {
-                                    <FieldLabel>@ele.Label</FieldLabel>
+                                    <FieldLabel Style="font-weight:600;">@ele.Label</FieldLabel>
                                     @if (ele.IsMandatory == 1)
                                     {
                                         <Validations @ref="validations" Mode="ValidationMode.Manual">
@@ -225,7 +226,7 @@
                                 {
                                     if(ele.LookupId!=null)
                                     {
-                                    <FieldLabel>@ele.Label</FieldLabel>
+                                      <FieldLabel Style="font-weight:600;">@ele.Label</FieldLabel>
                                     @*@if (ele.IsMandatory == 1)
                                     {*@
                                         <Validations @ref="validations" Mode="ValidationMode.Manual">
@@ -248,7 +249,7 @@
                                   }
                                 else if (ele.ElementType == "Date")
                                 {
-                                    <FieldLabel>@ele.Label</FieldLabel>
+                                    <FieldLabel Style="font-weight:600;">@ele.Label</FieldLabel>
                                     @if (ele.IsMandatory == 1)
                                     {
                                         <Validations @ref="validations" Mode="ValidationMode.Manual">
@@ -264,7 +265,7 @@
                                 }
                                 else if (ele.ElementType == "Time")
                                 {
-                                    <FieldLabel>@ele.Label</FieldLabel>
+                                    <FieldLabel Style="font-weight:600;">@ele.Label</FieldLabel>
                                     @if (ele.IsMandatory == 1)
                                     {
                                         <Validations @ref="validations" Mode="ValidationMode.Manual">
@@ -283,7 +284,7 @@
                                 }
                                 else if (ele.ElementType == "DateTime")
                                 {
-                                    <FieldLabel>@ele.Label</FieldLabel>
+                                    <FieldLabel Style="font-weight:600;">@ele.Label</FieldLabel>
                                      @if (ele.IsMandatory == 1)
                                     { <Validations @ref="validations" Mode="ValidationMode.Manual">
                                         <Validation Validator="ValidationRule.None">
@@ -300,15 +301,23 @@
                                     }
                                 }
                                 else if (ele.ElementType == "Boolean")
-                                {
-                                    <FieldLabel>@ele.Label</FieldLabel>
+                                  {
+
+                                   <FieldLabel Style="font-weight:600;">@ele.Label</FieldLabel>
                                     @if (ele.IsMandatory == 1)
-                                    {<Validations @ref="validations" Mode="ValidationMode.Manual">
+                                    {
+                                        <Validations @ref="validations" Mode="ValidationMode.Manual">
                                         <Validation Validator="ValidationRule.IsChecked">
-                                            <RadioGroup TValue="string" Name="Rgrp" CheckedValue="@checkdynamicbool" CheckedValueChanged="@Onchecked">
+                                           @* <RadioGroup TValue="string" Name="Rgrp" CheckedValue="@checkdynamicbool" CheckedValueChanged="@Onchecked">
                                             <Radio Group="Rgrp">Yes</Radio>
                                             <Radio Group="Rgrp">No</Radio>
-                                        </RadioGroup>
+                                        </RadioGroup>*@
+                                                    <Field>
+                                                        <InputRadioGroup @bind-Value="@ele.StringValue">
+                                                            <InputRadio Value="@("Yes")" />Yes
+                                                            <InputRadio Value="@("No")" />No<br />
+                                                        </InputRadioGroup>
+                                                    </Field>
                                              <Feedback>
                                                     <ValidationError>Required @ele.Label</ValidationError>
                                                 </Feedback>
@@ -317,11 +326,16 @@
                                     }
                                     else
                                     {
-                                        <RadioGroup TValue="string" Name="Rgrp" CheckedValue="@checkdynamicbool" CheckedValueChanged="@Onchecked">
+                                        <Field>
+                                            <InputRadioGroup @bind-Value="@ele.StringValue">
+                                                <InputRadio Value="@("Yes")"/>Yes
+                                                <InputRadio Value="@("No")"/>No<br/>
+                                            </InputRadioGroup>
+                                        </Field>
+                                       @* <RadioGroup TValue="string" Name="Rgrp" CheckedValue="@checkdynamicbool" CheckedValueChanged="@Onchecked">
                                             <Radio  Group="Rgrp">Yes</Radio>
                                             <Radio  Group="Rgrp">No</Radio>
-                                        </RadioGroup>
-                                        
+                                        </RadioGroup>*@
                                     }
                                 }
 
@@ -332,7 +346,7 @@
                             </Field>
 
                         </Field>
-
+                        </EditForm>
                     </CardText>
 
                 </CardBody>
@@ -512,6 +526,7 @@
         CurrentDate=DateTime.Now;
         departments = await httpservices.Get<List<TblDeptMaster>>("DeptMasters/ACT");
         logdtschema = await httpservices.Get<List<TblLogbookDetailSchema>>("LogbookDetailSchemas");
+       
         StateHasChanged();
 
     }
@@ -530,8 +545,8 @@
         formdatas.SubDepartment = value;
         Console.WriteLine(value);
         logbooks = (await httpservices.Get<List<LogbookMaster>>("LogbookMasters/ACT")).Where(a => (a.SubDepartment == formdatas.SubDepartment));
-        //string cmp = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).CompanyId;
-        //shiftdata = await httpservices.Get<List<TblShiftMaster>>("ShiftMasters/" + cmp + "/" + formdatas.Date?.ToString("MM-dd-yyyy HH:mm:ss"));
+        string cmp = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Company_Id;
+        shiftdata = await httpservices.Get<List<TblShiftMaster>>("ShiftMasters/" + cmp + "/" + CurrentDate?.ToString("MM-dd-yyyy HH:mm:ss"));
         StateHasChanged();
     }
     async void handlelog(string value)
@@ -640,8 +655,8 @@
                     else if (a.ElementType == "Boolean")
                     {
                         logdata.ParamName = a.Label;
-                        a.BoolValue = Convert.ToBoolean(checkdynamicbool);
-                        logdata.Val = a.BoolValue.ToString();
+                       // a.StringValue = Convert.ToBoolean(checkdynamicbool);
+                        logdata.Val = a.StringValue.ToString();
                     }
                     else if (a.ElementType == "Lookup")
                     {
@@ -756,7 +771,7 @@
                     else if (a.ElementType == "Boolean")
                     {
                         logdata.ParamName = a.Label;
-                        logdata.Val = a.BoolValue.ToString();
+                        logdata.Val = a.StringValue.ToString();
                     }
                      else if (a.ElementType == "Lookup")
                     {
@@ -875,7 +890,7 @@
                         {
                             if (!string.IsNullOrEmpty(dr[dc.ColumnName].ToString()))
                             {
-                                a.BoolValue = Convert.ToBoolean(dr[dc.ColumnName]);
+                                a.StringValue = (dr[dc.ColumnName]).ToString();
                             }
 
                         }

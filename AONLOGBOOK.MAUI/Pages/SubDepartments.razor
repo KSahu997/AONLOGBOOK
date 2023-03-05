@@ -202,7 +202,7 @@ else
             {
                 subdept.Created_By = "Admin";
                 subdept.Plant_Id = deptlist.First(a => (a.Plant_Id == plantId)).Plant_Id;
-                subdept.Dept_Id = deptlist.First(a => (a.Plant_Id == plantId)).Id.ToString();
+                subdept.Dept_Id = deptId;
                 subdept.Company_Id = deptlist.First(a => (a.Plant_Id == subdept.Plant_Id)).Company_Id;
                 var data = await httpservice.Post<string>("SubDeptMasters", subdept);
                 if (data != null)
@@ -256,14 +256,15 @@ else
             {
 
             }
+            StateHasChanged();
         }
     }
     protected override async Task OnInitializedAsync()
     {
         companies = await httpservice.Get<List<TblCompanyMaster>>("CompanyMasters/ACT");
 
-        subdept.Dept_Id = deptId;
-        SubDeptList = (await httpservice.Get<List<TblSubDeptMaster>>("SubDeptMasters/ACT")).Where(a => (a.Dept_Id == subdept.Dept_Id));
+       // subdept.Dept_Id = deptId;
+        //SubDeptList = (await httpservice.Get<List<TblSubDeptMaster>>("SubDeptMasters/ACT")).Where(a => (a.Dept_Id == subdept.Dept_Id));
         StateHasChanged();
     }
     void HandleAddsdept()
