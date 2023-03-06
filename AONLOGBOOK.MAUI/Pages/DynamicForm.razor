@@ -306,8 +306,8 @@
                                    <FieldLabel Style="font-weight:600;">@ele.Label</FieldLabel>
                                     @if (ele.IsMandatory == 1)
                                     {
-                                        <Validations @ref="validations" Mode="ValidationMode.Manual">
-                                        <Validation Validator="ValidationRule.IsChecked">
+                                       @* <Validations @ref="validations" Mode="ValidationMode.Manual">
+                                        <Validation Validator="ValidationRule.IsChecked">*@
                                            @* <RadioGroup TValue="string" Name="Rgrp" CheckedValue="@checkdynamicbool" CheckedValueChanged="@Onchecked">
                                             <Radio Group="Rgrp">Yes</Radio>
                                             <Radio Group="Rgrp">No</Radio>
@@ -318,11 +318,11 @@
                                                             <InputRadio Value="@("No")" />No<br />
                                                         </InputRadioGroup>
                                                     </Field>
-                                             <Feedback>
+                                       @*      <Feedback>
                                                     <ValidationError>Required @ele.Label</ValidationError>
                                                 </Feedback>
                                         </Validation>
-                                        </Validations>
+                                        </Validations*@
                                     }
                                     else
                                     {
@@ -445,7 +445,7 @@
                                      
                                
                                 }
-                                    <TableHeaderCell>Operation</TableHeaderCell>
+                                  
                                  </TableRow>
                             </TableHeader>
                             <TableBody>

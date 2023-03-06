@@ -20,6 +20,7 @@ namespace AONLOGBOOK.SHARED.Models
         public string? isLeaf { get; set; }
 
         public string? MName { get; set; }
+        public int? IsLookup { get; set; }
 
         public string? Mode { get; set; }
 

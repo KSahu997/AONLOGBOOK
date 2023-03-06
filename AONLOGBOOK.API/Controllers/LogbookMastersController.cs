@@ -69,6 +69,7 @@ namespace AONLOGBOOK.API.Controllers
                 new SqlParameter {ParameterName="@Prefix",Direction=ParameterDirection.Input,Value=tblLogbookMaster.Prefix},
                 new SqlParameter {ParameterName="@PlantCode",Direction =ParameterDirection.Input,Value = tblLogbookMaster.PlantCode},
                 new SqlParameter {ParameterName="@Sequence",Direction =ParameterDirection.Input,Value = tblLogbookMaster.Seq},
+                new SqlParameter {ParameterName="@islookup",Direction =ParameterDirection.Input,Value = tblLogbookMaster.IsLookup},
                
             };
             _sql.postData("uspLogBookMasterEntry", @params);
@@ -84,6 +85,7 @@ namespace AONLOGBOOK.API.Controllers
                 new SqlParameter {ParameterName="@logbookId",Direction=ParameterDirection.Input,Value=tblLogbookMaster.LogbookId},
                 new SqlParameter {ParameterName="@LogbookName",Direction=ParameterDirection.Input,Value=tblLogbookMaster.LogbookName},
                 new SqlParameter {ParameterName="@Delflag",Direction=ParameterDirection.Input,Value=tblLogbookMaster.Del_Flag},
+                 new SqlParameter {ParameterName="@islookup",Direction =ParameterDirection.Input,Value = tblLogbookMaster.IsLookup},
                //new SqlParameter {ParameterName="@Department",Direction=ParameterDirection.Input,Value=tblLogbookMaster.Department},
                // new SqlParameter {ParameterName="@SubDept",Direction=ParameterDirection.Input,Value=tblLogbookMaster.SubDepartment},
                // new SqlParameter {ParameterName="@Company_Id",Direction=ParameterDirection.Input,Value=tblLogbookMaster.Company_Id},
