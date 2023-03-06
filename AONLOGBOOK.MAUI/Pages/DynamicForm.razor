@@ -107,14 +107,7 @@
                                 <DateEdit Date="@CurrentDate" TValue="DateTime?" InputMode="DateInputMode.DateTime" DateChanged="@handleshift"/>
                                 @*</Validation>*@
                             </Field>
-                           @* <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
-                                <FieldLabel>Time</FieldLabel>
-                                <Validation Validator="ValidationRule.IsNotEmpty">
-                                    @*<DateEdit InputMode="DateInputMode.DateTime" Date="formdatas.Date.ToString()" TValue="string"
-                                    DateExpression="@(()=>formdatas.Date.ToString())" DateChanged="@((string arg)=>{handleshift(arg);})"></DateEdit>*@
-                                    @*<TimeEdit Time="@CurrentTime" TValue="TimeSpan?" TimeChanged="@handleshift"  />
-                                </Validation>
-                            </Field>*@
+                          
                             <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                                 <FieldLabel>Shift</FieldLabel>
                                 <Validation Validator="ValidationRule.IsNotEmpty">
@@ -127,15 +120,10 @@
                                                 <SelectItem Value="@shift.Id">@shift.Shift_prefix</SelectItem>
                                             }
                                         }
-                                        
-                                     
-
                                    </Select>
                                 </Validation>
                             </Field>
-                            
-                      
-
+                        
                     </Fields>
                         <Field Flex="Flex.JustifyContent.End.OnDesktop.JustifyContent.Center.OnMobile">
                             <Button Clicked="Submit" style="margin-top:10px;background:#659abb;color:#000;" Disabled=@(formdatas.Department==null||formdatas.SubDepartment==null||formdatas.logbook==null)>Generate Form</Button>
@@ -151,12 +139,11 @@
         
     @if (dynamicform.Count()>=0)
     {
-       
-@*        <Validations @ref="validations" Mode="ValidationMode.Manual">
-*@            <Card Margin="Margin.Is4.OnY" Background="Background.Transparent" Class="Card">
-                <CardHeader Style="background:linear-gradient(180deg, rgb(170 196 224 / 50%), transparent); color:#11324D;border-radius:15px;">
-                <Heading Size="HeadingSize.Is4"><Badge Color="Color.Info">@logbooks.First().LogbookName</Badge></Heading>
-                </CardHeader>
+@*       <Validations @ref="validations" Mode="ValidationMode.Manual">
+*@          <Card Margin="Margin.Is4.OnY" Background="Background.Transparent" Class="Card">
+              <CardHeader Style="background:linear-gradient(180deg, rgb(170 196 224 / 50%), transparent); color:#11324D;border-radius:15px;">
+                <Heading Size="HeadingSize.Is4"><Badge Color="Color.Info">@logbooks.First(a=>(a.LogbookId.ToString()==formdatas.logbook)).LogbookName</Badge></Heading>
+              </CardHeader>
                 <CardBody>
                     <CardText>
                         <EditForm Model="@dynamicform">
@@ -535,7 +522,7 @@
     {
         collapse1Visible = true;
         formdatas.Department = value;
-        
+
         subDepts = (await httpservices.Get<List<TblSubDeptMaster>>("SubDeptMasters/ACT")).Where(a=>(a.Dept_Id==formdatas.Department));
 
         StateHasChanged();
@@ -544,7 +531,7 @@
     {
         collapse1Visible = true;
         formdatas.SubDepartment = value;
-        
+
         logbooks = (await httpservices.Get<List<LogbookMaster>>("LogbookMasters/ACT")).Where(a => (a.SubDepartment == formdatas.SubDepartment));
         string cmp = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Company_Id;
         shiftdata = await httpservices.Get<List<TblShiftMaster>>("ShiftMasters/" + cmp + "/" + CurrentDate?.ToString("MM-dd-yyyy HH:mm:ss"));
@@ -700,8 +687,8 @@
                 }
 
                 //logdtList = new();
-                //dynamicform = null;
-                //Displaydynamic = false;
+               // dynamicform = new(); ;
+               // Displaydynamic = false;
                 dts = new();
                 datareport = await httpservices.GetDataTable("LogDataTable/" + formdatas.logbook + "/" + formdatas.Date?.ToString("yyyy-MM-dd HH:mm:ss"));
                 if (datareport != null)
@@ -826,8 +813,8 @@
                     await App.Current.MainPage.DisplayAlert("Error", "Error", "ok");
                 }
                 //logdtList = new();
-                // dynamicform = null;
-                // Displaydynamic = false;
+                //dynamicform = new();
+                //Displaydynamic = false;
                 
                 dts = new();
                 datareport = await httpservices.GetDataTable("LogDataTable/" + formdatas.logbook + "/" + formdatas.Date?.ToString("yyyy-MM-dd HH:mm:ss"));
