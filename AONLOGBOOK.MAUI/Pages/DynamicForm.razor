@@ -107,14 +107,7 @@
                                 <DateEdit Date="@CurrentDate" TValue="DateTime?" InputMode="DateInputMode.DateTime" DateChanged="@handleshift"/>
                                 @*</Validation>*@
                             </Field>
-                           @* <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
-                                <FieldLabel>Time</FieldLabel>
-                                <Validation Validator="ValidationRule.IsNotEmpty">
-                                    @*<DateEdit InputMode="DateInputMode.DateTime" Date="formdatas.Date.ToString()" TValue="string"
-                                    DateExpression="@(()=>formdatas.Date.ToString())" DateChanged="@((string arg)=>{handleshift(arg);})"></DateEdit>*@
-                                    @*<TimeEdit Time="@CurrentTime" TValue="TimeSpan?" TimeChanged="@handleshift"  />
-                                </Validation>
-                            </Field>*@
+                          
                             <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                                 <FieldLabel>Shift</FieldLabel>
                                 <Validation Validator="ValidationRule.IsNotEmpty">
@@ -127,15 +120,10 @@
                                                 <SelectItem Value="@shift.Id">@shift.Shift_prefix</SelectItem>
                                             }
                                         }
-                                        
-                                     
-
                                    </Select>
                                 </Validation>
                             </Field>
-                            
-                      
-
+                        
                     </Fields>
                         <Field Flex="Flex.JustifyContent.End.OnDesktop.JustifyContent.Center.OnMobile">
                             <Button Clicked="Submit" style="margin-top:10px;background:#659abb;color:#000;" Disabled=@(formdatas.Department==null||formdatas.SubDepartment==null||formdatas.logbook==null)>Generate Form</Button>
@@ -151,12 +139,11 @@
         
     @if (dynamicform.Count()>=0)
     {
-       
-@*        <Validations @ref="validations" Mode="ValidationMode.Manual">
-*@            <Card Margin="Margin.Is4.OnY" Background="Background.Transparent" Class="Card">
-                <CardHeader Style="background:linear-gradient(180deg, rgb(170 196 224 / 50%), transparent); color:#11324D;border-radius:15px;">
-                <Heading Size="HeadingSize.Is4"><Badge Color="Color.Info">@logbooks.First().LogbookName</Badge></Heading>
-                </CardHeader>
+@*       <Validations @ref="validations" Mode="ValidationMode.Manual">
+*@          <Card Margin="Margin.Is4.OnY" Background="Background.Transparent" Class="Card">
+              <CardHeader Style="background:linear-gradient(180deg, rgb(170 196 224 / 50%), transparent); color:#11324D;border-radius:15px;">
+                <Heading Size="HeadingSize.Is4"><Badge Color="Color.Info">@logbooks.First(a=>(a.LogbookId.ToString()==formdatas.logbook)).LogbookName</Badge></Heading>
+              </CardHeader>
                 <CardBody>
                     <CardText>
                         <EditForm Model="@dynamicform">
@@ -342,8 +329,8 @@
 
                         }
                             <Field Flex="Flex.JustifyContent.End.OnDesktop.JustifyContent.Center.OnMobile">
-                                <Button Clicked="@submit" Style="justify-content:center; margin:15px;background:#659abb;color:#000;" Disabled="@(!active)">Save</Button>
-                                <Button Clicked="@savedraft" Style="justify-content:center; margin:15px;background:#659abb;color:#000;">Save Draft</Button>
+                                <Button Clicked="@submit" Style="justify-content:center; margin:15px;background:#659abb;color:#000;" Disabled="@(inactive)">Save</Button>
+                                <Button Clicked="@savedraft" Style="justify-content:center; margin:15px;background:#659abb;color:#000;" Disabled="@(inactive)">Save Draft</Button>
                             </Field>
 
                         </Field>
@@ -519,7 +506,7 @@
     // TimeSpan? CurrentTime;
     bool collapse1Visible = true;
     bool Displaydynamic = false;
-    bool active = true;
+    bool inactive = false;
     List<DataTable> dts = new List<DataTable>();
     LogData logdata = new();
     protected override async Task OnInitializedAsync()
@@ -622,6 +609,7 @@
             {
 
                 var a = dynamicform;
+                logdatatable = new();
                 a.ForEach(a =>
                 {
                     LogData logdata = new();
@@ -691,32 +679,19 @@
                 var result = await httpservices.Post<string>("LogDataTable", logdtList);
                 if (result != null)
                 {
+                    inactive = true;
                     await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");
-
+                    inactive = false;
                     StateHasChanged();
                 }
                 else
                 {
                     await App.Current.MainPage.DisplayAlert("Error", "Error", "ok");
                 }
-
-                //logdtList = new();
-                //dynamicform = null;
-                //Displaydynamic = false;
-                dts = new();
-                datareport = await httpservices.GetDataTable("LogDataTable/" + formdatas.logbook + "/" + formdatas.Date?.ToString("yyyy-MM-dd HH:mm:ss"));
-                if (datareport != null)
-                {
-                    var datare = from rows in datareport.AsEnumerable()
-                                 group rows by new { Shift = rows["Shift_prefix"] }
-                     into grp
-                                 select grp;
-
-                    foreach (var item in datare)
-                    {
-                        dts.Add(item.CopyToDataTable());
-                    }
-                }
+               
+                dynamicform = new();
+                logdtList = new();
+               Submit();
                 StateHasChanged();
             }
         }
@@ -752,6 +727,7 @@
             if (await validations.ValidateAll())
             {
                 var a = dynamicform;
+                logdatatable = new();
                 a.ForEach(a =>
                 {
                     LogData logdata = new();
@@ -819,7 +795,9 @@
                 var result = await httpservices.Post<string>("LogDataTable", logdtList);
                 if (result != null)
                 {
+                    inactive = true;
                     await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");
+                    inactive = false;
                     StateHasChanged();
 
                 }
@@ -827,25 +805,11 @@
                 {
                     await App.Current.MainPage.DisplayAlert("Error", "Error", "ok");
                 }
-                logdtList = new();
+                
                 dynamicform = new();
-                // Displaydynamic = false;
-                submit();
-
-                dts = new();
-                datareport = await httpservices.GetDataTable("LogDataTable/" + formdatas.logbook + "/" + formdatas.Date?.ToString("yyyy-MM-dd HH:mm:ss"));
-                if (datareport != null)
-                {
-                    var datare = from rows in datareport.AsEnumerable()
-                                 group rows by new { Shift = rows["Shift_prefix"] }
-                     into grp
-                                 select grp;
-
-                    foreach (var item in datare)
-                    {
-                        dts.Add(item.CopyToDataTable());
-                    }
-                }
+                logdtList = new();
+                 Submit();
+                //Displaydynamic = false;
                 StateHasChanged();
             }
         }
@@ -872,6 +836,7 @@
     void handleitem(DataRow val)
     {
         Displaydynamic = true;
+      
         DataTable dt = datareport.AsEnumerable().Where(a => a.Field<string>("header_Id") == val[1]).CopyToDataTable();
 
         foreach(DataRow dr in dt.Rows)
