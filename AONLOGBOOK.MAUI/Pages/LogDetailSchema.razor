@@ -35,7 +35,8 @@
                                             <SelectItem Value=@("Automatic")>Automatic</SelectItem>
                                     </Select>
                                    </Field>
-                                   @if(cal == false){
+                    @if (cal == false)
+                    {
                         <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                             <FieldLabel>Type</FieldLabel>
                             <Select TValue="string" SelectedValue="logmddt.DataType" SelectedValueChanged="@((string a)=>{handleType(a);})" SelectedValueExpression="@(()=>logmddt.DataType)">
@@ -52,7 +53,7 @@
                             </Select>
                         </Field>
                                    }
-                  @if(lookup == true){
+                  @if(lookup == false){
                     <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                          <FieldLabel>Lookup List</FieldLabel>
                          <Select SelectedValue="@logmddt.LookupId" SelectedValueChanged="@((string arg)=>{handlelookuplist(arg);})"
@@ -69,7 +70,7 @@
                          </Select>
                     </Field>
                       }
-                    @if(lookitem == true)
+                    @if(lookitem == false)
                     {
                         <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                             <FieldLabel>Text Field</FieldLabel>
@@ -119,7 +120,7 @@
                             }
                         </Select>
                     </Field>   }
-                    @if(dislmin == false || txt == true){
+                    @if(dislmin == false || txt == false){
                         <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                             <FieldLabel>L_Min</FieldLabel>
                             <NumericEdit @bind-Value="logmddt.L_Min"></NumericEdit>
@@ -167,7 +168,7 @@
                        
                         <Field Flex="Flex.JustifyContent.End.OnDesktop.JustifyContent.Center.OnMobile">
                             @ChildContent
-                            <Button Clicked="Savedetails" Color="Color.Info">@(isnew==true?"Submit":"Update")</Button>
+                            <Button Clicked="Savedetails" Color="Color.Info" Disabled="@(busy == false)">@(isnew==true?"Submit":"Update")</Button>
                        </Field>
 
 
@@ -252,9 +253,9 @@
     bool ismandatory;
     bool? Displayform { get; set; } = false;
     bool? dislmin { get; set; } = true;
-    bool? txt { get; set; } = false;
-    bool? lookup { get; set; } = false;
-    bool? lookitem { get; set; } = false;
+    bool? txt { get; set; } = true;
+    bool? lookup { get; set; } = true;
+    bool? lookitem { get; set; } = true;
     Formdata datas = new();
     TblLogbookDetailSchema logdt = new();
     TblLogbookDetailSchemasMD logmddt = new();
@@ -267,27 +268,23 @@
     TblUommaster uom;
     bool isnew = true;
     bool? cal { get; set; } = true;
+    bool? busy = true;
     [Parameter]
     public RenderFragment ChildContent { get; set; }
 
     [Parameter]
     public EventCallback<bool> mstlogChanged { get; set; }
+    string logbook;
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            datas.Department = log.Department;
-            datas.SubDepartment = log.SubDepartment;
-            datas.logbook = log.LogbookId.ToString();
-            tagmst = await httpservice.Get<List<TblTagMaster>>("TagMasters/ACT");
-            uommst = await httpservice.Get<List<TblUommaster>>("Uommasters/ACT");
-            logdetail = await httpservice.Get<List<TblLogbookDetailSchemasMD>>("LogbookDetailSchemas/ACT/" + datas.logbook);
 
-        }
-        catch(Exception ex)
-        {
+        datas.Department = log.Department;
+        datas.SubDepartment = log.SubDepartment;
+        datas.logbook = log.LogbookId.ToString();
+        tagmst = await httpservice.Get<List<TblTagMaster>>("TagMasters/ACT");
+        uommst = await httpservice.Get<List<TblUommaster>>("Uommasters/ACT");
+        logdetail = await httpservice.Get<List<TblLogbookDetailSchemasMD>>("LogbookDetailSchemas/ACT/" + datas.logbook);
 
-        }
 
     }
     //async void handleUOM(object value)
@@ -326,6 +323,7 @@
             }
             logdetail = await httpservice.Get<List<TblLogbookDetailSchemasMD>>("LogbookDetailSchemas/ACT/" + datas.logbook);
             logmddt = new();
+            busy = false;
             StateHasChanged();
         }
         else
@@ -355,6 +353,7 @@
             }
             logdetail = await httpservice.Get<List<TblLogbookDetailSchemasMD>>("LogbookDetailSchemas/ACT/" + datas.logbook);
             logmddt = new();
+            busy = false;
             StateHasChanged();
             isnew = true;
 
@@ -416,20 +415,21 @@
         }
         if (logmddt.DataType == "Text")
         {
-            txt = true;
+            txt = false;
             StateHasChanged();
         }else{
-            txt = false;
+            txt = true;
         }
         if(logmddt.DataType == "Lookup")
         {
-            lookup = true;
-            logbooklist= (await httpservice.Get<List<TblLogbookMaster>>("LogbookMasters/ACT")).Where(a=>(a.Company_Id == log.Company_Id && a.PlantCode == log.PlantCode));
+            lookup = false;
+            //logbooklist= (await httpservice.Get<List<TblLogbookMaster>>("LogbookMasters/ACT")).Where(a=>(a.Company_Id == log.Company_Id && a.PlantCode == log.PlantCode));
+            logbooklist = (await httpservice.Get<List<TblLogbookMaster>>("LogbookMasters/ACT")).Where(a => (a.IsLookup == 1));
             StateHasChanged();
         }else{
-            lookup = false;
+            lookup = true;
         }
-         
+
         StateHasChanged();
     }
     void handlesrc(string val)
@@ -450,7 +450,7 @@
     {
         ismandatory = value;
     }
-   async void HandleEditLogDetail(TblLogbookDetailSchemasMD item)
+    async void HandleEditLogDetail(TblLogbookDetailSchemasMD item)
     {
         logmddt = item;
         isnew = false;
@@ -465,21 +465,22 @@
         }
         if (logmddt.DataType == "Text")
         {
-            txt = true;
+            txt = false;
             StateHasChanged();
         }
         else
         {
-            txt = false;
+            txt = true;
         }
         if (logmddt.DataType == "Lookup")
         {
-            lookup = true;
-            lookuplist = await httpservice.Get<List<TblLookup>>("LookupCreation/ACT");
+            lookup = false;
+            logbooklist = (await httpservice.Get<List<TblLogbookMaster>>("LogbookMasters/ACT")).Where(a => (a.IsLookup == 1));
+            StateHasChanged();
         }
         else
         {
-            lookup = false;
+            lookup = true;
         }
         if (logmddt.Source == "Calculated")
         {
@@ -494,8 +495,9 @@
     async void handlelookuplist(string value){
 
         logmddt.LookupId =value;
-        lookitem = true;
+        lookitem = false;
         logdetail = await httpservice.Get<List<TblLogbookDetailSchemasMD>>("LogbookDetailSchemas/ACT/" + logmddt.LookupId);
         StateHasChanged();
+         lookitem = true;
     }
 }

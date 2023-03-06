@@ -535,7 +535,7 @@
     {
         collapse1Visible = true;
         formdatas.Department = value;
-        
+
         subDepts = (await httpservices.Get<List<TblSubDeptMaster>>("SubDeptMasters/ACT")).Where(a=>(a.Dept_Id==formdatas.Department));
 
         StateHasChanged();
@@ -544,7 +544,7 @@
     {
         collapse1Visible = true;
         formdatas.SubDepartment = value;
-        
+
         logbooks = (await httpservices.Get<List<LogbookMaster>>("LogbookMasters/ACT")).Where(a => (a.SubDepartment == formdatas.SubDepartment));
         string cmp = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Company_Id;
         shiftdata = await httpservices.Get<List<TblShiftMaster>>("ShiftMasters/" + cmp + "/" + CurrentDate?.ToString("MM-dd-yyyy HH:mm:ss"));
@@ -693,6 +693,7 @@
                 {
                     await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");
 
+                    StateHasChanged();
                 }
                 else
                 {
@@ -819,16 +820,18 @@
                 if (result != null)
                 {
                     await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");
+                    StateHasChanged();
 
                 }
                 else
                 {
                     await App.Current.MainPage.DisplayAlert("Error", "Error", "ok");
                 }
-                //logdtList = new();
-                // dynamicform = null;
+                logdtList = new();
+                dynamicform = new();
                 // Displaydynamic = false;
-                
+                submit();
+
                 dts = new();
                 datareport = await httpservices.GetDataTable("LogDataTable/" + formdatas.logbook + "/" + formdatas.Date?.ToString("yyyy-MM-dd HH:mm:ss"));
                 if (datareport != null)
