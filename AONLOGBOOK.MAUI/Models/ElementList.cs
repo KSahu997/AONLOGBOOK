@@ -16,7 +16,7 @@ namespace AONLOGBOOK.MAUI.Models
         public string? HeaderId {get; set; }
         public DateTime? DateValue { get; set; }
         public DateTime? DateOnlyValue { get; set; }
-        public TimeSpan? TimeValue { get; set; }
+        public DateTime? TimeValue { get; set; }
        // [Required(ErrorMessage ="Required")]
         public string? StringValue { get; set; }
        // [Required(ErrorMessage ="Required")]
