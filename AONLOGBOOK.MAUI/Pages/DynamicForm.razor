@@ -329,8 +329,8 @@
 
                         }
                             <Field Flex="Flex.JustifyContent.End.OnDesktop.JustifyContent.Center.OnMobile">
-                                <Button Clicked="@submit" Style="justify-content:center; margin:15px;background:#659abb;color:#000;" Disabled="@(!active)">Save</Button>
-                                <Button Clicked="@savedraft" Style="justify-content:center; margin:15px;background:#659abb;color:#000;">Save Draft</Button>
+                                <Button Clicked="@submit" Style="justify-content:center; margin:15px;background:#659abb;color:#000;" Disabled="@(inactive)">Save</Button>
+                                <Button Clicked="@savedraft" Style="justify-content:center; margin:15px;background:#659abb;color:#000;" Disabled="@(inactive)">Save Draft</Button>
                             </Field>
 
                         </Field>
@@ -506,7 +506,7 @@
     // TimeSpan? CurrentTime;
     bool collapse1Visible = true;
     bool Displaydynamic = false;
-    bool active = true;
+    bool inactive = false;
     List<DataTable> dts = new List<DataTable>();
     LogData logdata = new();
     protected override async Task OnInitializedAsync()
@@ -609,6 +609,7 @@
             {
 
                 var a = dynamicform;
+                logdatatable = new();
                 a.ForEach(a =>
                 {
                     LogData logdata = new();
@@ -678,31 +679,19 @@
                 var result = await httpservices.Post<string>("LogDataTable", logdtList);
                 if (result != null)
                 {
+                    inactive = true;
                     await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");
-
+                    inactive = false;
+                    StateHasChanged();
                 }
                 else
                 {
                     await App.Current.MainPage.DisplayAlert("Error", "Error", "ok");
                 }
-
-                //logdtList = new();
-               // dynamicform = new(); ;
-               // Displaydynamic = false;
-                dts = new();
-                datareport = await httpservices.GetDataTable("LogDataTable/" + formdatas.logbook + "/" + formdatas.Date?.ToString("yyyy-MM-dd HH:mm:ss"));
-                if (datareport != null)
-                {
-                    var datare = from rows in datareport.AsEnumerable()
-                                 group rows by new { Shift = rows["Shift_prefix"] }
-                     into grp
-                                 select grp;
-
-                    foreach (var item in datare)
-                    {
-                        dts.Add(item.CopyToDataTable());
-                    }
-                }
+               
+                dynamicform = new();
+                logdtList = new();
+               Submit();
                 StateHasChanged();
             }
         }
@@ -738,6 +727,7 @@
             if (await validations.ValidateAll())
             {
                 var a = dynamicform;
+                logdatatable = new();
                 a.ForEach(a =>
                 {
                     LogData logdata = new();
@@ -805,31 +795,21 @@
                 var result = await httpservices.Post<string>("LogDataTable", logdtList);
                 if (result != null)
                 {
+                    inactive = true;
                     await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");
+                    inactive = false;
+                    StateHasChanged();
 
                 }
                 else
                 {
                     await App.Current.MainPage.DisplayAlert("Error", "Error", "ok");
                 }
-                //logdtList = new();
-                //dynamicform = new();
-                //Displaydynamic = false;
                 
-                dts = new();
-                datareport = await httpservices.GetDataTable("LogDataTable/" + formdatas.logbook + "/" + formdatas.Date?.ToString("yyyy-MM-dd HH:mm:ss"));
-                if (datareport != null)
-                {
-                    var datare = from rows in datareport.AsEnumerable()
-                                 group rows by new { Shift = rows["Shift_prefix"] }
-                     into grp
-                                 select grp;
-
-                    foreach (var item in datare)
-                    {
-                        dts.Add(item.CopyToDataTable());
-                    }
-                }
+                dynamicform = new();
+                logdtList = new();
+                 Submit();
+                //Displaydynamic = false;
                 StateHasChanged();
             }
         }
@@ -856,6 +836,7 @@
     void handleitem(DataRow val)
     {
         Displaydynamic = true;
+      
         DataTable dt = datareport.AsEnumerable().Where(a => a.Field<string>("header_Id") == val[1]).CopyToDataTable();
 
         foreach(DataRow dr in dt.Rows)
