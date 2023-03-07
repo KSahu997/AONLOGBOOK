@@ -30,7 +30,7 @@
                     </Fields>
                     <Fields>
                         <Field Flex="Flex.JustifyContent.Center">
-                            <Button Type="ButtonType.Submit" Color="Color.Primary" class="m-2">@(isnew==true?"Submit":"Update")</Button>
+                            <Button Type="ButtonType.Submit" Color="Color.Primary" class="m-2" Disabled="@(busy)">@(isnew==true?"Submit":"Update")</Button>
                             <Button Type="ButtonType.Reset" Color="Color.Info" class="m-2">Reset</Button>
                             <Button Type="ButtonType.Button" Color="Color.Warning" class="m-2" Clicked="@HandleCanceled">Cancel</Button>
                         </Field>
@@ -182,6 +182,7 @@ else
     string deptId;
     string cmpId;
     bool isnew = true;
+    bool busy = false; 
     [Parameter]
     public EventCallback<bool> mstdeptchanged { get; set; }
     [Parameter]
@@ -200,6 +201,7 @@ else
 
             try
             {
+                busy = true;
                 subdept.Created_By = "Admin";
                 subdept.Plant_Id = deptlist.First(a => (a.Plant_Id == plantId)).Plant_Id;
                 subdept.Dept_Id = deptId;
@@ -208,7 +210,7 @@ else
                 if (data != null)
                 {
                     await App.Current.MainPage.DisplayAlert("Message", data, "Ok");
-
+                    busy = false;
                 }
                 else
                 {
@@ -230,6 +232,7 @@ else
         {
             try
             {
+                busy = true;
                 subdept.Modified_By = "Admin";
                 subdept.Plant_Id = deptlist.First(a => (a.Plant_Id == plantId)).Plant_Id;
                 subdept.Dept_Id = deptlist.First(a => (a.Plant_Id == plantId)).Id.ToString();
@@ -239,7 +242,7 @@ else
                 if (data != null)
                 {
                     await App.Current.MainPage.DisplayAlert("Message", data, "Ok");
-
+                    busy = false;
                 }
                 else
                 {
@@ -293,7 +296,6 @@ else
         isDialogOpen = true;
         selectsdept = item;
         subdept = selectsdept;
-
         isnew = false;
     }
     async void handalDelSubDept(TblSubDeptMaster item)

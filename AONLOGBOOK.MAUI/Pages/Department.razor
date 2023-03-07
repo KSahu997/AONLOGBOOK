@@ -39,7 +39,7 @@
                     </Validations>
                     <div class="row m-2">
                         <div class="col-md-12 d-flex mb-3 justify-content-center">
-                            <Button Type=ButtonType.Submit class="m-2" Color="Color.Primary">@(isnew==true?"Submit":"Update")</Button>
+                            <Button Type=ButtonType.Submit class="m-2" Color="Color.Primary" Disabled="@(busy)">@(isnew==true?"Submit":"Update")</Button>
                             <Button Type="ButtonType.Reset" class="m-2" Color="Color.Info">Reset</Button>
                             <Button Type="ButtonType.Button" class="m-2" Color="Color.Warning" onclick="@HandleCancel">Cancel</Button>
                         </div>
@@ -182,6 +182,7 @@ else
     IEnumerable<TblDeptMaster> DeptList;
     bool DispsData;
     bool? isDialogOpen;
+    bool busy = false;
     public string plantId;
     TblDeptMaster? selectdept;
     IEnumerable<TblCompanyMaster> companies;
@@ -198,6 +199,7 @@ else
             {
                 try
                 {
+                    busy = true;
                     Dept.Company_Id = PlantList.First(a => (a.ID.ToString() == plantId)).Company_Id;
                     Dept.Created_By = "Admin";
                     var data = await httpservice.Post<string>("DeptMasters", Dept);
@@ -205,6 +207,7 @@ else
                     {
                         await App.Current.MainPage.DisplayAlert("Message", "Data Successfully Inserted", "ok");
                         Dept.Dept_Name = string.Empty;
+                        busy = false;
                     }
                     else
                     {
@@ -228,6 +231,7 @@ else
         {
             try
             {
+                busy = true;
                 Dept.Company_Id = PlantList.First(a => (a.ID.ToString() == plantId)).Company_Id;
                 Dept.Modified_By = Dept.Created_By;
                 var editdata = await httpservice.Post<string>("DeptMasters/UPD", Dept);
@@ -235,6 +239,7 @@ else
                 {
                     await App.Current.MainPage.DisplayAlert("Message", "Data Successfully Updated", "ok");
                     Dept = new();
+                    busy = false;
                 }
                 else
                 {

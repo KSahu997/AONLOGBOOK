@@ -68,7 +68,7 @@
                     </div>
                     <div class="row m-2">
                         <div class="col-md-12 d-flex mb-3 justify-content-center">
-                            <Button Type=ButtonType.Submit Color="Color.Primary" class="m-2">@(isnew==true?"Submit":"Update")</Button>
+                            <Button Type=ButtonType.Submit Color="Color.Primary" class="m-2" Disabled="@(busy)">@(isnew==true?"Submit":"Update")</Button>
                             <Button Type=ButtonType.Reset Color="Color.Info" class="m-2">Reset</Button>
                             <Button Type=ButtonType.Button Color="Color.Warning" class="m-2" onclick="@HandleCancel">Cancel</Button>
 
@@ -226,6 +226,7 @@ else
     bool? DispDatas;
     bool? isDialogOpen;
     bool? isnew = true;
+    bool busy = false;
     TblPlantMaster? selectedplant;
     protected override async Task OnInitializedAsync()
     {
@@ -242,6 +243,7 @@ else
             {
                 if (tblPlant.Company_Id != null && tblPlant.Plant_Name != "")
                 {
+                    busy = true;
                     tblPlant.Company_Id = companies.First(a => (a.ID.ToString() == cmpId)).ID.ToString();        
                     tblPlant.Created_By = "Admin";
                     var result = await httpservice.Post<string>("PlantMasters", tblPlant);
@@ -249,7 +251,7 @@ else
                     if (result != null)
                     {
                         await App.Current.MainPage.DisplayAlert("Message", result, "Ok");
-
+                        busy = false;
                     }
                     else
                     {
@@ -277,6 +279,7 @@ else
             {
                 if (tblPlant.Company_Id != null && tblPlant.Plant_Name != "")
                 {
+                    busy = true;
                     tblPlant.Company_Id = companies.First(a => (a.ID.ToString() == cmpId)).ID.ToString();
                     tblPlant.Modified_By = "Admin";
                     tblPlant.Status_F = 0;
@@ -285,7 +288,7 @@ else
                     if (result != null)
                     {
                         await App.Current.MainPage.DisplayAlert("Message", result, "Ok");
-
+                        busy = false;
                     }
                     else
                     {

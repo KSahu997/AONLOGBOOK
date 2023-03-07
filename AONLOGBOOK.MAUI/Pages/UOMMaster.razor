@@ -20,7 +20,7 @@
                         <TextEdit @bind-Text="uom.Unit"></TextEdit>
                     </Field>
                      <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
-                      <Button Type="ButtonType.Submit" Color="Color.Info" Style="margin-top:10px;" Margin="Margin.Is4">Submit</Button>
+                      <Button Type="ButtonType.Submit" Color="Color.Info" Style="margin-top:10px;" Margin="Margin.Is4" Disabled="@(busy)">Submit</Button>
                     </Field>
                     
                 </Fields>
@@ -65,6 +65,7 @@
 @code {
     TblUommaster uom = new();
     IEnumerable<TblUommaster> uommst;
+    bool busy = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -72,17 +73,21 @@
         {
             uommst = await httpservices.Get<List<TblUommaster>>("UOMMasters/ACT");
             StateHasChanged();
-        }catch(Exception ex){}
-   
+        }catch(Exception ex)
+        {
+            
+        }
+
     }
 
     async void submit()
     {
+        busy = true;
         var savedata = await httpservices.Post<string>("UOMMasters", uom);
         if (savedata != null)
         {
             await App.Current.MainPage.DisplayAlert("Message", savedata, "ok");
-
+            busy = false;
         }
         else
         {

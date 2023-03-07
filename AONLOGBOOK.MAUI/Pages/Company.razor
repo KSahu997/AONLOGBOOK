@@ -102,7 +102,7 @@
                         </Fields>
                         <Fields>
                             <Field Flex="Flex.JustifyContent.Center">
-                                <Button Type="ButtonType.Submit" Color="Color.Primary" class="m-2">@(isnew==true?"Submit":"Update")</Button>
+                                <Button Type="ButtonType.Submit" Color="Color.Primary" class="m-2" Disabled=@(busy)>@(isnew==true?"Submit":"Update")</Button>
                                 <Button Type="ButtonType.Reset" Color="Color.Info" class="m-2">Reset</Button>
                                 <Button Type="ButtonType.Button" Color="Color.Warning" class="m-2" Clicked="@HandleCanceled">Cancel</Button>
                             </Field>
@@ -239,11 +239,13 @@ else
     TblPlantMaster selectedplant;
     bool? DispData;
     bool? isnew = true;
+    bool busy = false;
     bool? isDialogOpen;
     async void submit()
     {
         if (isnew == true)
         {
+            busy = true;
             try
             {
                 tblCompanyMaster.Created_By = "Admin";
@@ -251,7 +253,9 @@ else
 
                 if (result != null)
                 {
+
                     await App.Current.MainPage.DisplayAlert("Message", result, "Ok");
+                    busy = false;
                 }
                 else
                 {
@@ -265,13 +269,13 @@ else
             }
             catch (Exception ex)
             {
-                if (tblCompanyMaster != null && tblCompanyMaster.Company_Name == tblCompanyMaster.Company_Name || tblCompanyMaster.Company_Name == "")
-                {
-                    await App.Current.MainPage.DisplayAlert("Message", "Invalid Company name", "Ok");
-                }
-                else
+                //if (tblCompanyMaster != null && tblCompanyMaster.Company_Name == tblCompanyMaster.Company_Name || tblCompanyMaster.Company_Name == "")
+                //{
+                //    await App.Current.MainPage.DisplayAlert("Message", "Invalid Company name", "Ok");
+                //}
+                //else
 
-                    await App.Current.MainPage.DisplayAlert("Message", ex.Message, "Ok");
+                await App.Current.MainPage.DisplayAlert("Message", ex.Message, "Ok");
             }
             HandleCanceled();
             StateHasChanged();
@@ -280,11 +284,13 @@ else
         }
         else
         {
+            busy = true;
             tblCompanyMaster.Status_F = 0;
             var editdata = await httpservice.Post<string>("companymasters/UPD", tblCompanyMaster);
             if (editdata != null)
             {
                 await App.Current.MainPage.DisplayAlert("message", editdata, "ok");
+                busy = false;
             }
             else
             {
