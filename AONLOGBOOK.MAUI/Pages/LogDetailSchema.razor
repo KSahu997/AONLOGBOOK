@@ -161,6 +161,9 @@
                         <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                             <Check TValue="bool" Checked="@ismandatory" CheckedChanged="@Oncheckedchange">IsMandatory</Check>
                         </Field>
+                        <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+                            <Check TValue="bool" Checked="@isother" CheckedChanged="@OnOthercheckedchange">IsOther</Check>
+                        </Field>
                         }
                   
                                
@@ -251,6 +254,7 @@
     public string Dept{ get; set; }
     public string SDept{ get; set; }
     bool ismandatory;
+    bool isother;
     bool? Displayform { get; set; } = false;
     bool? dislmin { get; set; } = true;
     bool? txt { get; set; } = true;
@@ -305,6 +309,7 @@
                 logmddt.CreatedBy = "Admin";
                 logmddt.LogbookId = datas.logbook;
                 logmddt.isMandatory = Convert.ToInt16(ismandatory);
+                logmddt.isOther = Convert.ToInt16(isother);
                 var savedata = await httpservice.Post<string>("LogbookDetailSchemas", logmddt);
                 if (savedata != null)
                 {
@@ -334,6 +339,7 @@
                 logmddt.UpdatedBy = "Admin";
                 logmddt.LogbookId = datas.logbook;
                 logmddt.isMandatory = Convert.ToInt16(ismandatory);
+                logmddt.isOther = Convert.ToInt16(isother);
                 logmddt.Del_Flag = 0;
                 var savedata = await httpservice.Post<string>("LogbookDetailSchemas/UPD", logmddt);
                 if (savedata != null)
@@ -450,6 +456,10 @@
     {
         ismandatory = value;
     }
+    void OnOthercheckedchange(bool value)
+    {
+        isother = value;
+    }
     async void HandleEditLogDetail(TblLogbookDetailSchemasMD item)
     {
         logmddt = item;
@@ -498,6 +508,6 @@
         lookitem = false;
         logdetail = await httpservice.Get<List<TblLogbookDetailSchemasMD>>("LogbookDetailSchemas/ACT/" + logmddt.LookupId);
         StateHasChanged();
-         lookitem = true;
+         
     }
 }

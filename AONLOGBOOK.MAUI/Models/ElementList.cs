@@ -28,9 +28,10 @@ namespace AONLOGBOOK.MAUI.Models
         public bool? BoolValue { get; set; }
         public Dictionary<string, string> options { get; set; }
         public List<LookupData> lookuplist { get; set; } = new List<LookupData>();
-        public string? LookupId { get; set; }
+        public string? LookupValue { get; set; }
         public int? Sequence { get; set; }
         public int? IsMandatory { get; set; }
+        public int? isOther { get; set; }
         public string? Shift_prefix { get; set; }
     }
 }

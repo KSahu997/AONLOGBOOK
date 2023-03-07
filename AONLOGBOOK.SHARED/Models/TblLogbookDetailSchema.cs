@@ -52,6 +52,7 @@ namespace AONLOGBOOK.SHARED.Models
         public int? isDashboardComponent { get; set; }
 
         public int? isMandatory { get; set; }
+        public int? isOther { get; set; }
 
         public string? Text_Schema { get; set; }
 

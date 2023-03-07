@@ -93,6 +93,7 @@ namespace AONLOGBOOK.API.Controllers
             new SqlParameter {ParameterName="@TextSchema",Direction=ParameterDirection.Input,Value=tblLogbookDetailSchema.Text_Schema},
             new SqlParameter {ParameterName="@ValueSchema",Direction=ParameterDirection.Input,Value=tblLogbookDetailSchema.Value_Schema},
             new SqlParameter {ParameterName="@ismandatory",Direction=ParameterDirection.Input,Value=tblLogbookDetailSchema.isMandatory},
+            new SqlParameter {ParameterName="@isother",Direction=ParameterDirection.Input,Value=tblLogbookDetailSchema.isOther},
             };
 
             _sql.postData("uspLogbookDetailSchema", @params);
@@ -118,6 +119,7 @@ namespace AONLOGBOOK.API.Controllers
                 new SqlParameter {ParameterName="@cal_param",Direction=ParameterDirection.Input,Value=tblLogbookDetailSchema.CalulationParams},
                 new SqlParameter {ParameterName="@operator",Direction=ParameterDirection.Input,Value=tblLogbookDetailSchema.Operator},
                  new SqlParameter {ParameterName="@ismandatory",Direction=ParameterDirection.Input,Value=tblLogbookDetailSchema.isMandatory},
+                  new SqlParameter {ParameterName="@isother",Direction=ParameterDirection.Input,Value=tblLogbookDetailSchema.isOther},
             };
             _sql.postData("uspLogbookDetailSchema", @params);
             return Ok("Schema Updated");
