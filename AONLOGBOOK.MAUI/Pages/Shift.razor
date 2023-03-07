@@ -19,7 +19,7 @@
                 <NumericPicker @bind-Value="@shift.Shifthour" />
             </Field>
             <Field>
-                <Button Type="ButtonType.Submit" style="background:#659abb;color:#000;">@(isnew ? "Add Shift":"Update")</Button>
+                <Button Type="ButtonType.Submit" style="background:#659abb;color:#000;" Disabled="@(busy)">@(isnew ? "Add Shift":"Update")</Button>
                 <Button Type="ButtonType.Reset" Background="Background.Secondary" TextColor="TextColor.Light">Reset</Button>
             </Field>
         </Fields>
@@ -146,6 +146,7 @@
     TimeOnly endshift;
     bool DispShift = false;
     int Delflag = 0;
+    bool busy = false;
     IEnumerable<TblCompanyMaster> companies;
     protected override async Task OnInitializedAsync()
     {
@@ -162,13 +163,14 @@
         {
             try
             {
+                busy = true;
                 shift.Created_by = "Admin";
                 shift.CompanyId = companies.First().ID.ToString();
                 var savedata = await httpservice.Post<string>("ShiftMasters", shift);
                 if (savedata != null)
                 {
                     await App.Current.MainPage.DisplayAlert("Message", savedata, "ok");
-
+                    busy = false;
                 }
                 else
                 {
@@ -190,13 +192,15 @@
 
             try
             {
-                 shift.Modified_by = "Admin";
+                busy = true;
+                shift.Modified_by = "Admin";
                 shift.CompanyId = companies.First().ID.ToString();
                 var editdata = await httpservice.Post<string>("ShiftMasters/UPD", shift);
                 if (editdata != null)
                 {
                     await App.Current.MainPage.DisplayAlert("Message", editdata, "ok");
                     isnew = true;
+                    busy = false;
                     StateHasChanged();
                 }
                 else
@@ -216,13 +220,6 @@
             shift.Shift_start = null;
             StateHasChanged();
         }
-
-
-
-
-
-
-
 
     }
     async void EditShift(TblShiftMaster item)

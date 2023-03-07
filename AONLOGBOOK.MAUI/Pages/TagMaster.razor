@@ -46,7 +46,7 @@
             </div>*@
            <Fields>
                <Field ColumnSize="ColumnSize.Is12.OnDesktop.Is12.OnMobile">
-                    <Button Type="ButtonType.Submit" Color="Color.Info">@(isedit==true?"Submit":"Update")</Button>
+                    <Button Type="ButtonType.Submit" Color="Color.Info" Disabled="@(busy)">@(isedit==true?"Submit":"Update")</Button>
                </Field>
            </Fields>
       
@@ -103,6 +103,7 @@
     TblTagMaster tagdata = new();
     TblTagMaster? selectTag;
     bool? isedit = true;
+    bool busy = false;
     protected override async Task  OnInitializedAsync()
     {
         uommst = await httpservices.Get<List<TblUommaster>>("UOMMasters/ACT");
@@ -114,12 +115,13 @@
     {
         if (isedit == true)
         {
+            busy = true;
             tagdata.Created_By = "Admin";
             var savedata = await httpservices.Post<string>("TagMasters", tagdata);
             if (savedata != null)
             {
                 await App.Current.MainPage.DisplayAlert("Message", savedata, "ok");
-
+                busy = false;
             }
             else
             {
@@ -131,13 +133,13 @@
         }
         else
         {
-
+            busy = true;
             tagdata.Created_By = "Admin";
             var editdata = await httpservices.Post<string>("TagMasters/UPD", tagdata);
             if (editdata != null)
             {
                 await App.Current.MainPage.DisplayAlert("Message", editdata, "ok");
-
+                busy = false;
             }
             else
             {
