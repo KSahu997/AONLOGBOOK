@@ -212,25 +212,50 @@
                                     }
                                 }else if (ele.ElementType == "Lookup")
                                 {
-                                    if(ele.LookupId!=null)
+                                    if(ele.LookupValue!=null)
                                     {
                                       <FieldLabel Style="font-weight:600;">@ele.Label</FieldLabel>
                                     @*@if (ele.IsMandatory == 1)
                                     {*@
-                                        <Validations @ref="validations" Mode="ValidationMode.Manual">
+                                        @if(ele.isOther == 1)
+                                        {
+                                            <Validations @ref="validations" Mode="ValidationMode.Manual">
                                         <Validation Validator="ValidationRule.None">
                                          
-                                              <Select @bind-SelectedValue="ele.LookupId">
+                                              <Select SelectedValue="@ele.LookupValue" SelectedValueChanged="@((string arg)=>{handlevalue(arg);})"
+                                                  SelectedValueExpression="@(()=>ele.LookupValue)">
                                                  <SelectItem>--select--</SelectItem>
                                                     @foreach(LookupData item in ele.lookuplist)
-                                                    {
+                                                    { 
                                                     <SelectItem Value="@item.value">@item.text</SelectItem>
                                                     }
+                                                    <SelectItem Value="@("Other")">Other</SelectItem>
                                                 </Select>
-                                     
+                                                @if(iscorrect == false){
+                                                 <TextEdit @bind-Text="@ele.StringValue" Style="margin:auto;"></TextEdit>
+                                                        }
+                                                    </Validation>
+                                                </Validations>
+                                        }else{<Validations @ref="validations" Mode="ValidationMode.Manual">
+                                        <Validation Validator="ValidationRule.None">
+                                         
+                                              <Select @bind-SelectedValue="ele.LookupValue">
+                                                 <SelectItem>--select--</SelectItem>
+                                                    @foreach(LookupData item in ele.lookuplist)
+                                                    { 
+                                                    <SelectItem Value="@item.value">@item.text</SelectItem>
+                                                    }
+                                                   
+                                                </Select>
+                                                    </Validation>
+                                                </Validations>
 
-                                        </Validation>
-                                        </Validations>
+                                        }
+                                        
+                                                    
+                                                   
+
+                                        
                                    @* }*@
                                     }
                                    
@@ -507,6 +532,8 @@
     bool collapse1Visible = true;
     bool Displaydynamic = false;
     bool inactive = false;
+    bool iscorrect = true;
+    ElementList ele;
     List<DataTable> dts = new List<DataTable>();
     LogData logdata = new();
     protected override async Task OnInitializedAsync()
@@ -562,8 +589,8 @@
             {
                 logbookdetail.ToList().ForEach(async a =>
                 {
-                    ElementList ele = new ElementList { Label = a.Display_Name, Sequence = a.Seq, ElementType = a.DataType, IsMandatory = a.isMandatory, LookupId= a.LookupId};
-                    if (a.LookupId != null)
+                    ElementList ele = new ElementList { Label = a.Display_Name, Sequence = a.Seq, ElementType = a.DataType, IsMandatory = a.isMandatory,isOther= a.isOther, LookupValue= a.Value_Schema};
+                    if (a.Value_Schema != null)
                     {
                         ele.lookuplist = await httpservices.Get<List<LookupData>>("LookupData/" + a.Text_Schema + "/" + a.Value_Schema);
                         //if(ele.Label=="Lookup")
@@ -650,10 +677,7 @@
                     else if (a.ElementType == "Lookup")
                     {
                         logdata.ParamName = a.Label;
-                        a.lookuplist.ForEach(b =>
-                            logdata.Val = b.text
-                        );
-
+                        logdata.Val = a.LookupValue;
                     }
                     logdata.CompanyId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Company_Id;
                     logdata.PlantId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Plant_Id;
@@ -675,11 +699,11 @@
                 logdtList.TblLogHead.date = Convert.ToDateTime(formdatas.Date?.ToString("yyyy-MM-ddTHH:mm:ss"));
                 logdtList.TblLogHead.CreatedBy = "Admin";
                 logdtList.TblLogHead.StatusF = 0;
-
+                inactive = true;
                 var result = await httpservices.Post<string>("LogDataTable", logdtList);
                 if (result != null)
                 {
-                    inactive = true;
+                    
                     await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");
                     inactive = false;
                     StateHasChanged();
@@ -688,10 +712,10 @@
                 {
                     await App.Current.MainPage.DisplayAlert("Error", "Error", "ok");
                 }
-               
+
                 dynamicform = new();
                 logdtList = new();
-               Submit();
+                Submit();
                 StateHasChanged();
             }
         }
@@ -767,9 +791,12 @@
                     else if (a.ElementType == "Lookup")
                     {
                         logdata.ParamName = a.Label;
-                        a.lookuplist.ForEach(b =>
-                            logdata.Val = b.text
-                        );
+                        if(a.LookupValue == "Other")
+                        {
+                            logdata.Val = a.StringValue.ToString();
+                        }
+                        else
+                            logdata.Val = a.LookupValue;
 
                     }
                     logdata.CompanyId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Company_Id;
@@ -805,10 +832,10 @@
                 {
                     await App.Current.MainPage.DisplayAlert("Error", "Error", "ok");
                 }
-                
+
                 dynamicform = new();
                 logdtList = new();
-                 Submit();
+                Submit();
                 //Displaydynamic = false;
                 StateHasChanged();
             }
@@ -836,7 +863,7 @@
     void handleitem(DataRow val)
     {
         Displaydynamic = true;
-      
+
         DataTable dt = datareport.AsEnumerable().Where(a => a.Field<string>("header_Id") == val[1]).CopyToDataTable();
 
         foreach(DataRow dr in dt.Rows)
@@ -909,6 +936,24 @@
         }
         StateHasChanged();
     }
-   
-    
+    void handlevalue(string val)
+    {
+        if(val == "Other")
+        {
+            dynamicform.ForEach(a =>{
+                a.LookupValue = val;
+            });
+            iscorrect = false;
+        }
+        else
+        {
+           dynamicform.ForEach(a =>{
+                a.LookupValue = val;
+            });
+            iscorrect = true; 
+        } 
+
+       
+    }
+
 }
