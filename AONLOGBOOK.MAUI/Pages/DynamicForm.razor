@@ -354,8 +354,8 @@
 
                         }
                             <Field Flex="Flex.JustifyContent.End.OnDesktop.JustifyContent.Center.OnMobile">
-                                <Button Clicked="@submit" Style="justify-content:center; margin:15px;background:#659abb;color:#000;" Disabled="@(inactive)">Save</Button>
-                                <Button Clicked="@savedraft" Style="justify-content:center; margin:15px;background:#659abb;color:#000;" Disabled="@(inactive)">Save Draft</Button>
+                                <Button Clicked="@submit" Style="justify-content:center; margin:15px;background:#659abb;color:#000;" Disabled="@(inactive== false)">Save</Button>
+                                <Button Clicked="@savedraft" Style="justify-content:center; margin:15px;background:#659abb;color:#000;" Disabled="@(inactive== false)">Save Draft</Button>
                             </Field>
 
                         </Field>
@@ -531,7 +531,7 @@
     // TimeSpan? CurrentTime;
     bool collapse1Visible = true;
     bool Displaydynamic = false;
-    bool inactive = false;
+    bool inactive = true;
     bool iscorrect = true;
     ElementList ele;
     List<DataTable> dts = new List<DataTable>();
@@ -699,13 +699,12 @@
                 logdtList.TblLogHead.date = Convert.ToDateTime(formdatas.Date?.ToString("yyyy-MM-ddTHH:mm:ss"));
                 logdtList.TblLogHead.CreatedBy = "Admin";
                 logdtList.TblLogHead.StatusF = 0;
-                inactive = true;
+                inactive = false;
                 var result = await httpservices.Post<string>("LogDataTable", logdtList);
                 if (result != null)
                 {
                     
                     await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");
-                    inactive = false;
                     StateHasChanged();
                 }
                 else
@@ -818,13 +817,13 @@
                 logdtList.TblLogHead.date = Convert.ToDateTime(formdatas.Date?.ToString("yyyy-MM-ddTHH:mm:ss"));
                 logdtList.TblLogHead.CreatedBy = "Admin";
                 logdtList.TblLogHead.StatusF = 3;
-
+                 inactive = false;
                 var result = await httpservices.Post<string>("LogDataTable", logdtList);
                 if (result != null)
                 {
-                    inactive = true;
+                   
                     await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");
-                    inactive = false;
+                   
                     StateHasChanged();
 
                 }
