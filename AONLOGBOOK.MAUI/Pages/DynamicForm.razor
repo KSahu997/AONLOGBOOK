@@ -636,7 +636,7 @@
             {
 
                 var a = dynamicform;
-
+                inactive = true;
                 logdatatable = new();
                 a.ForEach(a =>
                 {
@@ -701,7 +701,6 @@
                 logdtList.TblLogHead.CreatedBy = "Admin";
                 logdtList.TblLogHead.StatusF = 0;
                 inactive = false;
-                iscorrect = true;
                 var result = await httpservices.Post<string>("LogDataTable", logdtList);
                 if (result != null)
                 {
@@ -752,7 +751,7 @@
             if (await validations.ValidateAll())
             {
                 var a = dynamicform;
-
+                 inactive = true;
                 logdatatable = new();
                 a.ForEach(a =>
                 {
@@ -825,7 +824,7 @@
                 var result = await httpservices.Post<string>("LogDataTable", logdtList);
                 if (result != null)
                 {
-                 
+                    inactive = true;
                     await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");
                    
                     StateHasChanged();
@@ -929,6 +928,11 @@
                                 a.TimeValue = d;
 
                             }
+                        }
+                        else if(a.ElementType=="Lookup")
+                        {
+                            a.LookupValue = (dr[dc.ColumnName]).ToString();
+                            a.StringValue = (dr[dc.ColumnName]).ToString();
                         }
 
 
