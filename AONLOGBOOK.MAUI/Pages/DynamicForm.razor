@@ -636,7 +636,7 @@
             {
 
                 var a = dynamicform;
-                 inactive = true;
+                inactive = true;
                 logdatatable = new();
                 a.ForEach(a =>
                 {
@@ -700,11 +700,11 @@
                 logdtList.TblLogHead.date = Convert.ToDateTime(formdatas.Date?.ToString("yyyy-MM-ddTHH:mm:ss"));
                 logdtList.TblLogHead.CreatedBy = "Admin";
                 logdtList.TblLogHead.StatusF = 0;
-               
+
                 var result = await httpservices.Post<string>("LogDataTable", logdtList);
                 if (result != null)
                 {
-                   
+
                     await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");
                     inactive = false;
                     StateHasChanged();
@@ -752,7 +752,7 @@
             if (await validations.ValidateAll())
             {
                 var a = dynamicform;
-                 inactive = true;
+                inactive = true;
                 logdatatable = new();
                 a.ForEach(a =>
                 {
@@ -820,11 +820,11 @@
                 logdtList.TblLogHead.date = Convert.ToDateTime(formdatas.Date?.ToString("yyyy-MM-ddTHH:mm:ss"));
                 logdtList.TblLogHead.CreatedBy = "Admin";
                 logdtList.TblLogHead.StatusF = 3;
-               
+
                 var result = await httpservices.Post<string>("LogDataTable", logdtList);
                 if (result != null)
                 {
-                    
+
                     await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");
                     inactive = false;
                     StateHasChanged();
@@ -928,6 +928,11 @@
                                 a.TimeValue = d;
 
                             }
+                        }
+                        else if(a.ElementType=="Lookup")
+                        {
+                            a.LookupValue = (dr[dc.ColumnName]).ToString();
+                            a.StringValue = (dr[dc.ColumnName]).ToString();
                         }
 
 
