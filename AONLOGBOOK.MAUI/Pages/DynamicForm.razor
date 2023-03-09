@@ -598,7 +598,7 @@
             dynamicform = new List<ElementList>();
             dts = new();
             logbookdetail = await httpservices.Get<List<TblLogbookDetailSchemasMD>>("LogbookDetailSchemas/ACT/" + formdatas.logbook);
-
+           
             //formdatas.Date = Convert.ToDateTime(time.ToString().Replace("00-00-0000", CurrentDate?.ToString("MM-dd-yyyy")));
 
             if (logbookdetail.Count() == 0)
@@ -720,7 +720,7 @@
                 logdtList.TblLogHead.date = Convert.ToDateTime(formdatas.Date?.ToString("yyyy-MM-ddTHH:mm:ss"));
                 logdtList.TblLogHead.CreatedBy = "Admin";
                 logdtList.TblLogHead.StatusF = 0;
-
+                inactive = false;
                 var result = await httpservices.Post<string>("LogDataTable", logdtList);
                 if (result != null)
                 {
@@ -772,7 +772,7 @@
             if (await validations.ValidateAll())
             {
                 var a = dynamicform;
-                inactive = true;
+                 inactive = true;
                 logdatatable = new();
                 a.ForEach(a =>
                 {
@@ -840,11 +840,12 @@
                 logdtList.TblLogHead.date = Convert.ToDateTime(formdatas.Date?.ToString("yyyy-MM-ddTHH:mm:ss"));
                 logdtList.TblLogHead.CreatedBy = "Admin";
                 logdtList.TblLogHead.StatusF = 3;
-
+                inactive = false;
+                 iscorrect = true; 
                 var result = await httpservices.Post<string>("LogDataTable", logdtList);
                 if (result != null)
                 {
-
+                    inactive = true;
                     await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");
                    
                     StateHasChanged();

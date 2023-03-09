@@ -74,11 +74,12 @@
                     {
                         <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                             <FieldLabel>Text Field</FieldLabel>
-                            <Select @bind-SelectedValue="@logmddt.Text_Schema">
+                            <Select SelectedValue="@logmddt.Text_Schema" SelectedValueChanged="@((string arg)=>{handletext(arg);})"
+                                SelectedValueExpression="@(()=>logmddt.Text_Schema)">
                                 <SelectItem>--Select--</SelectItem>
-                                @if (logdetail != null)
+                                @if (logdetailss != null)
                                 {
-                                    @foreach (TblLogbookDetailSchemasMD item in logdetail)
+                                    @foreach (TblLogbookDetailSchemaMOD item in logdetailss)
                                     {
                                         <SelectItem Value="@item.Id">@item.Display_Name</SelectItem>
                                     }
@@ -88,11 +89,12 @@
                         </Field>
                         <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
                             <FieldLabel>Value Field</FieldLabel>
-                            <Select @bind-SelectedValue="@logmddt.Value_Schema">
+                            <Select SelectedValue="@logmddt.Value_Schema" SelectedValueChanged="@((string arg)=>{handlevalue(arg);})"
+                                SelectedValueExpression="@(()=>logmddt.Value_Schema)">
                                 <SelectItem>--Select--</SelectItem>
-                                @if (logdetail != null)
+                                @if (logdetailss != null)
                                 {
-                                    @foreach (TblLogbookDetailSchemasMD item in logdetail)
+                                    @foreach (TblLogbookDetailSchemaMOD item in logdetailss)
                                     {
                                         <SelectItem Value="@item.Id">@item.Display_Name</SelectItem>
                                     }
@@ -169,7 +171,7 @@
                        
                         <Field Flex="Flex.JustifyContent.End.OnDesktop.JustifyContent.Center.OnMobile">
                             @ChildContent
-                            <Button Clicked="Savedetails" Color="Color.Info" Disabled="@(busy == false)">@(isnew==true?"Submit":"Update")</Button>
+                            <Button Clicked="Savedetails" Color="Color.Info" Disabled="busy">@(isnew==true?"Submit":"Update")</Button>
                        </Field>
 
 
@@ -223,11 +225,11 @@
                                   <td>@item.Source</td>
                                   <td>@item.L_Min</td>
                                   <td>@item.L_Max</td>
-                                  <td> <Dropdown Disabled="@(item.DataType == "Lookup")">
+                                  <td> <Dropdown>
                                             <Button Color="Color.Info">Action</Button>
                                             <DropdownToggle Color="Color.Primary" Split />
                                             <DropdownMenu>
-                                                <DropdownItem Clicked="@(()=>HandleEditLogDetail(item))">Edit</DropdownItem>
+                                        <DropdownItem Clicked="@(()=>HandleEditLogDetail(item))" Disabled="@(item.DataType == "Lookup")">Edit</DropdownItem>
                                                 <DropdownDivider />
                                                 <DropdownItem Clicked="@(()=>handalDelLogDetail(item))">Delete</DropdownItem>
 
@@ -262,6 +264,8 @@
     TblLogbookDetailSchema logdt = new();
     TblLogbookDetailSchemasMD logmddt = new();
     IEnumerable<TblLogbookDetailSchemasMD> logdetail;
+    IEnumerable<TblLogbookDetailSchemaMOD> logdetailss;
+    IEnumerable<TblLogbookDetailSchema> logdetails;
     IEnumerable<TblTagMaster> tagmst;
     IEnumerable<TblUommaster> uommst;
     IEnumerable<TblLookup> lookuplist;
@@ -270,7 +274,7 @@
     TblUommaster uom;
     bool isnew = true;
     bool? cal { get; set; } = true;
-    bool? busy = true;
+    bool busy = false;
     [Parameter]
     public RenderFragment ChildContent { get; set; }
 
@@ -286,7 +290,7 @@
         tagmst = await httpservice.Get<List<TblTagMaster>>("TagMasters/ACT");
         uommst = await httpservice.Get<List<TblUommaster>>("Uommasters/ACT");
         logdetail = await httpservice.Get<List<TblLogbookDetailSchemasMD>>("LogbookDetailSchemas/ACT/" + datas.logbook);
-
+        StateHasChanged();
 
     }
     //async void handleUOM(object value)
@@ -304,6 +308,7 @@
         {
             try
             {
+                busy = true;
                 logmddt.CreatedBy = "Admin";
                 logmddt.LogbookId = datas.logbook;
                 logmddt.isMandatory = Convert.ToInt16(ismandatory);
@@ -312,7 +317,7 @@
                 if (savedata != null)
                 {
                     await App.Current.MainPage.DisplayAlert("Message", savedata, "ok");
-
+                    busy = false;
                 }
                 else
                 {
@@ -326,14 +331,14 @@
             }
             logdetail = await httpservice.Get<List<TblLogbookDetailSchemasMD>>("LogbookDetailSchemas/ACT/" + datas.logbook);
             logmddt = new();
-            busy = false;
+
             StateHasChanged();
         }
         else
         {
             try
             {
-
+                busy = true;
                 logmddt.UpdatedBy = "Admin";
                 logmddt.LogbookId = datas.logbook;
                 logmddt.isMandatory = Convert.ToInt16(ismandatory);
@@ -343,7 +348,7 @@
                 if (savedata != null)
                 {
                     await App.Current.MainPage.DisplayAlert("Message", savedata, "ok");
-
+                     busy =false;
                 }
                 else
                 {
@@ -387,6 +392,7 @@
         if (result != null)
         {
             await App.Current.MainPage.DisplayAlert("Message", "Schema Deleted Successfully", "Ok");
+            
         }
         else
         {
@@ -396,6 +402,7 @@
         }
 
         StateHasChanged();
+         logdetail = await httpservice.Get<List<TblLogbookDetailSchemasMD>>("LogbookDetailSchemas/ACT/" + datas.logbook);
         await OnInitializedAsync();
         isnew = true;
 
@@ -430,10 +437,16 @@
             //logbooklist= (await httpservice.Get<List<TblLogbookMaster>>("LogbookMasters/ACT")).Where(a=>(a.Company_Id == log.Company_Id && a.PlantCode == log.PlantCode));
             logbooklist = (await httpservice.Get<List<TblLogbookMaster>>("LogbookMasters/ACT")).Where(a => (a.IsLookup == 1));
             StateHasChanged();
+
         }else{
             lookup = true;
         }
-
+        lookitem = true;
+        logmddt.LookupId = null;
+        logmddt.L_Max = null;
+        logmddt.L_Min = null;
+        logmddt.Text_Schema = null;
+        logmddt.Value_Schema = null;
         StateHasChanged();
     }
     void handlesrc(string val)
@@ -474,17 +487,20 @@
         if (logmddt.DataType == "Text")
         {
             txt = false;
+            lookitem = true;
             StateHasChanged();
         }
         else
         {
             txt = true;
+
         }
         if (logmddt.DataType == "Lookup")
         {
             lookup = false;
             logbooklist = (await httpservice.Get<List<TblLogbookMaster>>("LogbookMasters/ACT")).Where(a => (a.IsLookup == 1));
             StateHasChanged();
+            logbooklist = null; 
         }
         else
         {
@@ -503,10 +519,27 @@
     async void handlelookuplist(string value)
     {
 
+
         logmddt.LookupId =value;
-        lookitem = false;
-        logdetail = await httpservice.Get<List<TblLogbookDetailSchemasMD>>("LogbookDetailSchemas/ACT/" + logmddt.LookupId);
-        StateHasChanged();
-         
+        if(logmddt.LookupId != null){
+            lookitem = false;
+            logdetailss = await httpservice.Get<List<TblLogbookDetailSchemaMOD>>("LogbookDetailSchemas/ACT/" + logmddt.LookupId);
+            StateHasChanged();
+            
+        }
+        else
+        {
+            lookitem = true;
+        }
+
     }
+    void handlevalue(string val){
+        logmddt.Value_Schema = val;
+        StateHasChanged();
+    }
+     void handletext(string val){
+         logmddt.Text_Schema = val;
+        StateHasChanged();
+    }
+
 }
