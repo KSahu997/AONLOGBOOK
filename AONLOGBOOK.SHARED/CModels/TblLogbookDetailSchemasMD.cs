@@ -12,8 +12,8 @@ namespace AONLOGBOOK.SHARED.CModels
         public string? Tag_Name { get; set; }
         public string? Display_Name { get; set; }
         public string? Source { get; set; }
-        public double L_Min { get; set; }
-        public double L_Max { get; set; }
+        public double? L_Min { get; set; }
+        public double? L_Max { get; set; }
         public string? DataType { get; set; }
        // public string? Id { get; set; }
        public string? LookupId {get;set;}
