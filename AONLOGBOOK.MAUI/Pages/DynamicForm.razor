@@ -126,7 +126,7 @@
                         
                     </Fields>
                         <Field Flex="Flex.JustifyContent.End.OnDesktop.JustifyContent.Center.OnMobile">
-                            <Button Clicked="Submit" style="margin-top:10px;background:#659abb;color:#000;" Disabled=@(formdatas.Department==null||formdatas.SubDepartment==null||formdatas.logbook==null)>Generate Form</Button>
+                            <Button Clicked="Submit"  style="margin-top:10px;background-color:#1f17b8; color:#e6e6e6;" Disabled=@(formdatas.Department==null||formdatas.SubDepartment==null||formdatas.logbook==null)>Generate Form</Button>
                         </Field>
                 </Validations>
             </EditForm>
@@ -219,47 +219,66 @@
                                     {*@
                                         @if(ele.isOther == 1)
                                         {
-                                            <Validations @ref="validations" Mode="ValidationMode.Manual">
-                                        <Validation Validator="ValidationRule.None">
+                                            @*<Validations @ref="validations" Mode="ValidationMode.Manual">
+                                                <Validation Validator="ValidationRule.None">*@
                                          
                                               <Select SelectedValue="@ele.LookupValue" SelectedValueChanged="@((string arg)=>{handlevalue(arg);})"
                                                   SelectedValueExpression="@(()=>ele.LookupValue)">
                                                  <SelectItem>--select--</SelectItem>
                                                     @foreach(LookupData item in ele.lookuplist)
                                                     { 
-                                                    <SelectItem Value="@item.value">@item.text</SelectItem>
+                                                         <SelectItem Value="@item.value">@item.text</SelectItem>
                                                     }
-                                                    <SelectItem Value="@("Other")">Other</SelectItem>
+                                                        <SelectItem Value="@("Other")">Other</SelectItem>
                                                 </Select>
-                                                @if(iscorrect == false){
+                                                @if(iscorrect == false)
+                                                {
                                                  <TextEdit @bind-Text="@ele.StringValue" Style="margin:auto;"></TextEdit>
+                                                }
+                                                    @*</Validation>
+                                                </Validations>*@
+                                                else if(isedit==true)
+                                                {
+                                                <Validations @ref="validations" Mode="ValidationMode.Manual">
+                                                    <Validation Validator="ValidationRule.None">
+
+                                                        <Select SelectedValue="@ele.LookupValue" SelectedValueChanged="@((string arg)=>{handlevalue(arg);})"
+                                                         SelectedValueExpression="@(()=>ele.LookupValue)">
+                                                            <SelectItem Value="@("Other")">Other</SelectItem>
+                                                            @foreach (LookupData item in ele.lookuplist)
+                                                            {
+                                                                <SelectItem Value="@item.value">@item.text</SelectItem>
+                                                            }
+
+                                                        </Select>
+                                                        @if (iscorrect == false)
+                                                        {
+                                                            <TextEdit @bind-Text="@ele.StringValue" Style="margin:auto;"></TextEdit>
                                                         }
                                                     </Validation>
                                                 </Validations>
-                                        }else{<Validations @ref="validations" Mode="ValidationMode.Manual">
-                                        <Validation Validator="ValidationRule.None">
-                                         
-                                              <Select @bind-SelectedValue="ele.LookupValue">
-                                                 <SelectItem>--select--</SelectItem>
-                                                    @foreach(LookupData item in ele.lookuplist)
-                                                    { 
-                                                    <SelectItem Value="@item.value">@item.text</SelectItem>
-                                                    }
-                                                   
-                                                </Select>
-                                                    </Validation>
-                                                </Validations>
+                                                }
+                                             }
+                                             else
+                                             {
+                                                    <Validations @ref="validations" Mode="ValidationMode.Manual">
+                                                        <Validation Validator="ValidationRule.None">
+                                                            <Select @bind-SelectedValue="ele.LookupValue">
+                                                            <SelectItem>--select--</SelectItem>
+                                                            @foreach(LookupData item in ele.lookuplist)
+                                                            { 
+                                                                <SelectItem Value="@item.value">@item.text</SelectItem>
+                                                            }
+                                                            </Select>
+                                                         </Validation>
+                                                     </Validations>
+                                            }
+                                       
 
-                                        }
-                                        
-                                                    
-                                                   
-
-                                        
-                                   @* }*@
                                     }
+                                }
                                    
-                                  }
+                                 
                                 else if (ele.ElementType == "Date")
                                 {
                                     <FieldLabel Style="font-weight:600;">@ele.Label</FieldLabel>
@@ -354,8 +373,8 @@
 
                         }
                             <Field Flex="Flex.JustifyContent.End.OnDesktop.JustifyContent.Center.OnMobile">
-                                <Button Clicked="@submit" Style="justify-content:center; margin:15px;background:#659abb;color:#000;" Disabled="@(inactive== false)">Save</Button>
-                                <Button Clicked="@savedraft" Style="justify-content:center; margin:15px;background:#659abb;color:#000;" Disabled="@(inactive== false)">Save Draft</Button>
+                                    <Button Clicked="@submit" Style="justify-content:center; margin:15px;background:#1f17b8;color:#e6e6e6;" Disabled="inactive">Save</Button>
+                                    <Button Clicked="@savedraft" Style="justify-content:center; margin:15px;background:#1f17b8;color:#e6e6e6;" Disabled="inactive">Save Draft</Button>
                             </Field>
 
                         </Field>
@@ -416,7 +435,7 @@
                                                    
                                                         <Field Flex="Flex.JustifyContent.Start" Margin="Margin.Is2" Padding="Padding.Is2">
                                                             <Dropdown>
-                                                                <Button Color="Color.Primary">Action</Button>
+                                                                <Button Color="Color.Info">Action</Button>
                                                                 <DropdownToggle Color="Color.Primary" Split />
                                                                 <DropdownMenu>
                                                                     <DropdownItem Clicked="@(()=>handleitem(row))" Disabled="@(Convert.ToInt32(row["status_F"])==0)">Edit</DropdownItem>
@@ -478,7 +497,7 @@
                                                 }
                                                 <TableRowCell>
                                                     <Dropdown>
-                                                        <Button Color="Color.Primary">Action</Button>
+                                                        <Button Color="Color.Info">Action</Button>
                                                         <DropdownToggle Color="Color.Primary" Split />
                                                         <DropdownMenu>
                                                             <DropdownItem Clicked="@(()=>handleitem(row))" Disabled="@(Convert.ToInt32(row["status_F"])==0)">Edit</DropdownItem>
@@ -531,8 +550,9 @@
     // TimeSpan? CurrentTime;
     bool collapse1Visible = true;
     bool Displaydynamic = false;
-    bool inactive = true;
+    bool inactive = false;
     bool iscorrect = true;
+    bool isedit = false;
     ElementList ele;
     List<DataTable> dts = new List<DataTable>();
     LogData logdata = new();
@@ -706,13 +726,14 @@
                 {
 
                     await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");
+                   
                     StateHasChanged();
                 }
                 else
                 {
                     await App.Current.MainPage.DisplayAlert("Error", "Error", "ok");
                 }
-
+                 inactive = false;
                 dynamicform = new();
                 logdtList = new();
                 Submit();
@@ -825,7 +846,7 @@
                 {
 
                     await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");
-                    inactive = false;
+                   
                     StateHasChanged();
 
                 }
@@ -833,7 +854,7 @@
                 {
                     await App.Current.MainPage.DisplayAlert("Error", "Error", "ok");
                 }
-
+                inactive = false;
                 dynamicform = new();
                 logdtList = new();
                 Submit();
@@ -930,8 +951,19 @@
                         }
                         else if(a.ElementType=="Lookup")
                         {
-                            a.LookupValue = (dr[dc.ColumnName]).ToString();
-                            a.StringValue = (dr[dc.ColumnName]).ToString();
+                            if (a.LookupValue == (dr[dc.ColumnName]).ToString())
+                            {
+                                a.LookupValue = (dr[dc.ColumnName]).ToString();
+                                isedit = false;
+                                iscorrect = true;
+                            }
+                            else
+                            {
+                                a.LookupValue = (dr[dc.ColumnName]).ToString();
+                                a.StringValue = (dr[dc.ColumnName]).ToString();
+                                isedit = true;
+                                iscorrect = false;
+                            }
                         }
 
 

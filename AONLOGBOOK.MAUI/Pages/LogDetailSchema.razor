@@ -198,7 +198,7 @@
                 {
                     @foreach (var item in logdetail)
                     {
-                              <tr>
+                          <tr>
                            @* @if (item.DataType == "Lookup")
                             {
                                 <td>@item.LogbookName</td>
@@ -322,7 +322,7 @@
             }
             catch (Exception ex)
             {
-
+                await App.Current.MainPage.DisplayAlert("Message", "Error", "ok");
             }
             logdetail = await httpservice.Get<List<TblLogbookDetailSchemasMD>>("LogbookDetailSchemas/ACT/" + datas.logbook);
             logmddt = new();
@@ -500,7 +500,8 @@
             cal = false;
         }
     }
-    async void handlelookuplist(string value){
+    async void handlelookuplist(string value)
+    {
 
         logmddt.LookupId =value;
         lookitem = false;
