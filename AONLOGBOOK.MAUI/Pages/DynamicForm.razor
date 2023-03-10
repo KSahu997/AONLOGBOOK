@@ -212,73 +212,25 @@
                                     }
                                 }else if (ele.ElementType == "Lookup")
                                 {
-                                    if(ele.LookupValue!=null)
-                                    {
-                                      <FieldLabel Style="font-weight:600;">@ele.Label</FieldLabel>
-                                    @*@if (ele.IsMandatory == 1)
-                                    {*@
-                                        @if(ele.isOther == 1)
-                                        {
-                                            @*<Validations @ref="validations" Mode="ValidationMode.Manual">
-                                                <Validation Validator="ValidationRule.None">*@
-                                         
-                                              <Select SelectedValue="@ele.LookupValue" SelectedValueChanged="@((string arg)=>{handlevalue(arg);})"
-                                                  SelectedValueExpression="@(()=>ele.LookupValue)">
-                                                 <SelectItem>--select--</SelectItem>
-                                                    @foreach(LookupData item in ele.lookuplist)
-                                                    { 
-                                                         <SelectItem Value="@item.value">@item.text</SelectItem>
-                                                    }
-                                                        <SelectItem Value="@("Other")">Other</SelectItem>
-                                                </Select>
-                                                @if(iscorrect == false)
+                                    <FieldLabel Style="font-weight:600;">@ele.Label</FieldLabel>
+                                        <Select @bind-SelectedValue="ele.LookupValue">
+                                              <SelectItem>--select--</SelectItem>
+                                                 @foreach(LookupData item in ele.lookuplist)
+                                                 { 
+                                                      <SelectItem Value="@item.value">@item.text</SelectItem>
+                                                 }
+                                                 @if(ele.isOther==1)
+                                                 {
+                                                     <SelectItem Value="@("Other")">Other</SelectItem>
+                                                 }
+                                        </Select>
+                                                @if (ele.LookupValue == "Other")
                                                 {
                                                  <TextEdit @bind-Text="@ele.StringValue" Style="margin:auto;"></TextEdit>
                                                 }
-                                                    @*</Validation>
-                                                </Validations>*@
-                                                else if(isedit==true)
-                                                {
-                                                <Validations @ref="validations" Mode="ValidationMode.Manual">
-                                                    <Validation Validator="ValidationRule.None">
-
-                                                        <Select SelectedValue="@ele.LookupValue" SelectedValueChanged="@((string arg)=>{handlevalue(arg);})"
-                                                         SelectedValueExpression="@(()=>ele.LookupValue)">
-                                                            <SelectItem Value="@("Other")">Other</SelectItem>
-                                                            @foreach (LookupData item in ele.lookuplist)
-                                                            {
-                                                                <SelectItem Value="@item.value">@item.text</SelectItem>
-                                                            }
-
-                                                        </Select>
-                                                        @if (iscorrect == false)
-                                                        {
-                                                            <TextEdit @bind-Text="@ele.StringValue" Style="margin:auto;"></TextEdit>
-                                                        }
-                                                    </Validation>
-                                                </Validations>
-                                                }
-                                             }
-                                             else
-                                             {
-                                                    <Validations @ref="validations" Mode="ValidationMode.Manual">
-                                                        <Validation Validator="ValidationRule.None">
-                                                            <Select @bind-SelectedValue="ele.LookupValue">
-                                                            <SelectItem>--select--</SelectItem>
-                                                            @foreach(LookupData item in ele.lookuplist)
-                                                            { 
-                                                                <SelectItem Value="@item.value">@item.text</SelectItem>
-                                                            }
-                                                            </Select>
-                                                         </Validation>
-                                                     </Validations>
-                                            }
-                                       
-
-                                    }
+                                                  
                                 }
-                                   
-                                 
+                               
                                 else if (ele.ElementType == "Date")
                                 {
                                     <FieldLabel Style="font-weight:600;">@ele.Label</FieldLabel>
@@ -338,23 +290,14 @@
                                    <FieldLabel Style="font-weight:600;">@ele.Label</FieldLabel>
                                     @if (ele.IsMandatory == 1)
                                     {
-                                        @*<Validations @ref="validations" Mode="ValidationMode.Manual">
-                                        <Validation Validator="ValidationRule.IsChecked">*@
-                                           @* <RadioGroup TValue="string" Name="Rgrp" CheckedValue="@checkdynamicbool" CheckedValueChanged="@Onchecked">
-                                            <Radio Group="Rgrp">Yes</Radio>
-                                            <Radio Group="Rgrp">No</Radio>
-                                        </RadioGroup>*@
-                                                    <Field>
-                                                        <InputRadioGroup @bind-Value="@ele.StringValue">
-                                                            <InputRadio Value="@("Yes")" />Yes
-                                                            <InputRadio Value="@("No")" />No<br />
-                                                        </InputRadioGroup>
-                                                    </Field>
-                                           @*  <Feedback>
-                                                    <ValidationError>Required @ele.Label</ValidationError>
-                                                </Feedback>
-                                        </Validation>
-                                        </Validations>*@
+                                       
+                                             <Field>
+                                                 <InputRadioGroup @bind-Value="@ele.StringValue">
+                                                     <InputRadio Value="@("Yes")" />Yes
+                                                     <InputRadio Value="@("No")" />No<br />
+                                                  </InputRadioGroup>
+                                             </Field>
+                                          
                                     }
                                     else
                                     {
@@ -364,10 +307,7 @@
                                                 <InputRadio Value="@("No")"/>No<br/>
                                             </InputRadioGroup>
                                         </Field>
-                                       @* <RadioGroup TValue="string" Name="Rgrp" CheckedValue="@checkdynamicbool" CheckedValueChanged="@Onchecked">
-                                            <Radio  Group="Rgrp">Yes</Radio>
-                                            <Radio  Group="Rgrp">No</Radio>
-                                        </RadioGroup>*@
+                                      
                                     }
                                 }
 
@@ -442,7 +382,7 @@
                                                                     <DropdownDivider />
                                                                     <DropdownItem>Delete</DropdownItem>
                                                                     <DropdownDivider/>
-                                                                    <DropdownItem>Save</DropdownItem>
+                                                                    <DropdownItem Disabled="@(Convert.ToInt32(row["status_F"])==0)">Save</DropdownItem>
                                                                 </DropdownMenu>
                                                             </Dropdown>
                                                         </Field>
@@ -504,7 +444,7 @@
                                                             <DropdownDivider />
                                                             <DropdownItem>Delete</DropdownItem>
                                                             <DropdownDivider />
-                                                            <DropdownItem>Save</DropdownItem>
+                                                            <DropdownItem Disabled="@(Convert.ToInt32(row["status_F"])==0)">Save</DropdownItem>
                                                         </DropdownMenu>
                                                     </Dropdown>
                                                 </TableRowCell>
@@ -598,7 +538,7 @@
             dynamicform = new List<ElementList>();
             dts = new();
             logbookdetail = await httpservices.Get<List<TblLogbookDetailSchemasMD>>("LogbookDetailSchemas/ACT/" + formdatas.logbook);
-           
+
             //formdatas.Date = Convert.ToDateTime(time.ToString().Replace("00-00-0000", CurrentDate?.ToString("MM-dd-yyyy")));
 
             if (logbookdetail.Count() == 0)
@@ -613,10 +553,7 @@
                     if (a.Value_Schema != null)
                     {
                         ele.lookuplist = await httpservices.Get<List<LookupData>>("LookupData/" + a.Text_Schema + "/" + a.Value_Schema);
-                        //if(ele.Label=="Lookup")
-                        //{
-                        //    ele.Label = logbookdetail.First(a => (a.LookupId == ele.LookupId)).LogbookName;
-                        //}
+                       
                     }
                     dynamicform.Add(ele);
 
@@ -692,7 +629,7 @@
                     else if (a.ElementType == "Boolean")
                     {
                         logdata.ParamName = a.Label;
-                        // a.StringValue = Convert.ToBoolean(checkdynamicbool);
+                       
                         logdata.Val = a.StringValue.ToString();
                     }
                     else if (a.ElementType == "Lookup")
@@ -726,14 +663,14 @@
                 {
 
                     await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");
-                   
+
                     StateHasChanged();
                 }
                 else
                 {
                     await App.Current.MainPage.DisplayAlert("Error", "Error", "ok");
                 }
-                 inactive = false;
+                inactive = false;
                 dynamicform = new();
                 logdtList = new();
                 Submit();
@@ -772,7 +709,7 @@
             if (await validations.ValidateAll())
             {
                 var a = dynamicform;
-                 inactive = true;
+                inactive = true;
                 logdatatable = new();
                 a.ForEach(a =>
                 {
@@ -841,13 +778,13 @@
                 logdtList.TblLogHead.CreatedBy = "Admin";
                 logdtList.TblLogHead.StatusF = 3;
                 inactive = false;
-                 iscorrect = true; 
+                iscorrect = true; 
                 var result = await httpservices.Post<string>("LogDataTable", logdtList);
                 if (result != null)
                 {
                     inactive = true;
                     await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");
-                   
+
                     StateHasChanged();
 
                 }
@@ -859,7 +796,7 @@
                 dynamicform = new();
                 logdtList = new();
                 Submit();
-                //Displaydynamic = false;
+               
                 StateHasChanged();
             }
         }
@@ -955,15 +892,13 @@
                             if (a.LookupValue == (dr[dc.ColumnName]).ToString())
                             {
                                 a.LookupValue = (dr[dc.ColumnName]).ToString();
-                                isedit = false;
-                                iscorrect = true;
+                                
                             }
                             else
                             {
-                                a.LookupValue = (dr[dc.ColumnName]).ToString();
+                                a.LookupValue = "Other";
                                 a.StringValue = (dr[dc.ColumnName]).ToString();
-                                isedit = true;
-                                iscorrect = false;
+                                
                             }
                         }
 
@@ -975,24 +910,6 @@
         }
         StateHasChanged();
     }
-    void handlevalue(string val)
-    {
-        if(val == "Other")
-        {
-            dynamicform.ForEach(a =>{
-                a.LookupValue = val;
-            });
-            iscorrect = false;
-        }
-        else
-        {
-           dynamicform.ForEach(a =>{
-                a.LookupValue = val;
-            });
-            iscorrect = true; 
-        } 
-
-       
-    }
+  
 
 }
