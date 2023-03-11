@@ -1,65 +1,54 @@
 ﻿@inherits LayoutComponentBase
 @using Newtonsoft.Json;
 @inject NavigationManager NaviManager
-    <Layout Sider>
 
-@if (User.userdata != null)
-{
-        <LayoutSider>
-            <LayoutSiderContent>
-                <Bar @ref="@sidebar" Mode="BarMode.VerticalInline"
-                 Breakpoint="Breakpoint.Desktop"
-                 Background="Background.Light"
-                 
-                 ThemeContrast="ThemeContrast.Light">
-                    <NavMenu />
-                </Bar>
-            </LayoutSiderContent>
-        </LayoutSider>
-        }
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
-        <Layout>
-        @if (User.userdata != null)
-        {
-            <LayoutHeader Fixed>
-                <Bar Mode="BarMode.Horizontal"
-                 ThemeContrast="ThemeContrast.Light" Style="background-color: #dee2e6;
-                color: #E7E0C9;">
-                        <BarToggler Bar="@sidebar" />
-                        <BarMenu>
-                            <BarItem></BarItem>
-                        </BarMenu>
-                    </Bar>
-                </LayoutHeader>
-            }
-                <LayoutContent Padding="Padding.Is4.OnX">
-                @Body
-            </LayoutContent>
-            
-            
-        </Layout>
-    </Layout>
-
-    @*Sider bar*@
-
+<MudLayout>
+    @if (User.userdata != null)
+    {
+        <MudAppBar Elevation="0">
+            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudSpacer />
+       @* <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Inherit" Link="https://mudblazor.com/" Target="_blank" />
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/MudBlazor/MudBlazor/" Target="_blank" />*@
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">Aon LOGBOOK</MudText>
+        </MudDrawerHeader>
+        <NavMenu />
+    </MudDrawer>
+    }
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="my-16 pt-16">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
 
 @code {
-    private Bar sidebar;
+    bool _drawerOpen = true;
 
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
     public User? user;
     protected override async Task OnInitializedAsync()
     {
-       
-            string data = await SecureStorage.GetAsync("user");
+
+        string data = await SecureStorage.GetAsync("user");
 
         if (!string.IsNullOrEmpty(data))
-          User.userdata = JsonConvert.DeserializeObject<UserData>(data);
+            User.userdata = JsonConvert.DeserializeObject<UserData>(data);
         else
-           NaviManager.NavigateTo("/LoginPage");
-            StateHasChanged();
-        
-        
-    }
+            NaviManager.NavigateTo("/LoginPage");
+        StateHasChanged();
 
+
+    }
 }
 

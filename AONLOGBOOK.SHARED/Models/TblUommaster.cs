@@ -7,7 +7,7 @@ namespace AONLOGBOOK.SHARED.Models
     {
         public Guid Id { get; set; }
 
-        public string Unit { get; set; }
+        public string? Unit { get; set; }
 
         public byte? delFlag { get; set; }
     }

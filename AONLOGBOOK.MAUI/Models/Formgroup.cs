@@ -9,6 +9,8 @@ namespace AONLOGBOOK.MAUI.Models
     public class Formgroup
     {
         public Guid FormGroupId { get; set; }
+#nullable enable
+
 
         public string? Plant { get; set; }
 
@@ -19,6 +21,8 @@ namespace AONLOGBOOK.MAUI.Models
         public string? Role { get; set; }
 
         public int? DelFlag { get; set; }
+#nullable disable
+
 
     }
 }

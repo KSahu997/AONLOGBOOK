@@ -8,7 +8,11 @@ namespace AONLOGBOOK.MAUI.Models
 {
     public  class Lookuplist
     {
+#nullable enable
+
         public string? label { get; set; }
         public string? Value { get; set; }
+#nullable disable
+
     }
 }

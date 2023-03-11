@@ -1,0 +1,92 @@
+﻿<MudDialog Options="new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true }">
+    <TitleContent>
+        </TitleContent>
+            <DialogContent>
+<MudForm @bind-IsValid=@success>
+    <div class="p-2">
+        <MudTextField T="string" Label="Company" @bind-Value=@tblCompanyMaster.Company_Name Required="true" RequiredError="Company name is required!" />
+        <MudTextField T="string" Label="Email" @bind-Value=@tblCompanyMaster.Email Required="true" InputType="InputType.Email" RequiredError="Email is required!" />
+        <MudTextField T="string" Label="Phone No" @bind-Value=@tblCompanyMaster.Phone_no InputType="InputType.Telephone" Required="true" RequiredError="Phone No is required!" />
+        <MudTextField T="string" Label="GST No" @bind-Value=@tblCompanyMaster.GST_no InputType="InputType.Text" Required="true" RequiredError="GST No is required!" />
+        <MudTextField T="string" Label="City" @bind-Value=@tblCompanyMaster.City InputType="InputType.Text" Required="true" RequiredError="City is required!" />
+        <MudTextField T="string" Label="State" @bind-Value=@tblCompanyMaster.State InputType="InputType.Text" Required="true" RequiredError="State is required!" />
+        <MudTextField T="string" Label="Country" @bind-Value=@tblCompanyMaster.Country InputType="InputType.Text" Required="true" RequiredError="Country is required!" />
+    </div>
+    <div class="d-flex align-center justify-space-between mt-3">
+                <MudButton OnClick="@(()=> MudDialog.Cancel())">Cancel</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!success)" OnClick=@submit Class="ml-auto">Register</MudButton>
+    </div>
+</MudForm>
+</DialogContent>
+</MudDialog>
+@code {
+    bool success;
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public TblCompanyMaster Company { get; set; }
+    UserData _user = User.userdata;
+    private TblCompanyMaster tblCompanyMaster;
+    protected override void OnInitialized()
+    {
+        tblCompanyMaster = Company; 
+    }
+
+    async void submit()
+    {
+        if (tblCompanyMaster.ID == new Guid())
+        {
+            try
+            {
+                tblCompanyMaster.Created_By = _user.username;
+                var result = await httpservice.Post<string>("CompanyMasters", tblCompanyMaster);
+
+                if (result != null)
+                {
+                    await App.Current.MainPage.DisplayAlert("Message", result, "Ok");
+                }
+                else
+                {
+
+                    await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
+
+                }
+
+                StateHasChanged();
+
+            }
+            catch (Exception ex)
+            {
+                if (tblCompanyMaster != null && tblCompanyMaster.Company_Name == tblCompanyMaster.Company_Name || tblCompanyMaster.Company_Name == "")
+                {
+                    await App.Current.MainPage.DisplayAlert("Message", "Invalid Company name", "Ok");
+                }
+                else
+
+                    await App.Current.MainPage.DisplayAlert("Message", ex.Message, "Ok");
+            }
+            StateHasChanged();
+            tblCompanyMaster = new();
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        else
+        {
+            tblCompanyMaster.Status_F = 0;
+            var editdata = await httpservice.Post<string>("companymasters/UPD", tblCompanyMaster);
+            if (editdata != null)
+            {
+                await App.Current.MainPage.DisplayAlert("message", editdata, "ok");
+            }
+            else
+            {
+
+                await App.Current.MainPage.DisplayAlert("message", "error", "ok");
+
+            }
+            StateHasChanged();
+            tblCompanyMaster = new();
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+
+    }
+
+
+}

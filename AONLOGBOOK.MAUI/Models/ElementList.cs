@@ -11,6 +11,8 @@ namespace AONLOGBOOK.MAUI.Models
 {
     public class ElementList
     {
+#nullable enable
+
         public string? Label { get; set; }
         public string? ElementType { get; set; }
         public string? HeaderId {get; set; }
@@ -26,11 +28,13 @@ namespace AONLOGBOOK.MAUI.Models
 
         [Range(typeof(bool), "true", "true", ErrorMessage = "You gotta tick the box!")]
         public bool? BoolValue { get; set; }
-        public Dictionary<string, string> options { get; set; }
+        public Dictionary<string, string>? options { get; set; }
         public List<LookupData> lookuplist { get; set; } = new List<LookupData>();
         public string? LookupId { get; set; }
         public int? Sequence { get; set; }
         public int? IsMandatory { get; set; }
         public string? Shift_prefix { get; set; }
+#nullable disable
+
     }
 }

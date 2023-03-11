@@ -13,7 +13,7 @@ namespace AONLOGBOOK.MAUI.Models
         public string Department { get; set; } = null!;
 
         public string SubDepartment { get; set; } = null!;
-
+#nullable enable
         public string? LogbookName { get; set; }
 
         public string? LogbookCode { get; set; }
@@ -49,5 +49,7 @@ namespace AONLOGBOOK.MAUI.Models
         public string? InsertQry { get; set; }
 
         public int? Seq { get; set; }
+#nullable disable
+
     }
 }

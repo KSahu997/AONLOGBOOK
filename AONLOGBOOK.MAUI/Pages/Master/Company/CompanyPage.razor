@@ -1,0 +1,60 @@
+﻿@page "/Company"
+@using System.ComponentModel.DataAnnotations
+@inject IDialogService DialogService
+<div class="d-flex">
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true" OnClick="Addcompany">Add New</MudButton>
+</div>
+<MudDataGrid T="TblCompanyMaster" Items="@companies" Bordered EditTrigger="DataGridEditTrigger.Manual">
+    <Columns>
+        <Column T="TblCompanyMaster" Field="Company_Name" Title="Company Name"/>
+        <Column T="TblCompanyMaster" Field="Email" Title="Email" />
+        <Column T="TblCompanyMaster" Field="Phone_no" Title="Phone No" />
+        <Column T="TblCompanyMaster" Field="GST_no" Title="GST No" />
+        <Column T="TblCompanyMaster" Field="City" Title="City" />
+        <Column T="TblCompanyMaster" Field="State" Title="State" />
+        <Column T="TblCompanyMaster" Field="Country" Title="Country" />
+        <Column T="TblCompanyMaster" >
+            <CellTemplate>
+                <MudIconButton Size="@Size.Small" Color="Color.Primary" Icon="@Icons.Material.Outlined.Edit" OnClick="@(()=>{Editcompany(context.Item);})"    />
+                <MudIconButton Size="@Size.Small" Color="@(context.Item.Status_F==1?Color.Error:Color.Success)" Icon="@Icons.Material.Outlined.Delete" OnClick="@(()=>{handalDelCompany(context.Item);})" />
+            </CellTemplate>
+        </Column>
+    </Columns>
+</MudDataGrid>
+@code {
+    TblCompanyMaster tblCompanyMaster = new();
+    IEnumerable<TblCompanyMaster> companies;
+    UserData _user = User.userdata;
+    protected override async Task OnInitializedAsync()
+    {
+        companies = await httpservice.Get<List<TblCompanyMaster>>("CompanyMasters/ACT");
+        StateHasChanged();
+    }
+    async void Addcompany()
+    {
+        var parameters = new DialogParameters { ["Company"] = new TblCompanyMaster() };
+        var dialog = await DialogService.ShowAsync<CompanyDialog>("Add Company", parameters);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+            await OnInitializedAsync();
+    }
+    async void Editcompany(TblCompanyMaster Company)
+    {
+        var parameters = new DialogParameters { ["Company"] = Company };
+        var dialog = await DialogService.ShowAsync<CompanyDialog>("Edit Company", parameters);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+            await OnInitializedAsync();
+    }
+    async void handalDelCompany(TblCompanyMaster item)
+    {
+        TblCompanyMaster data = item;
+        data.Status_F = 1;
+        var result = await httpservice.Post<string>("CompanyMasters/UPD", data);
+        if (result != null)
+            await App.Current.MainPage.DisplayAlert("Message", "Company Deleted", "Ok");
+        else
+            await App.Current.MainPage.DisplayAlert("Message", "Error", "Ok");
+        StateHasChanged();
+    }
+}

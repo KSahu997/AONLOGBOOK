@@ -1,63 +1,36 @@
 ﻿@page "/LoginPage"
-
-@inject NavigationManager nav
 @using AONLOGBOOK.SHARED.CModels;
 @using Newtonsoft.Json;
+@inject NavigationManager nav
 
-<style>
-    body{
-      background-image: linear-gradient(70deg, #2b5876, #4e437663);
-    }
-    .card{
-        border: 1px solid rgb(0 0 0 / 28%);
-        color:whitesmoke;
-    }
-    .form-control{
-       background: #e7e0c959;
-    }
-    .icon {
-  padding: 10px;
-  background: dodgerblue;
-  color: white;
-  min-width: 50px;
-  text-align: center;
-}
-
-</style>
-
-<Div class="container d-flex justify-content-center" Style="margin-top:10%">
-    <Card class="w-50" Style="background-color:transparent; color:whitesmoke;">
-        <CardHeader Style="background:#11324D; color:whitesmoke;">Login Here</CardHeader>
-        <CardBody>
-            <EditForm Model="@log" OnValidSubmit="Submit">
-                <DataAnnotationsValidator />
-                <Div class="row">
-                    <Div class="col-md-12">
-                        <Label>Username</Label>
-            
-                        <TextEdit @bind-Text="log.Username" type="text"></TextEdit>
-                    </Div>
-                    <Div class="col-md-12">
-                        <Label>Password</Label>
-                        <TextEdit @bind-Text="log.Password" type="Password"></TextEdit>
-                    </Div>
-                </Div>
-                <Div class="row justify-content-center m-2">
-                    <Button Type="ButtonType.Submit" Style="background:#E7E0C9;">Login</Button>
-                   
-                </Div>
-
-            </EditForm>
-        </CardBody>
-    </Card>
-</Div>
-
+<h3>LoginPage</h3>
+<MudPaper>
+    <MudForm Model="@log" @ref="form" @bind-IsValid="@success" >
+        <MudTextField T="string" Label="Username" @bind-Value="@log.Username" Required="true" RequiredError="Username is Required"/>
+        <MudTextField T="string" Label="Password" @bind-Value="@log.Password" Required="true" RequiredError="Password is Required" InputType="InputType.Password"/>
+        <div class="d-flex">
+            <MudButton Variant="Variant.Filled" OnClick="Submit" Color="Color.Primary" Disabled=@(!success&&process) Class="ml-auto">
+                @if (process)
+                {
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate=true/>
+                    <MudText>Processing</MudText>
+                }
+                else{
+                    <MudText>Login</MudText>
+                      }
+            </MudButton>
+        </div>
+    </MudForm>
+</MudPaper>
 
 @code {
     public Login log = new Login();
-
+    MudForm form;
+    bool success;
+    private bool process;
     async void Submit()
     {
+        process = true;
         if (log.Username == "Admin" && log.Password == "admin@123")
         {
             UserData us = new UserData()
@@ -74,9 +47,9 @@
             nav.NavigateTo("/");
         }
         else
-           {
-                await App.Current.MainPage.DisplayAlert("Login", "Incorrect Credentials!", "OK");
-            }
+        {
+            await App.Current.MainPage.DisplayAlert("Login", "Incorrect Credentials!", "OK");
+        }
+        process = false;
     }
 }
-

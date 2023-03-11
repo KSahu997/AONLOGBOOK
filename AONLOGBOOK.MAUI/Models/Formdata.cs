@@ -9,14 +9,18 @@ namespace AONLOGBOOK.MAUI.Models
 {
     public class Formdata
     {
+#nullable enable
+
         [Required]
-        public string Department { get; set; }
+        public string? Department { get; set; }
         [Required]
-        public string SubDepartment { get; set; }
+        public string? SubDepartment { get; set; }
         [Required]
-        public string logbook { get; set; }
+        public string? logbook { get; set; }
 
         public DateTime? Date { get; set; }
         public string? Shift { get; set; }
+#nullable disable
+
     }
 }

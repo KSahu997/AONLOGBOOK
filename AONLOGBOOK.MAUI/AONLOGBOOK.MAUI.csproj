@@ -50,13 +50,20 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Blazorise.Bootstrap" Version="1.2.0" />
-      <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.2.0" />
+      <PackageReference Include="MudBlazor" Version="6.1.9" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\AONLOGBOOK.SHARED\AONLOGBOOK.SHARED.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="wwwroot\css\bootstrap\bootstrap.min.css.map" />
+      <None Include="wwwroot\css\open-iconic\FONT-LICENSE" />
+      <None Include="wwwroot\css\open-iconic\font\fonts\open-iconic.svg" />
+      <None Include="wwwroot\css\open-iconic\ICON-LICENSE" />
+      <None Include="wwwroot\css\open-iconic\README.md" />
     </ItemGroup>
 
 </Project>
