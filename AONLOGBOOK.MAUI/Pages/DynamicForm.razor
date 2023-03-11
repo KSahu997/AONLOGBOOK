@@ -126,7 +126,7 @@
                         
                     </Fields>
                         <Field Flex="Flex.JustifyContent.End.OnDesktop.JustifyContent.Center.OnMobile">
-                            <Button Clicked="Submit"  style="margin-top:10px;background-color:#1f17b8; color:#e6e6e6;" Disabled=@(formdatas.Department==null||formdatas.SubDepartment==null||formdatas.logbook==null)>Generate Form</Button>
+                            <Button Clicked="Submit"  style="margin-top:10px;background-color:#1f17b8; color:#e6e6e6;" Disabled=@(formdatas.Department==null||formdatas.SubDepartment==null||formdatas.logbook==null||formdatas.Date==null||formdatas.Shift==null)>Generate Form</Button>
                         </Field>
                 </Validations>
             </EditForm>
@@ -290,14 +290,12 @@
                                    <FieldLabel Style="font-weight:600;">@ele.Label</FieldLabel>
                                     @if (ele.IsMandatory == 1)
                                     {
-                                       
                                              <Field>
                                                  <InputRadioGroup @bind-Value="@ele.StringValue">
                                                      <InputRadio Value="@("Yes")" />Yes
                                                      <InputRadio Value="@("No")" />No<br />
                                                   </InputRadioGroup>
                                              </Field>
-                                          
                                     }
                                     else
                                     {
@@ -381,8 +379,7 @@
                                                                     <DropdownItem Clicked="@(()=>handleitem(row))" Disabled="@(Convert.ToInt32(row["status_F"])==0)">Edit</DropdownItem>
                                                                     <DropdownDivider />
                                                                     <DropdownItem>Delete</DropdownItem>
-                                                                    <DropdownDivider/>
-                                                                    <DropdownItem Disabled="@(Convert.ToInt32(row["status_F"])==0)">Save</DropdownItem>
+                                                                    
                                                                 </DropdownMenu>
                                                             </Dropdown>
                                                         </Field>
@@ -443,8 +440,7 @@
                                                             <DropdownItem Clicked="@(()=>handleitem(row))" Disabled="@(Convert.ToInt32(row["status_F"])==0)">Edit</DropdownItem>
                                                             <DropdownDivider />
                                                             <DropdownItem>Delete</DropdownItem>
-                                                            <DropdownDivider />
-                                                            <DropdownItem Disabled="@(Convert.ToInt32(row["status_F"])==0)">Save</DropdownItem>
+                                                            
                                                         </DropdownMenu>
                                                     </Dropdown>
                                                 </TableRowCell>
@@ -491,8 +487,7 @@
     bool collapse1Visible = true;
     bool Displaydynamic = false;
     bool inactive = false;
-    bool iscorrect = true;
-    bool isedit = false;
+    bool issave = true;
     ElementList ele;
     List<DataTable> dts = new List<DataTable>();
     LogData logdata = new();
@@ -553,7 +548,7 @@
                     if (a.Value_Schema != null)
                     {
                         ele.lookuplist = await httpservices.Get<List<LookupData>>("LookupData/" + a.Text_Schema + "/" + a.Value_Schema);
-                       
+
                     }
                     dynamicform.Add(ele);
 
@@ -586,102 +581,217 @@
     }
     async Task submit()
     {
-        try
+        if(issave==true)
         {
-
-            if (await validations.ValidateAll())
+            try
             {
 
-                var a = dynamicform;
-                inactive = true;
-                logdatatable = new();
-                a.ForEach(a =>
-                {
-                    LogData logdata = new();
-                    logdata.Uom = logdtschema.First(a => (a.LogbookId == formdatas.logbook)).UOM;
-                    logdata.SubDeptId = formdatas.SubDepartment;
-                    logdata.DeptId = formdatas.Department;
-                    if (a.ElementType == "Text")
-                    {
-                        logdata.ParamName = a.Label;
-                        logdata.Val = a.StringValue;
-                    }
-                    else if (a.ElementType == "Number")
-                    {
-                        logdata.ParamName = a.Label;
-                        logdata.Val = a.IntegerValue.ToString();
-                    }
-                    else if (a.ElementType == "Date")
-                    {
-                        logdata.ParamName = a.Label;
-                        logdata.Val = a.DateOnlyValue?.ToString("MM-dd-yyyy");
-                    }
-                    else if (a.ElementType == "DateTime")
-                    {
-                        logdata.ParamName = a.Label;
-                        logdata.Val = a.DateValue?.ToString("MM-dd-yyyy HH:mm:ss");
-                    }
-                    else if (a.ElementType == "Time")
-                    {
-                        logdata.ParamName = a.Label;
-                        logdata.Val = a.TimeValue?.ToString("HH:mm:ss");
-                    }
-                    else if (a.ElementType == "Boolean")
-                    {
-                        logdata.ParamName = a.Label;
-                       
-                        logdata.Val = a.StringValue.ToString();
-                    }
-                    else if (a.ElementType == "Lookup")
-                    {
-                        logdata.ParamName = a.Label;
-                        logdata.Val = a.LookupValue;
-                    }
-                    logdata.CompanyId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Company_Id;
-                    logdata.PlantId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Plant_Id;
-                    logdata.Shift = formdatas.Shift;
-                    logdata.LogbookId = formdatas.logbook;
-                    logdata.MarkforDeletion = "0";  
-
-                    logdatatable.Add(logdata);
-
-                });
-                logdtList.TblLog = logdatatable;
-                logdtList.TblLogHead = new();
-                logdtList.TblLogHead.CompanyId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Company_Id;
-                logdtList.TblLogHead.PlantId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Plant_Id;
-                logdtList.TblLogHead.Shift = formdatas.Shift;
-                logdtList.TblLogHead.LogbookId = formdatas.logbook; 
-                logdtList.TblLogHead.DeptId = formdatas.Department; 
-                logdtList.TblLogHead.SubDeptId = formdatas.SubDepartment; 
-                logdtList.TblLogHead.date = Convert.ToDateTime(formdatas.Date?.ToString("yyyy-MM-ddTHH:mm:ss"));
-                logdtList.TblLogHead.CreatedBy = "Admin";
-                logdtList.TblLogHead.StatusF = 0;
-                inactive = false;
-                var result = await httpservices.Post<string>("LogDataTable", logdtList);
-                if (result != null)
+                if (await validations.ValidateAll())
                 {
 
-                    await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");
+                    var a = dynamicform;
+                    inactive = true;
+                    logdatatable = new();
+                    a.ForEach(a =>
+                    {
+                        LogData logdata = new();
+                        logdata.Uom = logdtschema.First(a => (a.LogbookId == formdatas.logbook)).UOM;
+                        logdata.SubDeptId = formdatas.SubDepartment;
+                        logdata.DeptId = formdatas.Department;
+                        if (a.ElementType == "Text")
+                        {
+                            logdata.ParamName = a.Label;
+                            logdata.Val = a.StringValue;
+                        }
+                        else if (a.ElementType == "Number")
+                        {
+                            logdata.ParamName = a.Label;
+                            logdata.Val = a.IntegerValue.ToString();
+                        }
+                        else if (a.ElementType == "Date")
+                        {
+                            logdata.ParamName = a.Label;
+                            logdata.Val = a.DateOnlyValue?.ToString("dd-MM-yyyy");
+                        }
+                        else if (a.ElementType == "DateTime")
+                        {
+                            logdata.ParamName = a.Label;
+                            logdata.Val = a.DateValue?.ToString("dd-MM-yyyy HH:mm:ss");
+                        }
+                        else if (a.ElementType == "Time")
+                        {
+                            logdata.ParamName = a.Label;
+                            logdata.Val = a.TimeValue?.ToString("HH:mm:ss");
+                        }
+                        else if (a.ElementType == "Boolean")
+                        {
+                            logdata.ParamName = a.Label;
+
+                            logdata.Val = a.StringValue.ToString();
+                        }
+                        else if (a.ElementType == "Lookup")
+                        {
+                            logdata.ParamName = a.Label;
+                            if (a.LookupValue == "Other")
+                            {
+                                logdata.Val = a.StringValue.ToString();
+                            }
+                            else
+                                logdata.Val = a.LookupValue;
+                        }
+                        logdata.CompanyId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Company_Id;
+                        logdata.PlantId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Plant_Id;
+                        logdata.Shift = formdatas.Shift;
+                        logdata.LogbookId = formdatas.logbook;
+                        logdata.MarkforDeletion = "0";
+
+                        logdatatable.Add(logdata);
+
+                    });
+                    logdtList.TblLog = logdatatable;
+                    logdtList.TblLogHead = new();
+                    logdtList.TblLogHead.CompanyId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Company_Id;
+                    logdtList.TblLogHead.PlantId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Plant_Id;
+                    logdtList.TblLogHead.Shift = formdatas.Shift;
+                    logdtList.TblLogHead.LogbookId = formdatas.logbook;
+                    logdtList.TblLogHead.DeptId = formdatas.Department;
+                    logdtList.TblLogHead.SubDeptId = formdatas.SubDepartment;
+                    logdtList.TblLogHead.date = Convert.ToDateTime(formdatas.Date?.ToString("yyyy-MM-ddTHH:mm:ss"));
+                    logdtList.TblLogHead.CreatedBy = "Admin";
+                    logdtList.TblLogHead.StatusF = 0;
+                    inactive = false;
+                    var result = await httpservices.Post<string>("LogDataTable", logdtList);
+                    if (result != null)
+                    {
+
+                        await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");
+
+                        StateHasChanged();
+                    }
+                    else
+                    {
+                        await App.Current.MainPage.DisplayAlert("Error", "Error", "ok");
+                    }
+                    inactive = false;
+                    dynamicform = new();
+                    logdtList = new();
+                    Submit();
+                    StateHasChanged();
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+        }
+        else
+        {
+            try
+            {
+                if (await validations.ValidateAll())
+                {
+                    var a = dynamicform;
+                    inactive = true;
+                    logdatatable = new();
+                    a.ForEach(a =>
+                    {
+                        LogData logdata = new();
+                        logdata.Uom = logdtschema.First(a => (a.LogbookId == formdatas.logbook)).UOM;
+                        logdata.SubDeptId = formdatas.SubDepartment;
+                        logdata.DeptId = formdatas.Department;
+                        if (a.ElementType == "Text")
+                        {
+                            logdata.ParamName = a.Label;
+                            logdata.Val = a.StringValue;
+                        }
+                        else if (a.ElementType == "Number")
+                        {
+                            logdata.ParamName = a.Label;
+                            logdata.Val = a.IntegerValue.ToString();
+                        }
+                        else if (a.ElementType == "Date")
+                        {
+                            logdata.ParamName = a.Label;
+                            logdata.Val = a.DateOnlyValue?.ToString("dd-MM-yyyy");
+                        }
+                        else if (a.ElementType == "DateTime")
+                        {
+                            logdata.ParamName = a.Label;
+                            logdata.Val = a.DateValue?.ToString("dd-MM-yyyy HH:mm:ss");
+                        }
+                        else if (a.ElementType == "Time")
+                        {
+                            logdata.ParamName = a.Label;
+                            logdata.Val = a.TimeValue?.ToString("HH:mm:ss");
+                        }
+                        else if (a.ElementType == "Boolean")
+                        {
+                            logdata.ParamName = a.Label;
+                            logdata.Val = a.StringValue.ToString();
+                        }
+                        else if (a.ElementType == "Lookup")
+                        {
+                            logdata.ParamName = a.Label;
+
+                            if(a.LookupValue == "Other")
+                            {
+                                logdata.Val = a.StringValue.ToString();
+                            }
+                            else
+                                logdata.Val = a.LookupValue;
+
+
+                        }
+                        logdata.CompanyId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Company_Id;
+                        logdata.PlantId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Plant_Id;
+                        logdata.Shift = formdatas.Shift;
+                        logdata.LogbookId = formdatas.logbook;
+                        logdata.MarkforDeletion = "3";
+                        logdatatable.Add(logdata);
+
+                    });
+                    logdtList.TblLog = logdatatable;
+                    logdtList.TblLogHead = new();
+                    logdtList.TblLogHead.CompanyId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Company_Id;
+                    logdtList.TblLogHead.PlantId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Plant_Id;
+                    logdtList.TblLogHead.Shift = formdatas.Shift;
+                    logdtList.TblLogHead.LogbookId = formdatas.logbook;
+                    logdtList.TblLogHead.DeptId = formdatas.Department;
+                    logdtList.TblLogHead.SubDeptId = formdatas.SubDepartment;
+                    logdtList.TblLogHead.date = Convert.ToDateTime(formdatas.Date?.ToString("yyyy-MM-ddTHH:mm:ss"));
+                    logdtList.TblLogHead.CreatedBy = "Admin";
+                    logdtList.TblLogHead.StatusF = 3;
+                    inactive = false;
+
+                    var result = await httpservices.Post<string>("LogDataTable", logdtList);
+                    if (result != null)
+                    {
+                        inactive = true;
+                        await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");
+
+                        StateHasChanged();
+
+                    }
+                    else
+                    {
+                        await App.Current.MainPage.DisplayAlert("Error", "Error", "ok");
+                    }
+                    inactive = false;
+                    dynamicform = new();
+                    logdtList = new();
+                    Submit();
 
                     StateHasChanged();
                 }
-                else
-                {
-                    await App.Current.MainPage.DisplayAlert("Error", "Error", "ok");
-                }
-                inactive = false;
-                dynamicform = new();
-                logdtList = new();
-                Submit();
-                StateHasChanged();
             }
-        }
-        catch(Exception ex)
-        {
+            catch (Exception ex)
+            {
+
+            }
 
         }
-
+        issave = true;
     }
 
     async void handleshift(DateTime? date)
@@ -704,106 +814,9 @@
     }
     async Task savedraft()
     {
-        try
-        {
-            if (await validations.ValidateAll())
-            {
-                var a = dynamicform;
-                inactive = true;
-                logdatatable = new();
-                a.ForEach(a =>
-                {
-                    LogData logdata = new();
-                    logdata.Uom = logdtschema.First(a => (a.LogbookId == formdatas.logbook)).UOM;
-                    logdata.SubDeptId = formdatas.SubDepartment;
-                    logdata.DeptId = formdatas.Department;
-                    if (a.ElementType == "Text")
-                    {
-                        logdata.ParamName = a.Label;
-                        logdata.Val = a.StringValue;
-                    }
-                    else if (a.ElementType == "Number")
-                    {
-                        logdata.ParamName = a.Label;
-                        logdata.Val = a.IntegerValue.ToString();
-                    }
-                    else if (a.ElementType == "Date")
-                    {
-                        logdata.ParamName = a.Label;
-                        logdata.Val = a.DateOnlyValue?.ToString("dd-MM-yyyy");
-                    }
-                    else if (a.ElementType == "DateTime")
-                    {
-                        logdata.ParamName = a.Label;
-                        logdata.Val = a.DateValue?.ToString("dd-MM-yyyy HH:mm:ss");
-                    }
-                    else if (a.ElementType == "Time")
-                    {
-                        logdata.ParamName = a.Label;
-                        logdata.Val = a.TimeValue?.ToString("HH:mm:ss");
-                    }
-                    else if (a.ElementType == "Boolean")
-                    {
-                        logdata.ParamName = a.Label;
-                        logdata.Val = a.StringValue.ToString();
-                    }
-                    else if (a.ElementType == "Lookup")
-                    {
-                        logdata.ParamName = a.Label;
-                        if(a.LookupValue == "Other")
-                        {
-                            logdata.Val = a.StringValue.ToString();
-                        }
-                        else
-                            logdata.Val = a.LookupValue;
+        issave = false;
+        await submit();
 
-                    }
-                    logdata.CompanyId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Company_Id;
-                    logdata.PlantId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Plant_Id;
-                    logdata.Shift = formdatas.Shift;
-                    logdata.LogbookId = formdatas.logbook;
-                    logdata.MarkforDeletion = "3";
-                    logdatatable.Add(logdata);
-
-                });
-                logdtList.TblLog = logdatatable;
-                logdtList.TblLogHead = new();
-                logdtList.TblLogHead.CompanyId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Company_Id;
-                logdtList.TblLogHead.PlantId = subDepts.First(a => (a.Id.ToString() == formdatas.SubDepartment)).Plant_Id;
-                logdtList.TblLogHead.Shift = formdatas.Shift;
-                logdtList.TblLogHead.LogbookId = formdatas.logbook;
-                logdtList.TblLogHead.DeptId = formdatas.Department;
-                logdtList.TblLogHead.SubDeptId = formdatas.SubDepartment;
-                logdtList.TblLogHead.date = Convert.ToDateTime(formdatas.Date?.ToString("yyyy-MM-ddTHH:mm:ss"));
-                logdtList.TblLogHead.CreatedBy = "Admin";
-                logdtList.TblLogHead.StatusF = 3;
-                inactive = false;
-                iscorrect = true; 
-                var result = await httpservices.Post<string>("LogDataTable", logdtList);
-                if (result != null)
-                {
-                    inactive = true;
-                    await App.Current.MainPage.DisplayAlert("Message", "Success", "ok");
-
-                    StateHasChanged();
-
-                }
-                else
-                {
-                    await App.Current.MainPage.DisplayAlert("Error", "Error", "ok");
-                }
-                inactive = false;
-                dynamicform = new();
-                logdtList = new();
-                Submit();
-               
-                StateHasChanged();
-            }
-        }
-        catch (Exception ex)
-        {
-
-        }
     }
 
     void Onchecked(string value)
@@ -888,20 +901,18 @@
                             }
                         }
                         else if(a.ElementType=="Lookup")
-                        {
-                            if (a.LookupValue == (dr[dc.ColumnName]).ToString())
+                        {   
+                            if(!a.lookuplist.Any(b=>(b.value==(dr[dc.ColumnName]).ToString())))
                             {
-                                a.LookupValue = (dr[dc.ColumnName]).ToString();
-                                
+                                 a.LookupValue = "Other";
+                                a.StringValue = (dr[dc.ColumnName]).ToString();
                             }
                             else
                             {
-                                a.LookupValue = "Other";
-                                a.StringValue = (dr[dc.ColumnName]).ToString();
-                                
+                                a.LookupValue = (dr[dc.ColumnName]).ToString();
                             }
+                          
                         }
-
 
                     }
 

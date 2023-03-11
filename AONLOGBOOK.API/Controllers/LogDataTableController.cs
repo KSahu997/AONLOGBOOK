@@ -27,7 +27,7 @@ namespace AONLOGBOOK.API.Controllers
         {
             SqlParameter[] @params =
             {
-                new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="ALL"},
+                new SqlParameter {ParameterName="@Type",Direction=ParameterDirection.Input,Value="DAT"},
                 new SqlParameter {ParameterName="@LogbookId",Direction=ParameterDirection.Input,Value=logbookid},
                 new SqlParameter {ParameterName="@DateTime",Direction=ParameterDirection.Input,Value=dt},
             };
