@@ -2,7 +2,7 @@
 @inject IHttpService httpservices;
 
 
-@*<Button Color="Color.Primary" Clicked="@ShowModal">Show Modal</Button>*@
+<Button Color="Color.Primary" Clicked="@ShowModal">Show Modal</Button>
 <EditForm Model="@Calc">
 <Modal @ref="modalRef">
     <ModalContent Centered>
@@ -13,9 +13,9 @@
         <ModalBody>
             <Field>
                 <FieldLabel>Tag</FieldLabel>
-                    <Select TValue="string" @bind-SelectedValue="@Calc.Tag">
+                    <Select TValue="string" @bind-SelectedValue="@calcItem.Tag">
                     
-                        <SelectItem>--Select--</SelectItem>
+                        <SelectItem></SelectItem>
                         @if(Tags!=null)
                         {
                              @foreach(TblTagMaster tags in Tags)
@@ -31,8 +31,8 @@
             <Field>
                 <FieldLabel>Operators</FieldLabel>
                 <Badge Color="Color.Primary">
-                        <Select TValue="string" @bind-SelectedValue="@Calc.Operator">
-                            <SelectItem>--Select--</SelectItem>
+                        <Select TValue="string" @bind-SelectedValue="@calcItem.Operator">
+                            <SelectItem></SelectItem>
                             <SelectItem Value="@("+")">+</SelectItem>
                             <SelectItem Value="@("-")">-</SelectItem>
                             <SelectItem Value="@("*")">*</SelectItem>
@@ -46,19 +46,15 @@
             </Field>
             <Field>
                 <FieldLabel>Numbers</FieldLabel>
-                <Badge Color="Color.Info">
-                    <TextEdit TValue="string" @bind-SelectedValue="@Calc.Num"/>
-                </Badge>
+                    <TextEdit Role="TextRole.Text" @bind-Text="@calcItem.Number"></TextEdit>
             </Field>
             <Field>
-                    <Button Type="ButtonType.Button" Color="Color.Info" onclick="@HandleAdd">Add</Button>
+                    <Button Type="ButtonType.Button" Color="Color.Info" Clicked="@(()=>HandleAdd())">Add</Button>
             </Field>
             <Field>
                 <FieldLabel>Formula</FieldLabel>
-                <Div>
-                    
-                </Div>
-            </Field>
+                    <TextEdit Role="TextRole.Text" @bind-Text="Calc.formula"></TextEdit>
+                </Field>
         </ModalBody>
         <ModalFooter>
             <Button Color="Color.Secondary" Clicked="@HideModal">Close</Button>
@@ -68,33 +64,64 @@
 </Modal>
 </EditForm>
 @code {
-    [Parameter]
-    public Modal modalRef{ get; set; }
-    [Parameter]
-    public EventCallback<List<string>> mstCalc { get; set; }
-    [Parameter]
-    public RenderFragment ChildContent { get; set; }
-    IEnumerable<TblTagMaster> Tags;
-    Calculator Calc = new();
-    string formula { get; set; }
-    private Task ShowModal()
-    {
-        return modalRef.Show();
-    }
+        [Parameter]
+        public Modal modalRef{ get; set; }
+        [Parameter]
+        public EventCallback<List<string>> mstCalc { get; set; }
+        [Parameter]
+        public RenderFragment ChildContent { get; set; }
+        IEnumerable<TblTagMaster> Tags;
+        Calculator Calc = new();
+        CalcItem calcItem = new();
+        IEnumerable<Calculator> cal;
+        string formula { get; set; }
+        string tagitem { get; set; }
+        string[] strArray = null;
+        private Task ShowModal()
+        {
+            return modalRef.Show();
+        }
 
-    private Task HideModal()
-    {
-        return modalRef.Hide();
-    }
+        async private Task HideModal()
+        {
+            // modalRef.Hide();
+
+
+        }
     protected override async Task OnInitializedAsync()
     {
-       
+
         Tags = await httpservices.Get<List<TblTagMaster>>("TagMasters");
-
+        StateHasChanged();
     }
-    void HandleAdd(string val)
+    async void HandleAdd()
     {
-       
 
+        Calc.formula += calcItem.Tag+""+calcItem.Operator+""+calcItem.Number+"";
+        strArray = (Calc.formula).Split(" ");
+        calcItem.Tag = string.Empty;
+        calcItem.Operator = string.Empty;
+        calcItem.Number = string.Empty;
+        StateHasChanged();
+        for (int i = 0; i < strArray.Length; i++)
+        {
+            for (int j = i + 1; j < strArray.Length; j++)
+            {
+                if (strArray[j] == strArray[i])
+                {
+                    await App.Current.MainPage.DisplayAlert("Message", "Error", "OK");
+                    strArray = strArray.Skip(j).ToArray();
+                    Calc.formula = string.Join("", strArray);
+
+                }
+                else
+                {
+                    Calc.formula += calcItem.Tag + "" + calcItem.Operator + "" + calcItem.Number + "";
+                   
+                }
+               
+                }
+           
+        }
     }
 }

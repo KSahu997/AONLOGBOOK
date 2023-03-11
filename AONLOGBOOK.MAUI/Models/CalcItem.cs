@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace AONLOGBOOK.MAUI.Models
 {
-    public class Calculator
+    public class CalcItem
     {
-        
-        public List<CalcItem> formulaL { get; set; }
-        public string formula { get; set; }
+        public string Tag { get; set; }
+        public string Operator { get; set; }
+        public string Number { get; set; }
     }
 }
