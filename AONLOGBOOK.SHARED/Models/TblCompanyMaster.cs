@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 
 namespace AONLOGBOOK.SHARED.Models
 {
     public partial class TblCompanyMaster
     {
+        public TblCompanyMaster Clone()
+        {
+            return (TblCompanyMaster)this.MemberwiseClone();
+        }
         public Guid ID { get; set; }                     
         public string? Company_Name { get; set; }
         public string? Attachment { get; set; }

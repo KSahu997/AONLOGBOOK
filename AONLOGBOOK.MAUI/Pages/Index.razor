@@ -1,7 +1,32 @@
 ﻿@page "/"
+<style>
+.container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
 
-<PageTitle>Index</PageTitle>
+/* Then style the iframe to fit in the container div with full height and width */
+.responsive-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+}
+</style>
+@*<PageTitle>Index</PageTitle>
 
 <MudText Typo="Typo.h3" GutterBottom="true">Hello, world!</MudText>
 <MudText Class="mb-8">Welcome to your new app, powered by MudBlazor!</MudText>
 <MudAlert Severity="Severity.Normal">You can find documentation and examples on our website here: <MudLink Href="https://mudblazor.com" Typo="Typo.body2" Color="Color.Inherit"><b>www.mudblazor.com</b></MudLink></MudAlert>
+*@
+<MudPaper Height="600px" Width="100%" Elevation="0" Class="p-0">
+    <MudContainer Style="height: -webkit-fill-available;" Fixed>
+    <iframe src="https://aonapps.in:7076"
+            frameborder="0"></iframe>
+            </MudContainer>
+
+</MudPaper>

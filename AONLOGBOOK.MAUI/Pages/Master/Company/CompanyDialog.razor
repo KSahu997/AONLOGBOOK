@@ -1,8 +1,10 @@
-﻿<MudDialog Options="new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true }">
+﻿<MudDialog DisableSidePadding Options="new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true }">
     <TitleContent>
+        <MudText Typo="Typo.h6">@(tblCompanyMaster.ID == new Guid() ? "Create Company" : "Edit Company")</MudText>
         </TitleContent>
             <DialogContent>
 <MudForm @bind-IsValid=@success>
+                <MudContainer Style="max-height:300px;overflow-y:scroll;">
     <div class="p-2">
         <MudTextField T="string" Label="Company" @bind-Value=@tblCompanyMaster.Company_Name Required="true" RequiredError="Company name is required!" />
         <MudTextField T="string" Label="Email" @bind-Value=@tblCompanyMaster.Email Required="true" InputType="InputType.Email" RequiredError="Email is required!" />
@@ -12,8 +14,9 @@
         <MudTextField T="string" Label="State" @bind-Value=@tblCompanyMaster.State InputType="InputType.Text" Required="true" RequiredError="State is required!" />
         <MudTextField T="string" Label="Country" @bind-Value=@tblCompanyMaster.Country InputType="InputType.Text" Required="true" RequiredError="Country is required!" />
     </div>
-    <div class="d-flex align-center justify-space-between mt-3">
-                <MudButton OnClick="@(()=> MudDialog.Cancel())">Cancel</MudButton>
+                </MudContainer>
+    <div class="mud-dialog-actions">
+                <MudButton OnClick="cancel" Color="Color.Secondary">Cancel</MudButton>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!success)" OnClick=@submit Class="ml-auto">Register</MudButton>
     </div>
 </MudForm>
@@ -27,7 +30,11 @@
     private TblCompanyMaster tblCompanyMaster;
     protected override void OnInitialized()
     {
-        tblCompanyMaster = Company; 
+        tblCompanyMaster = Company.Clone()  ; 
+    }
+    void cancel()
+    {
+        tblCompanyMaster=Company;MudDialog.Cancel();
     }
 
     async void submit()
